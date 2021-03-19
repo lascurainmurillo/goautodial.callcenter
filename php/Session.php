@@ -27,8 +27,10 @@ namespace creamy;
 
 
 // Start session if not already started.
+ini_set('max_execution_time', 120);
 require_once('CRMDefaults.php');
 require_once('SessionHandler.php');
+
 $session_class = new \creamy\SessionHandler();
 /*if (version_compare(phpversion(), '5.4.0', '<')) {
      if(session_id() == '') {

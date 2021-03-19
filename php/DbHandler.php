@@ -257,8 +257,6 @@ class DbHandler {
 			'ip_address' => $ip_address
 		);
 
-
-
 		foreach($postfields as $key=>$value) { $postfields_string .= $key.'='.$value.'&'; }
 		$postfields_string = rtrim($postfields_string, '&');
 
@@ -275,10 +273,13 @@ class DbHandler {
 		curl_setopt($ch,CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch,CURLOPT_POSTFIELDS, $postfields_string);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, VERIFY_SSL); // se agregó esta linea para localhost
+
 		$data = curl_exec($ch);
+
 		$userobj = json_decode($data);
 		curl_close($ch);
-
+		
 		if ($userobj->result === "success") { // first match valid?
 			//$password_hash = $userobj["password_hash"];
 			//$status = $userobj["status"];

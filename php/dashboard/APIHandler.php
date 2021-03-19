@@ -1,1 +1,5 @@
-../../php/APIHandler.php
+<?php 
+# ../../php/APIHandler.php
+require_once('../../php/APIHandler.php');
+
+?>

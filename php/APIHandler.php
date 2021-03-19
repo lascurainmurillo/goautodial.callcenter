@@ -120,12 +120,13 @@ if(isset($_SESSION["user"])){
 		curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, VERIFY_SSL);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postdata));
 		$data = curl_exec($ch);
 		curl_close($ch);
+		
+		//var_dump($url, http_build_query($postdata));
 	    $output = json_decode($data);
-	    
 	    if($request_data === true)
 	    	return $data;
 	    else
@@ -165,6 +166,7 @@ if(isset($_SESSION["user"])){
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT , 0); //gg
 		curl_setopt($ch, CURLOPT_TIMEOUT  , 0); //gg
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, VERIFY_SSL);
 		$data = curl_exec($ch);
 		curl_close($ch);
 		$output = json_decode($data);

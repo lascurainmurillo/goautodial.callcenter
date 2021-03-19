@@ -38,8 +38,8 @@
 
     } else {        
         $max = 0;
-        
-        foreach ($output->data as $key => $value) {        
+
+        foreach (@$output->data as $key => $value) {        
             if(++$max > 6) break;
             
 			$userid 							= $api->escapeJsonString($value->vu_user_id);
