@@ -1,6 +1,5 @@
 php/Config.php
 php/goCRMAPISettings.php
-.gitignore
 astguiclient.conf
 goautodial.conf
 php/dashboard/APIHandler.php

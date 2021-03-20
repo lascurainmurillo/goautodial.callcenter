@@ -1752,7 +1752,37 @@ error_reporting(E_ERROR | E_PARSE);
 			</div>
 			<!-- End of View Agent -->
 			<!-- End of modal -->
-                ';
+
+			<!-- SDK FACEBOOK -->
+			<div id="fb-root"></div>
+			<script async defer crossorigin="anonymous" src="https://connect.facebook.net/es_ES/sdk.js#xfbml=1&version=v10.0&appId=146655680685042&autoLogAppEvents=1" nonce="TwZDjBs8"></script>
+
+			<script>
+				window.fbAsyncInit = function() {
+					FB.init({
+					appId      : \''.APP_ID_FACEBOOK.'\',
+					cookie     : true,
+					xfbml      : true,
+					version    : \''.APP_VERSION_FACEBOOK.'\'
+					});
+					
+					FB.AppEvents.logPageView();   
+					
+				};
+
+				(function(d, s, id){
+					var js, fjs = d.getElementsByTagName(s)[0];
+					if (d.getElementById(id)) {return;}
+					js = d.createElement(s); js.id = id;
+					js.src = "https://connect.facebook.net/en_US/sdk.js";
+					fjs.parentNode.insertBefore(js, fjs);
+				}(document, \'script\', \'facebook-jssdk\'));
+
+			</script>
+
+			<!-- CUSTOM JS -->
+			<script src="js/custom/app-footer-202103192153.js" type="text/javascript"></script>  
+								';
 		return $footer;
 	}
 
@@ -2194,15 +2224,22 @@ error_reporting(E_ERROR | E_PARSE);
 				</li>';
 			}
 			$tabpanes .= '</ul>
-			  <ul class="control-sidebar-menu" style="bottom: 0px; position: absolute; width: 100%; margin: 25px -15px 15px;">
+			  <!-- <ul class="control-sidebar-menu" style="bottom: 0px; position: absolute; width: 100%; margin: 25px -15px 15px;"> -->
+			  <ul class="control-sidebar-menu" style="margin: 25px -15px 15px;">
 				<li>
-					<div class="center-block" style="text-align: center">
-						<a href="./profile.php" class="btn btn-warning"><i class="fa fa-user"></i> '.$this->lh->translationFor("my_profile").'</a>
-						 &nbsp;
-						<a href="./logout.php" id="cream-agent-logout" class="btn btn-warning"><i class="fa fa-sign-out"></i> '.$this->lh->translationFor("exit").'</a>
-					</div>
-				</li>
-			  </ul>'."\n";
+				<div class="center-block" style="text-align: center">';
+
+			if ($user->userHasBasicPermission()) {
+				$tabpanes .= '<div class="fb-login-button" data-width="" data-size="large" data-button-type="login_with" data-layout="default" data-auto-logout-link="false" data-use-continue-as="false" style="margin: 10px 0px" onlogin="checkLoginState();"></div>
+				';
+			}
+			
+			$tabpanes .= '<a href="./profile.php" class="btn btn-warning"><i class="fa fa-user"></i> '.$this->lh->translationFor("my_profile").'</a>
+							&nbsp;
+						  <a href="./logout.php" id="cream-agent-logout" class="btn btn-warning"><i class="fa fa-sign-out"></i> '.$this->lh->translationFor("exit").'</a>
+						</div>
+					</li>
+				</ul>'."\n";
 		}
 		$tabpanes .= "</div>\n";
 

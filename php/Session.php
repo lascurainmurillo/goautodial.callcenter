@@ -27,7 +27,7 @@ namespace creamy;
 
 
 // Start session if not already started.
-ini_set('max_execution_time', 120);
+// ini_set('max_execution_time', 120);
 require_once('CRMDefaults.php');
 require_once('SessionHandler.php');
 

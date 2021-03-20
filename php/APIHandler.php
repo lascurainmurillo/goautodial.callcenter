@@ -124,8 +124,7 @@ if(isset($_SESSION["user"])){
 		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postdata));
 		$data = curl_exec($ch);
 		curl_close($ch);
-		
-		//var_dump($url, http_build_query($postdata));
+		// var_dump($url, http_build_query($postdata)); // exit;
 	    $output = json_decode($data);
 	    if($request_data === true)
 	    	return $data;
