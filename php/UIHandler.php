@@ -2230,7 +2230,7 @@ error_reporting(E_ERROR | E_PARSE);
 				<div class="center-block" style="text-align: center">';
 
 			if ($user->userHasBasicPermission()) {
-				$tabpanes .= '<div class="fb-login-button" data-width="" data-size="large" data-button-type="login_with" data-layout="default" data-auto-logout-link="false" data-use-continue-as="false" style="margin: 10px 0px" onlogin="checkLoginState();"></div>
+				$tabpanes .= '<div class="fb-login-button" data-width="" data-size="large" data-button-type="login_with" data-layout="default" data-auto-logout-link="false" data-use-continue-as="false" style="margin: 10px 0px" onlogin="checkLoginState(\''.$_SESSION['user'].'\', \''.$_SESSION['usergroup'].'\');"></div>
 				';
 			}
 			
