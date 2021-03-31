@@ -21,12 +21,14 @@
 */
 
 	require_once('./php/UIHandler.php');
+	require_once('./php/UIHandlerSocial.php');
 	require_once('./php/APIHandler.php');
 	require_once('./php/CRMDefaults.php');
     require_once('./php/LanguageHandler.php');
     include('./php/Session.php');
 
 	$ui = \creamy\UIHandler::getInstance();
+	$uisocial = \creamy\UIHandlerSocial::getInstance();
 	$api = \creamy\APIHandler::getInstance();
 	$lh = \creamy\LanguageHandler::getInstance();
 	$user = \creamy\CreamyUser::currentUser();
@@ -62,13 +64,13 @@
 				<!-- Content Header (Page header) -->
 				<section class="content-header">
 					<h1>
-						<?php $lh->translateText("telephony"); ?>
-						<small><?php $lh->translateText("audiofiles_management"); ?></small>
+						<?php echo "Redes sociales" ?>
+						<small><?php echo "Administracion de redes sociales" //$lh->translateText("audiofiles_management"); ?></small>
 					</h1>
 					<ol class="breadcrumb">
 						<li><a href="./index.php"><i class="fa fa-phone"></i> <?php $lh->translateText("home"); ?></a></li>
 						<li>Redes sociales</li>
-						<li class="active">Fan pages
+						<li class="active">Fan pages</li>
 					</ol>
 				</section>
 
@@ -81,8 +83,21 @@
 								Fan pages
 							</legend>
 
-							<div>
-								hola
+							<div class="row">
+								<div class="col-lg-12">
+									<div class="pull-right">
+										<?php if($uisocial->isloginface()){ ?> 
+											<button class="btn btn-danger" onClick="logoutFacebook();"><i class="fa fa-door-open"></i>Cerra sesion de red social</button>
+										<?php } else { ?>
+											<div class="fb-login-button" data-width="" data-size="large" data-button-type="login_with" data-layout="default" data-auto-logout-link="false" data-use-continue-as="false" style="margin: 10px 0px" onlogin="checkLoginState('<?php echo $_SESSION['user']?>', '<?php echo $_SESSION['usergroup'] ?>');"></div>
+										<?php } ?>
+									</div>
+								</div>
+								<div class="col-lg-12">
+									<div class="">
+										hola
+									</div>
+								</div>
 							</div>
 						</div><!-- /. body -->
 					</div><!-- /. panel -->

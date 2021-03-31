@@ -153,6 +153,9 @@ define('CRM_HELPDESK_TICKETS_TABLE_NAME', "ost_ticket");
 define('CRM_HELPDESK_TICKETS_CONTENT_TABLE_NAME', "ost_thread_entry");
 define('CRM_HELPDESK_USERS_TABLE_NAME', "ost_staff");
 
+// Custom Table names
+define('CRM_SOCIAL_TOKEN', "go_social_token");
+
 // Session constants
 define('CRM_SESSION_DRIVER', 'database');              // The storage driver to use: files, database
 define('CRM_SESSION_COOKIE_NAME', 'go_sessions');   // The session cookie/table name, must contain only [0-9a-z_] characters

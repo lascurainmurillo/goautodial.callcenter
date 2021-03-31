@@ -1,11 +1,11 @@
 /**
  *
- *  Ver estado de login
+ *  Ver estado de login. Se esjecuta despues de que el usuario se logea
  * FB is SDK Facebook javascript
  */
 function checkLoginState(log_user, log_group) {
     // mostrar Loading
-    // $(".preloader").show();
+    $(".preloader").show();
     FB.getLoginStatus(function(response) {
 
         if (response.status == "connected") {
@@ -15,31 +15,64 @@ function checkLoginState(log_user, log_group) {
                 log_group: "ADMIN", // log_group,
                 token: response.authResponse.accessToken,
                 expiration_time: response.authResponse.data_access_expiration_time,
-                user_id: response.authResponse.userID
+                user_id: response.authResponse.userID,
+                responsetype: 'json',
             }
 
             // guardar en base de datos el token
             $.ajax({
-                url: "./php/social_red/SocialCrud.php",
+                url: "./php/social_red/SocialLogin.php",
                 type: 'POST',
+                dataType: "json",
                 data: data,
                 success: function(data) {
-                    console.log(data);
-                    if (data) {
-
+                    // console.log(data);
+                    $(".preloader").hide();
+                    if (data.result == "success") {
+                        // redireccionar a la paginas de pages face
+                        window.location.replace("/socialpages.php");
                     } else {
+                        // colocar un swal para notificar que el usuario no se logeo correctamente
+                        swal("Cerrar", data.result, "error");
                         // sweetAlert("<?php $lh->translateText("add_user_failed"); ?>", data, "error");
                     }
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    swal("Cerrar", "Sucedió un problema inténtelo nuevamente. " + errorThrown, "error");
                 }
             });
-
-            // redireccionar a la paginas de pages face
-            // window.location.replace("/socialpages.php");
         } else {
             // eliminar Loading
-            // mostrar alerta "usted no se ha logueado correctamente"
             $(".preloader").hide();
+            swal("Cerrar", "Usted no se ha logueado correctamente.", "error");
         }
-        // statusChangeCallback(response);
+
+    });
+
+}
+
+
+function logoutFacebook() {
+
+    // ajax cerrar sesion cambiar estado en base de datos
+    $.ajax({
+        url: "./php/social_red/SocialLogout.php",
+        type: 'POST',
+        dataType: "json",
+        data: { responsetype: 'json' },
+        success: function(data) {
+            // console.log(data);
+            if (data.result == "success") {
+                // cambiar boton cerrar a boton de facebook
+                window.location.replace("/index.php");
+            } else {
+                // colocar un swal para notificar que el usuario no se logeo correctamente
+                swal("Cerrar", data.result, "error");
+                // sweetAlert("<?php $lh->translateText("add_user_failed"); ?>", data, "error");
+            }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            swal("Cerrar", "Sucedió un problema inténtelo nuevamente. " + errorThrown, "error");
+        }
     });
 }

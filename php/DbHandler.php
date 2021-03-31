@@ -2224,6 +2224,23 @@ class DbHandler {
 		$return = ($this->dbConnector->getRowCount() > 0) ? $result : false;
 		return $return;
 	}
+
+
+	/** ------------------------------- Query custom - Mark Cornejo Bonifacio ------------------------------------------- */
+
+	/* Social Network */	
+	/**
+	 * Obtener el registro de un token habilitado. field. status=1
+	 *
+	 * @return void
+	 */
+	public function getTokenUser() {
+		$this->dbConnector->where("status", 1);
+		$result = $this->dbConnector->getOne(CRM_SOCIAL_TOKEN, "token,user_id,expiration_time");
+		return $result;
+	}
+
+
 }
 
 ?>

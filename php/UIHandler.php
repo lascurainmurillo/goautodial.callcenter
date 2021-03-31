@@ -2200,6 +2200,7 @@ error_reporting(E_ERROR | E_PARSE);
 	}
 
 	protected function getRightTabPane($user, $tab, $active = false) {
+		//var_dump(($this->db->getTokenUser())); exit;
 		$avatarElement = $this->getVueAvatar($user->getUserName(), $user->getUserAvatar(), 96, false, true, false);
 
 		$isActive = ($active) ? ' active' : '';
@@ -2228,15 +2229,18 @@ error_reporting(E_ERROR | E_PARSE);
 			  <ul class="control-sidebar-menu" style="margin: 25px -15px 15px;">
 				<li>
 				<div class="center-block" style="text-align: center">';
-
-			if ($user->userHasBasicPermission()) {
+			
+			if ($user->userHasBasicPermission() && !($this->db->getTokenUser())) {
 				$tabpanes .= '<div class="fb-login-button" data-width="" data-size="large" data-button-type="login_with" data-layout="default" data-auto-logout-link="false" data-use-continue-as="false" style="margin: 10px 0px" onlogin="checkLoginState(\''.$_SESSION['user'].'\', \''.$_SESSION['usergroup'].'\');"></div>
 				';
+			} else {
+				// colocar un boton de "VER TODAS LAS PAGINAS FAN"
+				$tabpanes .= '<a href="./socialpages.php" class="btn btn-primary" style="margin-bottom: 20px"><i class="fa fa-thumbs-up"></i> VER FANPAGE VINCULADAS</a>';
 			}
 			
-			$tabpanes .= '<a href="./profile.php" class="btn btn-warning"><i class="fa fa-user"></i> '.$this->lh->translationFor("my_profile").'</a>
+			$tabpanes .= '<a href="./profile.php" class="btn btn-warning" style="margin-bottom: 20px"><i class="fa fa-user"></i> '.$this->lh->translationFor("my_profile").'</a>
 							&nbsp;
-						  <a href="./logout.php" id="cream-agent-logout" class="btn btn-warning"><i class="fa fa-sign-out"></i> '.$this->lh->translationFor("exit").'</a>
+						  <a href="./logout.php" id="cream-agent-logout" class="btn btn-warning" style="margin-bottom: 20px"><i class="fa fa-sign-out"></i> '.$this->lh->translationFor("exit").'</a>
 						</div>
 					</li>
 				</ul>'."\n";

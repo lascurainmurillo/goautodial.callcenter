@@ -123,7 +123,7 @@
 	if (!isset($userResponseType) || strlen($userResponseType) < 1) {
 		$userResponseType = "xml";
 	}
-    
+	
     /* API OUTPUT */
     ob_start();
     

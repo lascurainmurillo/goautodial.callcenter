@@ -1,6 +1,6 @@
 <?php
 
-$_GET['goAction'] = 'SocialCrud';
+$_GET['goAction'] = 'SocialLogin';
 include_once ("goAPI.php");
 
 
@@ -37,20 +37,44 @@ if (empty($goUser) || is_null($goUser)) {
 } else {
 	
 	// cambiar todos los registros a status 0
-	$goDB->udpate("go_social_token", ['status' => 0]);
+	try {
+		//code...
+		$upd = $goDB->update("go_social_token", ['status' => 0]);
 
-	$data_script 							= array(
-		"token" 							=> $token, 
-		"user_id" 							=> $user_id, 
-		"expiration_time" 					=> $expiration_time, 
-		"date_add" 							=> date('Y-m-d H:i:s'), 
-	);
+		$data_script 							= array(
+			"token" 							=> $token, 
+			"user_id" 							=> $user_id, 
+			"expiration_time" 					=> $expiration_time, 
+			"date_add" 							=> date('Y-m-d H:i:s'), 
+		);
 
-	// único registro activo
-	$goDB->insert("go_social_token", $data_script);
+		// único registro activo
+		$insertScript = $goDB->insert("go_social_token", $data_script);
+
+		if (!$insertScript) {
+			$apiresults 						= array(
+				"result" 							=> "Error: Add failed, check your details"
+			);
+		} else {
+			$log_id 							= log_action($goDB, "ADD", /*$log_user*/'mark', /*$log_ip*/'124.241.241.212', "Added New token: $token", $log_group, $goDB->getLastQuery());
+			$apiresults 						= array(
+				"result" 							=> "success"
+			);
+		}
+		
+	} catch (Exception $e) {
+		$err = $e->getMessage();
+		$err_msg 									= error_handle("10001");
+		$apiresults 								= array(
+			"code" 										=> "10001", 
+			"result" 									=> $err_msg." - ".$err,
+			);	
+	}
+	
+
 
 }
-var_dump($apiresults); exit;
+// var_dump($apiresults); exit;
 // echo "ddssds"; exit;
 // var_dump($_SESSION); exit;
 //check access
