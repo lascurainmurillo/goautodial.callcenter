@@ -1,3 +1,4 @@
+/vendor
 php/Config.php
 php/goCRMAPISettings.php
 astguiclient.conf
