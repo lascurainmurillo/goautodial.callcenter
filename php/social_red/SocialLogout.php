@@ -1,4 +1,6 @@
 <?php
+require __DIR__ . '/../../vendor/autoload.php';
+use App\Lib\Phpjwt;
 
 $_GET['goAction'] = 'SocialLogout';
 include_once ("goAPI.php");

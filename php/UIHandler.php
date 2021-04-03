@@ -1781,7 +1781,9 @@ error_reporting(E_ERROR | E_PARSE);
 			</script>
 
 			<!-- CUSTOM JS -->
-			<script src="js/custom/app-footer-202103192153.js" type="text/javascript"></script>  
+			<script src="js/custom/global.js" type="text/javascript"></script>
+			<script src="js/custom/app-footer.js" type="text/javascript"></script>  
+			  
 								';
 		return $footer;
 	}
@@ -2231,7 +2233,7 @@ error_reporting(E_ERROR | E_PARSE);
 				<div class="center-block" style="text-align: center">';
 			
 			if ($user->userHasBasicPermission() && !($this->db->getTokenUser())) {
-				$tabpanes .= '<div class="fb-login-button" data-width="" data-size="large" data-button-type="login_with" data-layout="default" data-auto-logout-link="false" data-use-continue-as="false" style="margin: 10px 0px" onlogin="checkLoginState(\''.$_SESSION['user'].'\', \''.$_SESSION['usergroup'].'\');"></div>
+				$tabpanes .= '<fb:login-button class="fb-login-button" data-width="" data-size="large" data-button-type="login_with" data-layout="default" data-auto-logout-link="false" data-use-continue-as="false" style="margin: 10px 0px" scope="public_profile,email,pages_show_list" onlogin="checkLoginState(\''.$_SESSION['user'].'\', \''.$_SESSION['usergroup'].'\');"></fb:login-button>
 				';
 			} else {
 				// colocar un boton de "VER TODAS LAS PAGINAS FAN"

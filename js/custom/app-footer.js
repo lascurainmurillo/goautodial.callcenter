@@ -17,6 +17,7 @@ function checkLoginState(log_user, log_group) {
                 expiration_time: response.authResponse.data_access_expiration_time,
                 user_id: response.authResponse.userID,
                 responsetype: 'json',
+                utjo: getCookie("utjo")
             }
 
             // guardar en base de datos el token
@@ -30,6 +31,7 @@ function checkLoginState(log_user, log_group) {
                     $(".preloader").hide();
                     if (data.result == "success") {
                         // redireccionar a la paginas de pages face
+                        // localStorage.setItem('user', JSON.stringify(data.data));
                         window.location.replace("/socialpages.php");
                     } else {
                         // colocar un swal para notificar que el usuario no se logeo correctamente
@@ -51,7 +53,11 @@ function checkLoginState(log_user, log_group) {
 
 }
 
-
+/**
+ *
+ * Cerrar sesion de facebook y elimina la lista de pages
+ * LogoutFacebook
+ */
 function logoutFacebook() {
 
     // ajax cerrar sesion cambiar estado en base de datos
@@ -59,11 +65,12 @@ function logoutFacebook() {
         url: "./php/social_red/SocialLogout.php",
         type: 'POST',
         dataType: "json",
-        data: { responsetype: 'json' },
+        data: { responsetype: 'json', tokenjwt: localStorage.getItem('user') },
         success: function(data) {
             // console.log(data);
             if (data.result == "success") {
                 // cambiar boton cerrar a boton de facebook
+                // localStorage.removeItem('user');
                 window.location.replace("/index.php");
             } else {
                 // colocar un swal para notificar que el usuario no se logeo correctamente

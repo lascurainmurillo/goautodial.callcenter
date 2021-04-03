@@ -22,6 +22,12 @@
 		OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 		THE SOFTWARE.
 	*/
+
+	// se llama a la librerias
+	require __DIR__ . '/vendor/autoload.php';
+	
+	use App\Lib\Phpjwt;
+
 	error_reporting(E_ERROR | E_PARSE);
 
 	require_once('./php/CRMDefaults.php');
@@ -76,6 +82,11 @@
 			if ($result == NULL) { // login failed
 				$error = $lh->translationFor("invalid_login_password");
 			} else {
+
+				// se crea el tokenjwt y poner en la cookie utjo;
+				$tokenjwt = Phpjwt::getToken();
+				setcookie('utjo', $tokenjwt, time() + (7 * 24 * 60 * 60));  // la cookie utjo es el token
+
 				$_SESSION["user"] = $username;
 				$_SESSION["userid"] = $result["id"];
 				$_SESSION["username"] = $result["name"];

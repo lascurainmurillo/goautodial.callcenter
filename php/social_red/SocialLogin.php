@@ -1,12 +1,16 @@
 <?php
+require __DIR__ . '/../../vendor/autoload.php';
+use App\Lib\Phpjwt;
+
 
 $_GET['goAction'] = 'SocialLogin';
 include_once ("goAPI.php");
 
 
-$token 				= $astDB->escape($_REQUEST["token"]);
-$expiration_time 	= $astDB->escape($_REQUEST["expiration_time"]);
-$user_id 			= $astDB->escape($_REQUEST["user_id"]);
+$token 				= $astDB->escape(@$_REQUEST["token"]);
+$expiration_time 	= $astDB->escape(@$_REQUEST["expiration_time"]);
+$user_id 			= $astDB->escape(@$_REQUEST["user_id"]);
+$tokenjwt 			= $astDB->escape(@$_REQUEST["utjo"]);
 
 // Error Checking
 /*
@@ -22,7 +26,12 @@ if (empty($goUser) || is_null($goUser)) {
 	$apiresults 									= array(
 		"result" 										=> "Error: Session User Not Defined."
 	);
-} else*/if ( empty($token) || is_null($token) ) {
+} else*/
+if (empty($tokenjwt) || is_null($tokenjwt) || @!($result_jwt = Phpjwt::verifyToken($tokenjwt)['success'])) { //Phpjwt verificar token
+	$apiresults 									= array(
+		"result" 										=> "Error: El token no es válido."
+	);
+} elseif ( empty($token) || is_null($token) ) {
 	$apiresults 									= array(
 		"result" 										=> "Error: No se obtuvo token."
 	);
@@ -56,10 +65,11 @@ if (empty($goUser) || is_null($goUser)) {
 				"result" 							=> "Error: Add failed, check your details"
 			);
 		} else {
-			$log_id 							= log_action($goDB, "ADD", /*$log_user*/'mark', /*$log_ip*/'124.241.241.212', "Added New token: $token", $log_group, $goDB->getLastQuery());
-			$apiresults 						= array(
-				"result" 							=> "success"
-			);
+			$log_id 		= log_action($goDB, "ADD", /*$log_user*/'mark', /*$log_ip*/'124.241.241.212', "Added New token: $token", $log_group, $goDB->getLastQuery());
+			$apiresults 	= [
+				"result" 	=> "success",
+				"data" => $result_jwt,
+			];
 		}
 		
 	} catch (Exception $e) {

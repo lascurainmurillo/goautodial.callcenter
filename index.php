@@ -5,10 +5,6 @@ require __DIR__ . '/vendor/autoload.php';
 
 use App\Lib\Logger;
 Logger::enableSystemLogs();
-
-use App\Lib\Phpjwt;
-$token = Phpjwt::getToken(); //obtene token
-var_dump($token);
 */
 
 /*

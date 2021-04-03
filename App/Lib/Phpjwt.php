@@ -25,7 +25,7 @@ class Phpjwt
             // "iss" => self::Aud(),
             "aud" => self::Aud(),
             "iat" => $time, // Tiempo que inició el token
-            "nbf" => $time + (7 * 24 * 60 * 60) // Tiempo que expirará el token (+1 hora)
+            "exp" => $time + (3 * 24 * 60 * 60) // Tiempo que expirará el token (+1 hora)
         ];
     
     }
@@ -39,7 +39,6 @@ class Phpjwt
     public static function getToken()
     {
         new Phpjwt();
-        var_dump(self::$payload);
         $jwt = JWT::encode(self::$payload, self::$key);
         return $jwt;
        
@@ -52,21 +51,27 @@ class Phpjwt
      * @param String $token
      * @return Array[success, error]
      */
-    public static function  verifyToken($token) {
+    public static function verifyToken($token) {
 
         try {
-
+            
+            //verificar si el token existe
             if(empty($token))
             {
-                throw new Exception("Invalid token supplied.");
+                throw new \Exception("Invalid token supplied.");
             }
 
-            JWT::$leeway = 60; // $leeway in seconds
-            $decode = JWT::decode($token, self::$key, array('HS256'));
+            //verificar si es un token borrado. Token borrados en la base de datos.
+            // code ... ... ...
 
+            // decodificar token
+            JWT::$leeway = 60; // $leeway in seconds
+            $decode = self::decodet($token, array('HS256'));
+
+            // verificar procedencia
             if($decode->aud !== self::Aud())
             {
-                throw new Exception("Invalid user logged in.");
+                throw new \Exception("Invalid user logged in.");
             }
 
         } catch (\Exception $e) {
@@ -78,6 +83,44 @@ class Phpjwt
                 "error" => false,
             ];
 
+    }
+    
+    /**
+     * deleteToken
+     * Borrar token de acceso. Los token borrado se deben registrar en bd
+     * 
+     *
+     * @param  String $token
+     * @return String / boolean
+     */
+    public static function deleteToken($token) {
+        // OJO: se debe registrar los token borrados en una tabla Db
+
+        /*
+        if(!empty($token)){
+            $deco = (array) self::decodet($token, array('HS256'));
+            $deco['iat'] = time();   // se igualan los tiempos
+            $deco['exp'] = time();   // se igualan los tiempos
+            $enc = JWT::encode($deco, self::$key);
+            return $enc;
+        } else {
+            return false;
+        }
+        */
+
+    }
+
+    
+    /**
+     * decode token
+     *
+     * @param  String $token
+     * @param  Array $algo
+     * @return Array
+     */
+    public static function decodet($token, $algo) {
+        new Phpjwt();
+        return JWT::decode($token, self::$key, $algo);
     }
 
     /*
