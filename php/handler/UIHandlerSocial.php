@@ -1,36 +1,13 @@
 <?php
-/**
-	The MIT License (MIT)
-
-	Copyright (c) 2015 Ignacio Nieto Carvajal
-
-	Permission is hereby granted, free of charge, to any person obtaining a copy
-	of this software and associated documentation files (the "Software"), to deal
-	in the Software without restriction, including without limitation the rights
-	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-	copies of the Software, and to permit persons to whom the Software is
-	furnished to do so, subject to the following conditions:
-
-	The above copyright notice and this permission notice shall be included in
-	all copies or substantial portions of the Software.
-
-	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-	THE SOFTWARE.
-*/
 
 namespace creamy;
 
 // dependencies
-require_once('CRMDefaults.php');
-require_once('LanguageHandler.php');
-require_once('CRMUtils.php');
-require_once('ModuleHandler.php');
-require_once('goCRMAPISettings.php');
+require_once(__DIR__.'/../CRMDefaults.php');
+require_once(__DIR__.'/../LanguageHandler.php');
+require_once(__DIR__.'/../CRMUtils.php');
+// require_once(__DIR__.'/../ModuleHandler.php');
+require_once(__DIR__.'/../goCRMAPISettings.php');
 //require_once('Session.php');
 
 // constants
@@ -76,9 +53,10 @@ error_reporting(E_ERROR | E_PARSE);
      */
     protected function __construct()
     {
-        require_once dirname(__FILE__) . '/DbHandler.php';
+        require_once dirname(__FILE__) . '/DbHandlerSocial.php';
+
         // opening db connection
-        $this->db = new \creamy\DbHandler();
+        $this->db = new \creamy\DbHandlerSocial();
         $this->api = \creamy\APIHandler::getInstance();
         $this->lh = \creamy\LanguageHandler::getInstance();
     }
@@ -113,9 +91,11 @@ error_reporting(E_ERROR | E_PARSE);
 	public function isloginface() {
 		return $this->db->getTokenUser();
 	}
+
+    public function listPage() {
+        return $this->db->getFanPagesNoToken();
+    }
 	
-
-
 }
 
 ?>

@@ -21,12 +21,13 @@
 */
 
 	require_once('./php/UIHandler.php');
-	require_once('./php/UIHandlerSocial.php');
+	require_once('./php/handler/UIHandlerSocial.php');
 	require_once('./php/APIHandler.php');
 	require_once('./php/CRMDefaults.php');
     require_once('./php/LanguageHandler.php');
     include('./php/Session.php');
 
+	
 	$ui = \creamy\UIHandler::getInstance();
 	$uisocial = \creamy\UIHandlerSocial::getInstance();
 	$api = \creamy\APIHandler::getInstance();
@@ -82,7 +83,7 @@
 							<legend>
 								Fan pages
 							</legend>
-
+							<?php // var_dump($uisocial->listPage()); ?>
 							<div class="row">
 								<div class="col-lg-12">
 									<div class="pull-right">
@@ -94,8 +95,33 @@
 									</div>
 								</div>
 								<div class="col-lg-12">
-									<div class="">
-										hola
+									<div class="row">
+										<?php foreach ($uisocial->listPage() as $key => $value) { ?>
+										<div class="col-lg-3">
+											<div class="panel panel-default">
+												<div class="panel-body">
+													<div class="panel-page">
+														<div class="panel-table" style="width: 75px;">
+															<img width="75" src="https://graph.facebook.com/<?php echo $value['page_id']; ?>/picture?type=large" alt="perfil">
+														</div>
+														<div class="panel-table">
+															<div style="margin-left: 7px;">
+																<h4><?php echo $value['name'] ?></h4>
+															</div>
+														</div>
+														<div class="panel-table" style="width: 25px">
+															<div class="checkbox">
+																<label for="name-<?php echo $value['id'] ?>" class="checkbox-inline c-checkbox" >
+																	<input type="checkbox" id="name-<?php echo $value['id'] ?>" name="name-<?php echo $value['id'] ?>" onchange="checkPageFacebook(this);" value="1" <?php echo $value["status"] ? "checked" : "" ?> >
+																	<span class="fa fa-check"></span>
+																</label>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<?php } ?>
 									</div>
 								</div>
 							</div>

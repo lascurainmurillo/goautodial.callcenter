@@ -32,7 +32,6 @@
  * @link URL http://digitalleaves.com
  */
 
-
 // global constants
 define ('BASE_URL', 'https://vaglxc01.goautodial.com');
 
@@ -155,6 +154,7 @@ define('CRM_HELPDESK_USERS_TABLE_NAME', "ost_staff");
 
 // Custom Table names
 define('CRM_SOCIAL_TOKEN', "go_social_token");
+define('CRM_SOCIAL_PAGE', "go_social_page");
 
 // Session constants
 define('CRM_SESSION_DRIVER', 'database');              // The storage driver to use: files, database
@@ -234,4 +234,5 @@ define ('ECCS_BLIND_MODE', "n"); //Customizations requested by ECCS. Accessibili
 define ('LEADUPLOAD_LEAD_MAPPING', "n"); // Customization requested by Yoothit. Lead Mapping
 define ('LEADUPLOAD_CUSTOM_DELIMITER', ""); //put special characters here, for multiple separate by [space]
 define ('LEADUPLOAD_CHECK_PHONES_IN_SYSTEM', 'n'); //enable or disable Lead Upload Feature: check duplicates in entire system
+
 ?>

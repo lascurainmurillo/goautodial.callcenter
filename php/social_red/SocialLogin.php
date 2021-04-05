@@ -1,10 +1,12 @@
 <?php
 require __DIR__ . '/../../vendor/autoload.php';
-use App\Lib\Phpjwt;
 
+use App\Lib\Phpjwt;
+use App\Lib\Facebookgo;
+use App\Service\FacebookService;
 
 $_GET['goAction'] = 'SocialLogin';
-include_once ("goAPI.php");
+require_once ("goAPI.php");
 
 
 $token 				= $astDB->escape(@$_REQUEST["token"]);
@@ -44,10 +46,11 @@ if (empty($tokenjwt) || is_null($tokenjwt) || @!($result_jwt = Phpjwt::verifyTok
 		"result" 										=> "Error: La user_id no se obtuvo o el valor no es permitido"
 	);
 } else {
-	
-	// cambiar todos los registros a status 0
+
+	// require_once (__DIR__.'/../handler/UIHandlerSocial.php');
 	try {
-		//code...
+
+		// eliminar el anterior usuario activado
 		$upd = $goDB->update("go_social_token", ['status' => 0]);
 
 		$data_script 							= array(
@@ -60,12 +63,17 @@ if (empty($tokenjwt) || is_null($tokenjwt) || @!($result_jwt = Phpjwt::verifyTok
 		// único registro activo
 		$insertScript = $goDB->insert("go_social_token", $data_script);
 
-		if (!$insertScript) {
-			$apiresults 						= array(
-				"result" 							=> "Error: Add failed, check your details"
+		// obtener lista de pages y registrar lista de pages en tabla con sus respectivos tokens
+		$fanpages = Facebookgo::userAccounts($token, $user_id);
+		$resultmsm = FacebookService::getInstance($goDB)->regFanPage($fanpages, $insertScript);
+
+		if (!$insertScript || !$resultmsm["success"]) {
+			$apiresults 		= array(
+				"result" 		=> ((@$resultmsm["error"]) ? $resultmsm["error"] : "Error: Add failed, check your details")
 			);
 		} else {
 			$log_id 		= log_action($goDB, "ADD", /*$log_user*/'mark', /*$log_ip*/'124.241.241.212', "Added New token: $token", $log_group, $goDB->getLastQuery());
+
 			$apiresults 	= [
 				"result" 	=> "success",
 				"data" => $result_jwt,
@@ -80,27 +88,8 @@ if (empty($tokenjwt) || is_null($tokenjwt) || @!($result_jwt = Phpjwt::verifyTok
 			"result" 									=> $err_msg." - ".$err,
 			);	
 	}
-	
+}
 
 
-}
-// var_dump($apiresults); exit;
-// echo "ddssds"; exit;
-// var_dump($_SESSION); exit;
-//check access
-
-// check required fields
-/*
-$validated = 1;
-if (!isset($_POST["token"])) {
-	$validated = 0;
-}
-if (!isset($_POST["expiration_time"])) {
-	$validated = 0;
-}
-if (!isset($_POST["user_id"])) {
-	$validated = 0;
-}
-*/
 
 ?>

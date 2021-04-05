@@ -13,7 +13,8 @@
     ],
     "require": {
         "firebase/php-jwt": "^5.2",
-        "monolog/monolog": "^1.26"
+        "monolog/monolog": "^1.26",
+        "facebook/graph-sdk": "^5.7"
     },
     "type": "project",
     "autoload": {

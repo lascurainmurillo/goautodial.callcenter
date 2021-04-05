@@ -83,3 +83,51 @@ function logoutFacebook() {
         }
     });
 }
+
+function checkPageFacebook(e) {
+
+    if ($(e).is(':checked')) {
+        var status = $(e).val();
+    } else {
+        var status = 0;
+    }
+
+    // deshabilitar los checkbox
+    var checkbox = ".checkbox .c-checkbox input[type=checkbox]";
+    $(checkbox).prop("disabled", true);
+
+    var data = {
+        log_user: "goadmin", // log_user,
+        log_group: "ADMIN", // log_group,
+        status: parseInt(status),
+        id: $(e).attr("name").split("-")[1], // id table
+        responsetype: 'json',
+        utjo: getCookie("utjo")
+    }
+
+
+    $.ajax({
+        url: "./php/social_red/SocialCheckPage.php",
+        type: 'POST',
+        dataType: "json",
+        data: data,
+        success: function(data) {
+            // habilitar los checkbox
+            $(checkbox).prop("disabled", false);
+            if (data.result == "success") {
+                // cambiar estado checkbox html
+            } else {
+                // colocar un swal para notificar que sucedío algo
+                swal("Cerrar", data.result, "error");
+                // sweetAlert("<?php $lh->translateText("add_user_failed"); ?>", data, "error");
+            }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            // habilitar los checkbox
+            $(checkbox).prop("disabled", false);
+            swal("Cerrar", "Sucedió un problema inténtelo nuevamente. " + errorThrown, "error");
+        }
+    });
+
+
+}

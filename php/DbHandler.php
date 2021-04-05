@@ -73,7 +73,7 @@ class DbHandler {
 	    if (isset($this->dbConnector)) { unset($this->dbConnector); }
 	    if (isset($this->dbConnectorAsterisk)) { unset($this->dbConnectorAsterisk); }
 	    if (isset($this->api)) { unset($this->api); }
-    }    
+    }
     
     /** Administration of users */
     
@@ -85,7 +85,7 @@ class DbHandler {
     public function createUser($name, $password, $email, $phone, $role, $avatarURL) {
         // First check if user already existed in db
         //if ($this->userExistsIdentifiedByName($name) || $this->userExistsIdentifiedByEmail($email)) {
-	if ($this->userExistsIdentifiedByName($name)) {
+		if ($this->userExistsIdentifiedByName($name)) {
             // User with same email already existed in the db
             return USER_ALREADY_EXISTED;
         } else {
@@ -2239,7 +2239,6 @@ class DbHandler {
 		$result = $this->dbConnector->getOne(CRM_SOCIAL_TOKEN, "token,user_id,expiration_time");
 		return $result;
 	}
-
 
 }
 

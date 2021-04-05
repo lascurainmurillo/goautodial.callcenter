@@ -58,7 +58,6 @@ class SessionHandler {
 	 */
 	function __construct ($table = NULL, $lifeTime = 0, $encrypt = TRUE) {
 		$this->db = \creamy\DatabaseConnectorFactory::getInstance()->getDatabaseConnectorOfType(CRM_DB_CONNECTOR_TYPE_MYSQL);
-		
 		$this->lifeTime = ($lifeTime === 0) ? CRM_SESSION_EXPIRATION : $lifeTime;
 		
 		// Session storage table

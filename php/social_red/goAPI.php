@@ -21,11 +21,12 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
+	include_once ("../Config.php");
     include_once ("../../goAPIv2/goDBasterisk.php");
     include_once ("../../goAPIv2/goDBgoautodial.php");
     include_once ("../../goAPIv2/goDBkamailio.php");
     include_once ("../../goAPIv2/goFunctions.php");
-    
+
     /* Check if DB variables are not set */
 	$VARDB_server   = (!isset($VARDB_server)) ? "localhost" : $VARDB_server;
 	$VARDB_user     = (!isset($VARDB_user)) ? "asterisku" : $VARDB_user;
