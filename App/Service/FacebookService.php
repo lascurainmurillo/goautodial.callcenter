@@ -73,7 +73,6 @@ class FacebookService
                                         // $this->db->commit();
             }
         }
-
     }
 
 }

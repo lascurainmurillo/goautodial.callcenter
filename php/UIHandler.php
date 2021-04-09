@@ -2233,7 +2233,7 @@ error_reporting(E_ERROR | E_PARSE);
 				<div class="center-block" style="text-align: center">';
 			
 			if ($user->userHasBasicPermission() && !($this->db->getTokenUser())) {
-				$tabpanes .= '<fb:login-button class="fb-login-button" data-width="" data-size="large" data-button-type="login_with" data-layout="default" data-auto-logout-link="false" data-use-continue-as="false" style="margin: 10px 0px" scope="public_profile,email,pages_show_list" onlogin="checkLoginState(\''.$_SESSION['user'].'\', \''.$_SESSION['usergroup'].'\');"></fb:login-button>
+				$tabpanes .= '<fb:login-button class="fb-login-button" data-width="" data-size="large" data-button-type="login_with" data-layout="default" data-auto-logout-link="false" data-use-continue-as="false" style="margin: 10px 0px" scope="public_profile,email,pages_show_list,pages_manage_ads,pages_manage_metadata,pages_read_engagement,leads_retrieval" onlogin="checkLoginState(\''.$_SESSION['user'].'\', \''.$_SESSION['usergroup'].'\');"></fb:login-button>
 				';
 			} else {
 				// colocar un boton de "VER TODAS LAS PAGINAS FAN"

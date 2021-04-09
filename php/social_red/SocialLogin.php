@@ -50,13 +50,16 @@ if (empty($tokenjwt) || is_null($tokenjwt) || @!($result_jwt = Phpjwt::verifyTok
 	// require_once (__DIR__.'/../handler/UIHandlerSocial.php');
 	try {
 
+		// Ampliar el tiempo de caducidad del access_token user face
+		$new_longer_token = Facebookgo::extendTokenUser($token);
+
 		// eliminar el anterior usuario activado
 		$upd = $goDB->update("go_social_token", ['status' => 0]);
 
 		$data_script 							= array(
-			"token" 							=> $token, 
+			"token" 							=> $new_longer_token["access_token"], 
 			"user_id" 							=> $user_id, 
-			"expiration_time" 					=> $expiration_time, 
+			"expiration_time" 					=> $new_longer_token["expiration_time"], 
 			"date_add" 							=> date('Y-m-d H:i:s'), 
 		);
 
@@ -64,20 +67,31 @@ if (empty($tokenjwt) || is_null($tokenjwt) || @!($result_jwt = Phpjwt::verifyTok
 		$insertScript = $goDB->insert("go_social_token", $data_script);
 
 		// obtener lista de pages y registrar lista de pages en tabla con sus respectivos tokens
-		$fanpages = Facebookgo::userAccounts($token, $user_id);
+		$fanpages = Facebookgo::userAccounts($new_longer_token["access_token"], $user_id);
 		$resultmsm = FacebookService::getInstance($goDB)->regFanPage($fanpages, $insertScript);
 
-		if (!$insertScript || !$resultmsm["success"]) {
-			$apiresults 		= array(
-				"result" 		=> ((@$resultmsm["error"]) ? $resultmsm["error"] : "Error: Add failed, check your details")
-			);
-		} else {
-			$log_id 		= log_action($goDB, "ADD", /*$log_user*/'mark', /*$log_ip*/'124.241.241.212', "Added New token: $token", $log_group, $goDB->getLastQuery());
+		if($resultmsm["success"]) { // si todo va bien...
 
-			$apiresults 	= [
-				"result" 	=> "success",
-				"data" => $result_jwt,
-			];
+			// subcribir fan pages
+			foreach ($fanpages as $key => $val) {
+				Facebookgo::subscribedApps($val["access_token"], $val["id"]);
+			}
+
+			if (!$insertScript || !$resultmsm["success"]) {
+				$apiresults 		= array(
+					"result" 		=> ((@$resultmsm["error"]) ? $resultmsm["error"] : "Error: Add failed, check your details")
+				);
+			} else {
+				$log_id 		= log_action($goDB, "ADD", /*$log_user*/'mark', /*$log_ip*/'124.241.241.212', "Added New token: $token", $log_group, $goDB->getLastQuery());
+	
+				$apiresults 	= [
+					"result" 	=> "success",
+					"data" => $result_jwt,
+				];
+			}
+
+		} else {
+			throw new \Exception($resultmsm["error"]);
 		}
 		
 	} catch (Exception $e) {

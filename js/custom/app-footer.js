@@ -40,6 +40,8 @@ function checkLoginState(log_user, log_group) {
                     }
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    // eliminar Loading
+                    $(".preloader").hide();
                     swal("Cerrar", "Sucedió un problema inténtelo nuevamente. " + errorThrown, "error");
                 }
             });
@@ -60,14 +62,18 @@ function checkLoginState(log_user, log_group) {
  */
 function logoutFacebook() {
 
+    // mostrar Loading
+    $(".preloader").show();
     // ajax cerrar sesion cambiar estado en base de datos
     $.ajax({
         url: "./php/social_red/SocialLogout.php",
         type: 'POST',
         dataType: "json",
-        data: { responsetype: 'json', tokenjwt: localStorage.getItem('user') },
+        data: { responsetype: 'json', utjo: getCookie("utjo") },
         success: function(data) {
-            // console.log(data);
+
+            // eliminar Loading
+            $(".preloader").hide();
             if (data.result == "success") {
                 // cambiar boton cerrar a boton de facebook
                 // localStorage.removeItem('user');
@@ -79,6 +85,8 @@ function logoutFacebook() {
             }
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
+            // eliminar Loading
+            $(".preloader").hide();
             swal("Cerrar", "Sucedió un problema inténtelo nuevamente. " + errorThrown, "error");
         }
     });

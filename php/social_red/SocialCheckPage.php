@@ -1,6 +1,8 @@
 <?php
 require __DIR__ . '/../../vendor/autoload.php';
 use App\Lib\Phpjwt;
+use App\Lib\Facebookgo;
+use App\Service\FacebookService;
 
 $_GET['goAction'] = 'SocialCheckPage';
 include_once ("goAPI.php");
@@ -39,13 +41,23 @@ if (empty($id) || is_null(@$id) || !is_numeric($id)) { //Phpjwt verificar token
 
 	// cambiar todos los registros a status 0
 	try {
-		//code...
-		$goDB->where('id', $id);
-
+		
 		// actualizar estado
+		$goDB->where('id', $id);
 		$updateScript = $goDB->update("go_social_page", ['status' => $status, 'date_upd' => date('Y-m-d H:i:s')]);
+		
+		// Si el status es 0 desubcribir de webhook, si status es 1 subcribir webhook
+		$goDB->where('id', $id);
+		$page = $goDB->getOne("go_social_page", 'page_id, access_token');
+		if(count($page) > 0) {
+			if($status == "1") {
+				$resultmsm = Facebookgo::subscribedApps($page["access_token"], $page["page_id"]); // subcribir
+			} else {
+				$resultmsm = Facebookgo::subscribedApps($page["access_token"], $page["page_id"], "DELETE"); // dessubcribir
+			}
+		}
 
-		if (!$updateScript) {
+		if (!$updateScript || !@$resultmsm["success"]) {
 			$apiresults 						= array(
 				"result" 							=> "Error: Add failed, check your details"
 			);

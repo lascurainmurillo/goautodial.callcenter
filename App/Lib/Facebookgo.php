@@ -71,4 +71,103 @@ class Facebookgo
         */
     }
 
+    public static function subscribedApps($access_token, $page_id, $method = 'POST', $sub_fields = 'leadgen') 
+    {
+        new Facebookgo();
+        try {
+            // Returns a `Facebook\FacebookResponse` object
+            if($method == 'POST') {
+                $response = self::$fb->post(
+                    '/'.$page_id.'/subscribed_apps',
+                    array (
+                    'subscribed_fields' => $sub_fields,
+                    ),
+                    $access_token
+                );
+            } else if ($method == "DELETE") {
+                $response = self::$fb->delete(
+                    '/'.$page_id.'/subscribed_apps',
+                    array (
+                    'subscribed_fields' => $sub_fields,
+                    ),
+                    $access_token
+                );
+            }
+        
+        } catch( \Facebook\Exceptions\FacebookResponseException $e) {
+            echo 'Graph returned an error: ' . $e->getMessage();
+            exit;
+        } catch( \Facebook\Exceptions\FacebookSDKException $e) {
+            echo 'Facebook SDK returned an error: ' . $e->getMessage();
+            exit;
+        }
+        
+        // $graphEdge = $response->getGraphEdge();
+        $graphNode = $response->getGraphNode();
+        return $graphNode;
+    }
+
+
+
+    public static function extendTokenUser($short_access_token) {
+        
+        new Facebookgo();
+        try {
+            $response = self::$fb->getOAuth2Client()->getLongLivedAccessToken($short_access_token);
+            /*
+            $response = self::$fb->get(
+                '/oauth/access_token',
+                array (
+                'grant_type' => 'fb_exchange_token',
+                // 'fb_exchange_token' => 
+                ),
+                $short_access_token
+            );
+            */
+       
+        } catch( \Facebook\Exceptions\FacebookResponseException $e) {
+            echo 'Graph returned an error: ' . $e->getMessage();
+            exit;
+        } catch( \Facebook\Exceptions\FacebookSDKException $e) {
+            echo 'Facebook SDK returned an error: ' . $e->getMessage();
+            exit;
+        }
+        
+
+        if(@$response->getExpiresAt()){
+            $expiration_time = @$response->getExpiresAt()->getTimestamp();
+        } else {
+            $expiration_time = "";
+        }
+
+        $return = [
+            "access_token" => $response->getValue(),
+            "expiration_time" => $expiration_time,
+        ];
+
+        return $return;
+    }
+
+
+    public static function verifyTokenUser($input_token, $access_token) {
+
+        new Facebookgo();
+        try {
+            // Returns a `Facebook\FacebookResponse` object
+            $response = self::$fb->get(
+              '/debug_token?input_token=' . $input_token,
+              $access_token
+            );
+        } catch(\Facebook\Exceptions\FacebookResponseException $e) {
+            echo 'Graph returned an error: ' . $e->getMessage();
+            exit;
+        } catch(\Facebook\Exceptions\FacebookSDKException $e) {
+            echo 'Facebook SDK returned an error: ' . $e->getMessage();
+            exit;
+        }
+
+        $graphNode = $response->getGraphNode();;
+        return $graphNode;
+    }
+
 }
