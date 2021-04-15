@@ -5657,3 +5657,7 @@ table.text-center th {
         white-space: normal !important
     }
 }
+
+.control-sidebar-agent {
+    width: 230px;
+}

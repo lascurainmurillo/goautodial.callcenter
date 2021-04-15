@@ -468,83 +468,83 @@ function response($order_id,$amount,$response_code,$response_desc){
 	<?php 
 		if(ECCS_BLIND_MODE === 'y'){
 	?>
-		<style>
-		.content{
-			padding: 0px;
-			margin-top: 30px;
-		}
+<style>
+	.content{
+		padding: 0px;
+		margin-top: 30px;
+	}
 
-		.nav a.dropdown-toggle{
-		        height: 65px;
-		}
+	.nav a.dropdown-toggle{
+			height: 65px;
+	}
 
-		.main-header .logo{
-		        height: 60px;
-		}
+	.main-header .logo{
+			height: 60px;
+	}
 
-		//toggle
-		.switch {
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 34px;
-}
+	/* toggle
+	.switch {
+	position: relative;
+	display: inline-block;
+	width: 60px;
+	height: 34px;
+	}
 
-/* Hide default HTML checkbox */
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
+	/* Hide default HTML checkbox */
+	.switch input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+	}
 
-/* The slider */
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  -webkit-transition: .4s;
-  transition: .4s;
-}
+	/* The slider */
+	.slider {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #ccc;
+	-webkit-transition: .4s;
+	transition: .4s;
+	}
 
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  -webkit-transition: .4s;
-  transition: .4s;
-}
+	.slider:before {
+	position: absolute;
+	content: "";
+	height: 26px;
+	width: 26px;
+	left: 4px;
+	bottom: 4px;
+	background-color: white;
+	-webkit-transition: .4s;
+	transition: .4s;
+	}
 
-input:checked + .slider {
-  background-color: #2196F3;
-}
+	input:checked + .slider {
+	background-color: #2196F3;
+	}
 
-input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
-}
+	input:focus + .slider {
+	box-shadow: 0 0 1px #2196F3;
+	}
 
-input:checked + .slider:before {
-  -webkit-transform: translateX(26px);
-  -ms-transform: translateX(26px);
-  transform: translateX(26px);
-}
+	input:checked + .slider:before {
+	-webkit-transform: translateX(26px);
+	-ms-transform: translateX(26px);
+	transform: translateX(26px);
+	}
 
-/* Rounded sliders */
-.slider.round {
-  border-radius: 34px;
-}
+	/* Rounded sliders */
+	.slider.round {
+	border-radius: 34px;
+	}
 
-.slider.round:before {
-  border-radius: 50%;
-}
-		</style>
+	.slider.round:before {
+	border-radius: 50%;
+	}
+</style>
 		<!-- ECCS CSS -->
 	<!--	<link href="./css/bootstrap-toggle.min.css" type="text/css" /> -->
 		<link href="eccs4.css" rel="stylesheet" type="text/css"/>
@@ -1700,11 +1700,11 @@ input:checked + .slider:before {
 					<input id="muteMicrophone" name="muteMicrophone" type="checkbox" checked/>
 					<label for="muteMicrophone" class="label-primary"></label>
 				</div>
-<!--				<div class="pull-right">
-<label class="switch">
-  <input id="muteMicrophone" name="muteMicrophone" type="checkbox" checked>
-  <span class="slider round"></span>
-</label>
+				<!--				<div class="pull-right">
+				<label class="switch">
+				<input id="muteMicrophone" name="muteMicrophone" type="checkbox" checked>
+				<span class="slider round"></span>
+				</label>
 				</div> -->
 				<div  class="sidebar-toggle-labels" style="font-weight: bold; text-transform: uppercase;"><label for="muteMicrophone"><?=$lh->translationFor('microphone')?></label></div>
 			</li>
@@ -1795,7 +1795,7 @@ input:checked + .slider:before {
   <!-- /.control-sidebar -->
   <!-- Add the sidebar's background. This div must be placed
        immediately after the control sidebar -->
-  <div class="control-sidebar-bg" style="position: fixed; height: auto;"></div>
+  <div class="control-sidebar-bg control-sidebar-agent" style="position: fixed; height: auto;"></div>
 
         </div><!-- ./wrapper -->
 

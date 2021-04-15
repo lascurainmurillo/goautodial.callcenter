@@ -2013,6 +2013,7 @@ error_reporting(E_ERROR | E_PARSE);
 		$loadleads = "";
 		$crm = "";
 		$eventsArea = "";
+		
 		if ($userrole != CRM_DEFAULTS_USER_ROLE_AGENT) {
 
 			$modulesWithSettings = $mh->modulesWithSettings();
@@ -2153,9 +2154,9 @@ error_reporting(E_ERROR | E_PARSE);
 			}
         }
  
-  if($userrole != CRM_DEFAULTS_USER_ROLE_AGENT){
-        $result .= $this->getSidebarItem("credits.php", "list-alt", $this->lh->translationFor("Credits"));
-  }
+		if($userrole != CRM_DEFAULTS_USER_ROLE_AGENT){
+				$result .= $this->getSidebarItem("credits.php", "list-alt", $this->lh->translationFor("Credits"));
+		}
 
 		$result .= '</ul></section></aside>';
 
@@ -2233,7 +2234,7 @@ error_reporting(E_ERROR | E_PARSE);
 				<div class="center-block" style="text-align: center">';
 			
 			if ($user->userHasBasicPermission() && !($this->db->getTokenUser())) {
-				$tabpanes .= '<fb:login-button class="fb-login-button" data-width="" data-size="large" data-button-type="login_with" data-layout="default" data-auto-logout-link="false" data-use-continue-as="false" style="margin: 10px 0px" scope="public_profile,email,pages_show_list,pages_manage_ads,pages_manage_metadata,pages_read_engagement,leads_retrieval" onlogin="checkLoginState(\''.$_SESSION['user'].'\', \''.$_SESSION['usergroup'].'\');"></fb:login-button>
+				$tabpanes .= '<fb:login-button class="fb-login-button" data-width="" data-size="large" data-button-type="login_with" data-layout="default" data-auto-logout-link="false" data-use-continue-as="false" style="margin: 10px 0px" scope="public_profile,email,pages_show_list,pages_manage_ads,pages_manage_metadata,pages_read_engagement,leads_retrieval,ads_management" onlogin="checkLoginState(\''.$_SESSION['user'].'\', \''.$_SESSION['usergroup'].'\');"></fb:login-button>
 				';
 			} else {
 				// colocar un boton de "VER TODAS LAS PAGINAS FAN"

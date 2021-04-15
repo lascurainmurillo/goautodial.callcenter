@@ -124,7 +124,8 @@ if(isset($_SESSION["user"])){
 		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postdata));
 		$data = curl_exec($ch);
 		curl_close($ch);
-		// var_dump($url, http_build_query($postdata)); // exit;
+		// var_dump($url, http_build_query($postdata));  // exit;
+		// var_dump($data); exit;
 	    $output = json_decode($data);
 	    if($request_data === true)
 	    	return $data;
@@ -255,6 +256,7 @@ if(isset($_SESSION["user"])){
 		
 		//execute post
 		$data = curl_exec($ch);
+		// var_dump($data); exit;
 		$result = json_decode($data);
 		
 		//close connection

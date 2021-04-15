@@ -904,6 +904,7 @@ $("#cb-datepicker").on("dp.change", function (e) {
     $("#date-selected").html(moment(e.date).format('dddd, MMMM Do YYYY, h:mm a'));
     $("#callback-date").val(selectedDate);
 });
+
 <?php if(ECCS_BLIND_MODE === 'y') { ?>
 
 $('#callback-datepicker').on('shown.bs.modal', function(){
@@ -975,7 +976,7 @@ $('#callback-datepicker').on('shown.bs.modal', function(){
 	}
 
 <?php } ?>
-        
+
         $("#show-cb-calendar").click(function() {
             $("#cb-container").slideToggle('slow');
         });
@@ -1032,7 +1033,7 @@ $('#callback-datepicker').on('shown.bs.modal', function(){
             });
         }
     });
-   
+
    /*$(document).bind('keydown', '16', function(){
 	 $("#cream-agent-logout").click();
    });*/
