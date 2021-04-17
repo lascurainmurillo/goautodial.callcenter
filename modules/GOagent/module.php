@@ -964,8 +964,16 @@ EOF;
 		</div>
 	</div>
 </div>
+// fin de estilos
+
 
 EOF;
+
+require('module-custom.php');
+
+$str .= \moduleCustom::modalClientLeads($this->goDB);
+$str .= \moduleCustom::javascriptAll($this->goDB);
+
 		return $str;
 	}
 

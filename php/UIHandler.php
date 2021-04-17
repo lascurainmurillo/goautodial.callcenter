@@ -1536,6 +1536,7 @@ error_reporting(E_ERROR | E_PARSE);
 									//'.$this->getTopbarTasksMenu($user).'
 
 		$avatarElement = $this->getVueAvatar($user->getUserName(), $user->getUserAvatar(), 22, true);
+
 		return '<header class="main-header">
 				<a href="./index.php" class="logo"><img src="'.$logo.'" width="auto" height="45" style="padding-top:10px;"></a>
 	            <nav class="navbar navbar-static-top" role="navigation">
@@ -1545,6 +1546,11 @@ error_reporting(E_ERROR | E_PARSE);
 	                </a>
 	                <div class="navbar-custom-menu">
 	                    <ul class="nav navbar-nav">
+						        <li style="margin-top: 7px;">
+								    <div>
+						            <button class="btn btn-warning" onclick="openModalCientLeads();">Clientes potenciales</button>
+								    </div>
+							    </li>
 	                    		'.$moduleTopbarElements.'
 	                    		'.$this->getTopbarMessagesMenu($user).'
 		                    	<li>

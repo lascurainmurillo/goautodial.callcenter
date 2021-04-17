@@ -2762,5 +2762,14 @@ function response($order_id,$amount,$response_code,$response_desc){
 			});
 		</script>
 		<?php } //end if ECCS_BLIND_MODE ?>
+
+		<script src="js/custom/global.js" type="text/javascript"></script>
+		<script>
+			$(document).ready(function() {
+				countup.datenow("<?php echo date('r'); ?>");
+				countup.xcon_();
+				countup.xtimeCont();
+			});
+		</script>
     </body>
 </html>
