@@ -1534,6 +1534,8 @@ error_reporting(E_ERROR | E_PARSE);
 									//'.$this->getTopbarMessagesMenu($user).'
 									//'.$this->getTopbarNotificationsMenu($user).'
 									//'.$this->getTopbarTasksMenu($user).'
+		
+		$countView = $this->db->getCountViewStatus();
 
 		$avatarElement = $this->getVueAvatar($user->getUserName(), $user->getUserAvatar(), 22, true);
 
@@ -1548,7 +1550,9 @@ error_reporting(E_ERROR | E_PARSE);
 	                    <ul class="nav navbar-nav">
 						        <li style="margin-top: 7px;">
 								    <div>
-						            <button class="btn btn-warning" onclick="openModalCientLeads();">Clientes potenciales</button>
+						            <a class="btn btn-warning" onclick="openModalCientLeads();">Clientes potenciales
+										<span id="viewcount" class="label label-danger">'.$countView.'</span>
+									</a>
 								    </div>
 							    </li>
 	                    		'.$moduleTopbarElements.'

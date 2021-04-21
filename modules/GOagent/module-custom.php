@@ -9,10 +9,14 @@ class moduleCustom {
                 
         $goDB->where('type', 'leadgen');
         $goDB->where('status', 1);
-        $result = $goDB->get('go_social_webhook_data', null, 'id,full_name,email,phone_number,created_time');
+        $result = $goDB->orderBy('created_time', 'DESC')->get('go_social_webhook_data', null, 'id,full_name,email,phone_number,created_time');
 
         $html_result_leadgen = "";
         foreach ($result as $key => $value) {
+
+            $fecha = date_create($value['created_time']);
+            $fecha1 = date_format($fecha, 'd-M-Y');
+            $fecha2 = explode('-', $fecha1);
 
             $html_result_leadgen .= "
                 <tr>
@@ -27,9 +31,10 @@ class moduleCustom {
                     </th>
                     <th>
                         <span class='dropdown-time text-primary' xtime='".date('r', strtotime($value['created_time']))."'></span>
+                        <span class='dropdown-time text-primary'>".$fecha2[0] . " " . $fecha2[1] . " " . $fecha2[2]."</span>
                     </th>
                     <th>
-                        <button class=\"btn btn-warning\">Llamar a cliente</button>
+                        <button class=\"btn btn-warning\">Accion 1</button>
                         <!-- button class=\"btn btn-danger\">Ocultar</button> -->
                     </th>
                 </tr>
@@ -47,7 +52,7 @@ class moduleCustom {
                             </div>
                             <div class="modal-body">
                                 <div class="table-responsive">
-                                    <table class="table table-striped">
+                                    <table id="list_leadgen" class="table table-striped">
                                         <thead>
                                             <tr>
                                                 <th>Nombre</th>
@@ -84,6 +89,27 @@ class moduleCustom {
         <script>
 
             function openModalCientLeads() {
+
+                $.ajax({
+                    url: './php/social_red/SocialWebhookViewStatus.php',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { responsetype: 'json', utjo: getCookie('utjo') },
+                    success: function(data) {
+            
+                        if (data.result == 'success') {
+                            $('#viewcount').html(0);
+                        } else {
+                            // colocar un swal para notificar que el usuario no se logeo correctamente
+                            swal('Cerrar', data.result, 'error');
+                        }
+                    },
+                    error: function(XMLHttpRequest, textStatus, errorThrown) {
+                        swal('Cerrar', 'Sucedió un problema inténtelo nuevamente. ' + errorThrown, 'error');
+                    }
+                });
+
+
                 $('#modal-client-leads').modal({
                     // keyboard: false,
                     // backdrop: 'static',

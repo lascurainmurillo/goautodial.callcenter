@@ -28,8 +28,8 @@ countup.xcon_ = function() {
 
 
 countup.xtimeCont = function() {
+    h = countup.h;
     $('span[xtime]').each(function(index, element) {
-        h = countup.h;
         var t_ = $(this).attr('xtime');
         var t = Date.parse(t_);
         var c = h - t;
@@ -75,4 +75,61 @@ countup.xtimeCont = function() {
         $(this).html(txt);
     });
     setTimeout("countup.xtimeCont()", 5000);
+}
+
+// notificaciones
+var notify = {}
+notify.htmlstyleleadgen = "<div>" +
+    "<div class='clearfix'>" +
+    "<div class='title' data-notify-html='title'/>" +
+    "<div class='buttons'>" +
+    "<button class='btn btn-warning yes' data-notify-text='button'></button>" +
+    "<button class='btn btn-danger no'>Cancel</button>" +
+    "</div>" +
+    "</div>" +
+    "</div>";
+
+notify.addnewstyle = function(html, stylename) {
+
+    // debes crear los estilos para stylename. Por ejemplo si stylename = 'notify_custom' entonces crear los estilos siguientes
+    /*
+    .notifyjs-notify_custom-base {}
+    .notifyjs-notify_custom-base .title {}
+    .notifyjs-notify_custom-base .buttons {} 
+    .notifyjs-notify_custom-base button {}
+    */
+    $.notify.addStyle(stylename, {
+        html: html
+    });
+}
+
+// eventos para notify leadgen
+notify.events = function() {
+
+    //listen for click events from this style
+    $(document).on('click', '.notifyjs-notify_leadgen .no', function() {
+        //programmatically trigger propogating hide event
+        $(this).trigger('notify-hide');
+    });
+
+    $(document).on('click', '.notifyjs-notify_leadgen-base .yes', function() {
+        //show button text
+        alert($(this).text() + " Haciendo la llamada");
+        //hide notification
+        $(this).trigger('notify-hide');
+    });
+}
+
+notify.init = function(position, message, buttontext, stylename) {
+    // Documentation https://notifyjs.jpillora.com/
+    $.notify({
+        title: message,
+        button: buttontext
+    }, {
+        style: stylename,
+        position: position, // "right bottom",
+        // className: classtype, // info
+        autoHideDelay: 500000,
+        clickToHide: false
+    });
 }

@@ -192,7 +192,10 @@ function response($order_id,$amount,$response_code,$response_desc){
 		<script src="js/jquery.md5.js" type="text/javascript"></script>
         <!-- Date Picker -->
         <script type="text/javascript" src="js/dashboard/eonasdan-bootstrap-datetimepicker/build/js/moment.js"></script>
-        <script type="text/javascript" src="js/dashboard/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>		
+        <script type="text/javascript" src="js/dashboard/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>	
+		<!-- Notify -->
+		<script type="text/javascript" src="js/notify.min.js"></script>
+		
         <!-- X-Editable -->
         <link rel="stylesheet" src="js/dashboard/x-editable/dist/css/bootstrap-editable.css">
         <script type="text/javascript" src="js/dashboard/x-editable/dist/js/bootstrap-editable.min.js"></script>
@@ -2764,12 +2767,24 @@ function response($order_id,$amount,$response_code,$response_desc){
 		<?php } //end if ECCS_BLIND_MODE ?>
 
 		<script src="js/custom/global.js" type="text/javascript"></script>
-		<script>
-			$(document).ready(function() {
+		<script type="text/javascript">
+			// $(document).ready(function() {
 				countup.datenow("<?php echo date('r'); ?>");
 				countup.xcon_();
 				countup.xtimeCont();
-			});
+			// });
+		</script>
+		<script src="https://goautodial-node.herokuapp.com/socket.io/socket.io.js" type="text/javascript"></script>
+		<script src="js/custom/socket.js" type="text/javascript"></script>
+		<script>
+			// nodejs socket
+			socketcus.init();
+			socketcus.on_notify_leadgen();
+			
+			// notificaciones declaraciones
+			notify.addnewstyle(notify.htmlstyleleadgen, 'notify_leadgen',);
+			notify.events('notify_leadgen');
+
 		</script>
     </body>
 </html>

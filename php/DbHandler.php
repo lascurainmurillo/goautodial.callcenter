@@ -2240,6 +2240,14 @@ class DbHandler {
 		return $result;
 	}
 
+
+	/* obtener count view_status */
+	public function getCountViewStatus() {
+		$this->dbConnector->where('view_status', 0);
+		$this->dbConnector->get('go_social_webhook_data', null, 'view_status');
+		return $this->dbConnector->count;
+	}
+
 }
 
 ?>
