@@ -1,5 +1,10 @@
 <?php
 require __DIR__ . '/../../vendor/autoload.php';
+/**
+ * 
+ * Login con facebook
+ * 
+ */
 
 use App\Lib\Phpjwt;
 use App\Lib\Facebookgo;

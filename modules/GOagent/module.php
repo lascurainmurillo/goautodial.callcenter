@@ -968,7 +968,7 @@ EOF;
 
 
 EOF;
-
+ // agregar modulo personalizado
 require('module-custom.php');
 
 $str .= \moduleCustom::modalClientLeads($this->goDB);

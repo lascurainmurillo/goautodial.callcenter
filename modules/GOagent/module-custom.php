@@ -4,7 +4,13 @@
 // Clientes potenciales
 
 class moduleCustom {
-
+    
+    /**
+     * modalClientLeads
+     * Modal para mostrar la lista de leads registrados
+     * @param object $goDB
+     * @return string (html)
+     */
     public static function modalClientLeads($goDB) {
                 
         $goDB->where('type', 'leadgen');
@@ -82,7 +88,13 @@ class moduleCustom {
         return $modal;
     
     }
-
+    
+    /**
+     * javascriptAll
+     * javacript para agentes
+     * @param  object $db
+     * @return string (script)
+     */
     public static function javascriptAll($db) {
         
         $script = "

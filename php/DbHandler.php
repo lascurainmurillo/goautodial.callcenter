@@ -2241,7 +2241,11 @@ class DbHandler {
 	}
 
 
-	/* obtener count view_status */
+	/**
+	 * getCountViewStatus
+	 * obtener count view_status
+	 * @return int
+	 */
 	public function getCountViewStatus() {
 		$this->dbConnector->where('view_status', 0);
 		$this->dbConnector->get('go_social_webhook_data', null, 'view_status');

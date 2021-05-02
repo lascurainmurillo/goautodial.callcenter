@@ -1,3 +1,10 @@
+/**
+ *
+ * obtener data de una cookie. cname = nombre de la cookie
+ * getCookie
+ * param cname string 
+ * return string
+ */
 function getCookie(cname) {
     var name = cname + "=";
     var ca = document.cookie.split(';');
@@ -13,6 +20,15 @@ function getCookie(cname) {
     return "";
 }
 
+/**
+ * ******************************************************************************************
+ * countup. tiempo de duracion de un registro.
+ * 
+ * Declara en etiqueta html <span xtime="" ... ></span>
+ * 
+ * param date_rfc date rfc2822
+ *
+ */
 var countup = {};
 countup.h = 0;
 
@@ -20,12 +36,10 @@ countup.datenow = function(date_rfc) {
     countup.h = Date.parse(date_rfc);
 }
 
-
 countup.xcon_ = function() {
     countup.h = countup.h + 1000;
     setTimeout("countup.xcon_()", 1000)
 }
-
 
 countup.xtimeCont = function() {
     h = countup.h;
@@ -77,7 +91,20 @@ countup.xtimeCont = function() {
     setTimeout("countup.xtimeCont()", 5000);
 }
 
-// notificaciones
+/******************************************************************************************** */
+
+
+
+
+/**
+ * ******************************************************************************************
+ * notify. tiempo de duracion de un registro.
+ * notify.addnewstyle: crear un html template para mostrar en la notificacion
+ * notify.events: eventos para los botones
+ * 
+ * param date_rfc date rfc2822
+ *
+ */
 var notify = {}
 notify.htmlstyleleadgen = "<div>" +
     "<div class='clearfix'>" +
@@ -103,7 +130,7 @@ notify.addnewstyle = function(html, stylename) {
     });
 }
 
-// eventos para notify leadgen
+// eventos exclusivo para notify leadgen
 notify.events = function() {
 
     //listen for click events from this style
@@ -133,3 +160,5 @@ notify.init = function(position, message, buttontext, stylename) {
         clickToHide: false
     });
 }
+
+/******************************************************************************************** */

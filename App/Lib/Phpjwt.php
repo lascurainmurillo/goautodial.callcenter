@@ -69,7 +69,7 @@ class Phpjwt
             $decode = self::decodet($token, array('HS256'));
 
             // verificar procedencia
-            if($decode->aud !== self::Aud())
+            if(@$decode->aud !== self::Aud())
             {
                 throw new \Exception("Invalid user logged in.");
             }

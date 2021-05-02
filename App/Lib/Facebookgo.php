@@ -26,7 +26,13 @@ class Facebookgo
     
     }
     
-    
+        
+    /**
+     * profileUser
+     * Obtener datos de perfil de usuario
+     * @param  string $access_token
+     * @return object
+     */
     public static function profileUser($access_token) 
     {
         new Facebookgo();
@@ -44,9 +50,16 @@ class Facebookgo
             exit;
         }
         
-        $me = $response->getGraphUser();
+        return $me = $response->getGraphUser();
     }
-
+    
+    /**
+     * userAccounts
+     * Obtener pages del usuario
+     * @param  string $access_token
+     * @param  string $user_face_id
+     * @return object
+     */
     public static function userAccounts($access_token, $user_face_id)
     {
         new Facebookgo();
@@ -70,7 +83,16 @@ class Facebookgo
         exit;
         */
     }
-
+    
+    /**
+     * subscribedApps
+     *  Para poder recibir el webhook de un tipo $sub_fields = 'leadgen' se debe subscribir la app
+     * @param  string $access_token
+     * @param  string $page_id
+     * @param  string $method   GET | DELETE | PATCH | POST
+     * @param  string $sub_fields
+     * @return void
+     */
     public static function subscribedApps($access_token, $page_id, $method = 'POST', $sub_fields = 'leadgen') 
     {
         new Facebookgo();
@@ -108,7 +130,13 @@ class Facebookgo
     }
 
 
-
+    
+    /**
+     * extendTokenUser
+     * Extender vida del token de usuario
+     * @param  string $short_access_token
+     * @return array
+     */
     public static function extendTokenUser($short_access_token) {
         
         new Facebookgo();
@@ -148,7 +176,14 @@ class Facebookgo
         return $return;
     }
 
-
+    
+    /**
+     * verifyTokenUser
+     *  Verifica si el token aun sigue en funcionamiento
+     * @param  string $input_token
+     * @param  string $access_token
+     * @return object
+     */
     public static function verifyTokenUser($input_token, $access_token) {
 
         new Facebookgo();

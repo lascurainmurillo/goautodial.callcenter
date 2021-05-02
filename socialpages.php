@@ -88,7 +88,7 @@
 								<div class="col-lg-12">
 									<div class="pull-right">
 										<?php if($uisocial->isloginface()){ ?> 
-											<button class="btn btn-danger" onClick="logoutFacebook();"><i class="fa fa-door-open"></i>Cerra sesion de red social</button>
+											<button class="btn btn-danger" onClick="logoutFacebook('<?php echo $_SESSION['user']?>', '<?php echo $_SESSION['usergroup'] ?>');"><i class="fa fa-door-open"></i>Cerra sesion de red social</button>
 										<?php } else { ?>
 											<div class="fb-login-button" data-width="" data-size="large" data-button-type="login_with" data-layout="default" data-auto-logout-link="false" data-use-continue-as="false" style="margin: 10px 0px" onlogin="checkLoginState('<?php echo $_SESSION['user']?>', '<?php echo $_SESSION['usergroup'] ?>');"></div>
 										<?php } ?>

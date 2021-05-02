@@ -11,8 +11,8 @@ function checkLoginState(log_user, log_group) {
         if (response.status == "connected") {
 
             var data = {
-                log_user: "goadmin", // log_user,
-                log_group: "ADMIN", // log_group,
+                log_user: log_user, // log_user,
+                log_group: log_group, // log_group,
                 token: response.authResponse.accessToken,
                 expiration_time: response.authResponse.data_access_expiration_time,
                 user_id: response.authResponse.userID,
@@ -60,7 +60,7 @@ function checkLoginState(log_user, log_group) {
  * Cerrar sesion de facebook y elimina la lista de pages
  * LogoutFacebook
  */
-function logoutFacebook() {
+function logoutFacebook(log_user, log_group) {
 
     // mostrar Loading
     $(".preloader").show();
@@ -69,7 +69,7 @@ function logoutFacebook() {
         url: "./php/social_red/SocialLogout.php",
         type: 'POST',
         dataType: "json",
-        data: { responsetype: 'json', utjo: getCookie("utjo") },
+        data: { responsetype: 'json', utjo: getCookie("utjo"), log_user: log_user, log_group: log_group },
         success: function(data) {
 
             // eliminar Loading

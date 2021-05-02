@@ -1,10 +1,21 @@
+/**
+ *
+ * inicilizar conexion 
+ * on_notify_leadgen
+ * 
+ */
 socketcus = {}
 socketcus.socket = null;
 socketcus.init = function() {
     socketcus.socket = io.connect('https://goautodial-node.herokuapp.com', { 'forceNew': true });
 }
 
-// escuchar notify leadgen
+/**
+ *
+ * escuchar notificaciones leadgen y agregar una fila a la lista de leadgen
+ * on_notify_leadgen
+ * 
+ */
 socketcus.on_notify_leadgen = function() {
     socketcus.socket.on('notify_leadgen', function(data) {
 

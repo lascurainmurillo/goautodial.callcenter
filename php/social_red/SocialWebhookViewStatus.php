@@ -1,38 +1,26 @@
 <?php
 require __DIR__ . '/../../vendor/autoload.php';
+/**
+ * 
+ * Cambiar el estado de vista de view status
+ * Falta mejorar esto, debe ser por usuario
+ * 
+ */
+
 use App\Lib\Phpjwt;
 
 $_GET['goAction'] = 'SocialWebhookViewStatus';
 include_once ("goAPI.php");
 
 
+$tokenjwt 			= $astDB->escape(@$_REQUEST["utjo"]);
 // Error Checking
-/*
-if (empty($goUser) || is_null($goUser)) {
+
+if (empty($tokenjwt) || is_null($tokenjwt) || @!($result_jwt = Phpjwt::verifyToken($tokenjwt)['success'])) { //Phpjwt verificar token
 	$apiresults 									= array(
-		"result" 										=> "Error: goAPI User Not Defined."
+		"result" 										=> "Error: El token no es válido."
 	);
-} elseif (empty($goPass) || is_null($goPass)) {
-	$apiresults 									= array(
-		"result" 										=> "Error: goAPI Password Not Defined."
-	);
-} elseif (empty($log_user) || is_null($log_user)) {
-	$apiresults 									= array(
-		"result" 										=> "Error: Session User Not Defined."
-	);
-} elseif ( empty($token) || is_null($token) ) {
-	$apiresults 									= array(
-		"result" 										=> "Error: No se obtuvo token."
-	);
-} elseif ( empty($expiration_time) || is_null($expiration_time) || !is_numeric($expiration_time) ) {
-	$apiresults 									= array(
-		"result" 										=> "Error: La expiration time no se obtuvo o el valor no es permitido"
-	);
-} elseif ( empty($user_id) || is_null($user_id) || !is_numeric($user_id) ) {
-	$apiresults 									= array(
-		"result" 										=> "Error: La user_id no se obtuvo o el valor no es permitido"
-	);
-} else {*/
+} else {
 
 	// cambiar todos los registros a status 0
 	try {
@@ -83,5 +71,5 @@ if (empty($goUser) || is_null($goUser)) {
 	
 
 
-//}
+}
 ?>

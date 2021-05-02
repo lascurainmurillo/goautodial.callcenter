@@ -27,7 +27,14 @@ class FacebookService
     {
         $this->db = $db;
     }
-
+    
+    /**
+     * regFanPage
+     * eliminar todas las fanpage y registrar fanpage en bd
+     * @param  array $fanpages
+     * @param  int $user_id
+     * @return array
+     */
     public function regFanPage($fanpages, $user_id) {
 
         $autoCommit = (isset($this->db->_transaction_in_progress) ? !$this->db->_transaction_in_progress : true);
@@ -56,7 +63,14 @@ class FacebookService
         return ["success" => true];
     }
     
-
+    
+    /**
+     * insertFanPage
+     * insertar un array de fanpages
+     * @param array $fanpages
+     * @param string $user_id
+     * 
+     */
     public function insertFanPage($fanpages, $user_id)
     {
 

@@ -56,6 +56,7 @@ if ($list_id_ct > 0) {
 		$middle_initial = $output->middle_initial[$i];
 		$last_name 		= $output->last_name[$i];
 		
+		$photo			= $output->photo[$i];
 		$email 			= $output->email[$i];
 		$phone_number 	= $output->phone_number[$i];
 		$alt_phone 		= $output->alt_phone[$i];
@@ -624,7 +625,11 @@ function response($order_id,$amount,$response_code,$response_desc){
 								<?php //}//end if?>
 									<div class="row">
 										<div id="cust_avatar" class="col-lg-1 col-md-1 col-sm-2 text-center hidden-xs" style="height: 64px;">
-											<avatar username="Dialed Client" src="<?php echo CRM_DEFAULTS_USER_AVATAR;?>" :size="64"></avatar>
+											<?php if($lh->translationFor('photo')) { ?>
+												<avatar username="Dialed Client" src="<?php echo $photo ?>" :size="64"></avatar>
+											<?php } else { ?>
+												<avatar username="Dialed Client" src="<?php echo CRM_DEFAULTS_USER_AVATAR;?>" :size="64"></avatar>
+											<?php } ?>
 										</div>
 										<div class="col-lg-11 col-md-11 col-sm-10">
 								<!-- ECCS Customization-->

@@ -6,7 +6,7 @@ use App\Lib\Facebookgo;
 $_GET['goAction'] = 'SocialLogout';
 include_once ("goAPI.php");
 
-
+$tokenjwt 			= $astDB->escape(@$_REQUEST["utjo"]);
 // Error Checking
 /*
 if (empty($goUser) || is_null($goUser)) {
@@ -33,7 +33,12 @@ if (empty($goUser) || is_null($goUser)) {
 	$apiresults 									= array(
 		"result" 										=> "Error: La user_id no se obtuvo o el valor no es permitido"
 	);
-} else {*/
+*/
+if (empty($tokenjwt) || is_null($tokenjwt) || @!($result_jwt = Phpjwt::verifyToken($tokenjwt)['success'])) { //Phpjwt verificar token
+	$apiresults = array(
+		"result" => "Error: El token no es válido."
+	);
+} else {
 	
 	// cambiar todos los registros a status 0
 	try {
@@ -93,5 +98,5 @@ if (empty($goUser) || is_null($goUser)) {
 	
 
 
-//}
+}
 ?>
