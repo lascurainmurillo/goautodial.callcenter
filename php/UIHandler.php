@@ -1550,9 +1550,11 @@ error_reporting(E_ERROR | E_PARSE);
 	                    <ul class="nav navbar-nav">
 						        <li style="margin-top: 7px;">
 								    <div>
+									<!--
 						            <a class="btn btn-warning" onclick="openModalCientLeads();">Clientes potenciales
 										<span id="viewcount" class="label label-danger">'.$countView.'</span>
 									</a>
+									-->
 								    </div>
 							    </li>
 	                    		'.$moduleTopbarElements.'

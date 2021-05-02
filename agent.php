@@ -625,11 +625,7 @@ function response($order_id,$amount,$response_code,$response_desc){
 								<?php //}//end if?>
 									<div class="row">
 										<div id="cust_avatar" class="col-lg-1 col-md-1 col-sm-2 text-center hidden-xs" style="height: 64px;">
-											<?php if($lh->translationFor('photo')) { ?>
-												<avatar username="Dialed Client" src="<?php echo $photo ?>" :size="64"></avatar>
-											<?php } else { ?>
-												<avatar username="Dialed Client" src="<?php echo CRM_DEFAULTS_USER_AVATAR;?>" :size="64"></avatar>
-											<?php } ?>
+											<avatar username="Dialed Client" src="<?php echo CRM_DEFAULTS_USER_AVATAR;?>" :size="64"></avatar>
 										</div>
 										<div class="col-lg-11 col-md-11 col-sm-10">
 								<!-- ECCS Customization-->
@@ -2779,17 +2775,18 @@ function response($order_id,$amount,$response_code,$response_desc){
 				countup.xtimeCont();
 			// });
 		</script>
-		<script src="https://goautodial-node.herokuapp.com/socket.io/socket.io.js" type="text/javascript"></script>
+		<!-- <script src="https://goautodial-node.herokuapp.com/socket.io/socket.io.js" type="text/javascript"></script> -->
 		<script src="js/custom/socket.js" type="text/javascript"></script>
 		<script>
 			// nodejs socket
+			/*
 			socketcus.init();
 			socketcus.on_notify_leadgen();
 			
 			// notificaciones declaraciones
 			notify.addnewstyle(notify.htmlstyleleadgen, 'notify_leadgen',);
 			notify.events('notify_leadgen');
-
+			*/
 		</script>
     </body>
 </html>
