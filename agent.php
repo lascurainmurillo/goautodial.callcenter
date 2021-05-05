@@ -2270,6 +2270,7 @@ function response($order_id,$amount,$response_code,$response_desc){
 					}
 				})
 				.done(function (result) {
+					console.log(result);
 					if (result.result == 'success') {
 						selectedMessages = [];
 						selectedAll = false;

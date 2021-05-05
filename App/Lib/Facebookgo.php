@@ -205,4 +205,28 @@ class Facebookgo
         return $graphNode;
     }
 
+
+
+    public static function getFormLead($form_id, $access_token) {
+
+        new Facebookgo();
+        try {
+            // Returns a `Facebook\FacebookResponse` object
+            $response = self::$fb->get(
+                '/' . $form_id . '?fields=context_card,name,page,question_page_custom_headline',
+              $access_token
+            );
+        } catch(\Facebook\Exceptions\FacebookResponseException $e) {
+            echo 'Graph returned an error: ' . $e->getMessage();
+            // exit;
+        } catch(\Facebook\Exceptions\FacebookSDKException $e) {
+            echo 'Facebook SDK returned an error: ' . $e->getMessage();
+            // exit;
+        }
+
+        $graphNode = $response->getGraphNode();
+
+        return $graphNode;
+    }
+
 }
