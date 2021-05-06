@@ -3417,9 +3417,19 @@ function CheckForConfCalls (confnum, force) {
     });
 }
 
+
+/* Variables globales para form lead de facebook*/
+var social_form_id = "";
+var social_form_data = "";
+var social_form_image = "";
+
 function CheckForIncoming () {
     all_record = 'NO';
     all_record_count = 0;
+    
+    social_form_id = "";
+    social_form_data = "";
+    social_form_image = "";
 
     var postData = {
         goAction: 'goVDADCheckIncoming',
@@ -3570,6 +3580,10 @@ function CheckForIncoming () {
             //DialLog("start");
 
             custchannellive = 1;
+
+            social_form_id = this_VDIC_data.social_form_id;
+            social_form_data = this_VDIC_data.social_form_data;
+            social_form_image = this_VDIC_data.social_form_image;
 
             LastCID                                     = this_VDIC_data.MqueryCID;
             LeadPrevDispo                               = this_VDIC_data.dispo;
@@ -9065,7 +9079,9 @@ function LoadScriptContents() {
     
     var new_vars = {};
     var new_web_vars = web_form_vars.replace(/^\?/g, '');
+    console.log(web_form_vars);
     var web_vars_arr = new_web_vars.split('&');
+    console.log(web_vars_arr);
     $.each(web_vars_arr, function(idx, val) {
         if (val.length > 0) {
             var vars_arr = val.split('=');
@@ -9074,6 +9090,10 @@ function LoadScriptContents() {
     });
     
     postData = $.extend(postData, new_vars);
+    postData.social_form_id = social_form_id;
+    postData.social_form_data = social_form_data;
+    postData.social_form_image = social_form_image;
+console.log(postData);
     $.ajax({
         type: 'POST',
         url: '<?=$goAPI?>/goAgent/goAPI.php',

@@ -196,6 +196,13 @@ if (isset($_GET['goUserCustomFields'])) { $CF_uses_custom_fields = $astDB->escap
 if (isset($_GET['isPBP'])) { $isPBP = $astDB->escape($_GET['isPBP']); }
     else if (isset($_POST['isPBP'])) { $isPBP = $astDB->escape($_POST['isPBP']); }
 
+if (isset($_GET["social_form_id"]))			{$social_form_id=$astDB->escape(@$_GET["social_form_id"]);}
+	elseif (isset($_POST["social_form_id"]))	{$social_form_id=$astDB->escape(@$_POST["social_form_id"]);}
+if (isset($_GET["social_form_data"]))			{$social_form_data=$astDB->escape(@$_GET["social_form_data"]);}
+	elseif (isset($_POST["social_form_data"]))	{$social_form_data=$astDB->escape(@$_POST["social_form_data"]);}
+if (isset($_GET["social_form_image"]))			{$social_form_image=$astDB->escape(@$_GET["social_form_image"]);}
+	elseif (isset($_POST["social_form_image"]))	{$social_form_image=$astDB->escape(@$_POST["social_form_image"]);}
+
 
 if ($is_logged_in) {
     if (strlen($in_script) < 1) {
@@ -320,6 +327,9 @@ if ($is_logged_in) {
         $did_pattern = preg_replace('/\s/i', '+', $did_pattern);
         $did_description = preg_replace('/\s/i', '+', $did_description);
         $web_vars = preg_replace('/\s/i', '+', $web_vars);
+        $social_form_id = preg_replace('/\s/i','+',@$social_form_id);
+	    $social_form_data = preg_replace('/\s/i','+',@$social_form_data);
+	    $social_form_image = preg_replace('/\s/i','+',@$social_form_image);
     }
     
     $script_text = preg_replace('/--A--lead_id--B--/i', "$lead_id", $script_text);
@@ -406,6 +416,10 @@ if ($is_logged_in) {
     $script_text = preg_replace('/--A--call_id--B--/i', "$call_id", $script_text);
     $script_text = preg_replace('/--A--user_group--B--/i', "$user_group", $script_text);
     $script_text = preg_replace('/--A--web_vars--B--/i', "$web_vars", $script_text);
+    $script_text = preg_replace('/--A--social_form_id--B--/i',"$social_form_id",$script_text);
+    $script_text = preg_replace('/--A--social_form_data--B--/i',"$social_form_data",$script_text);
+    $script_text = preg_replace('/--A--social_form_image--B--/i',"$social_form_image",$script_text);
+
     
     if ($CF_uses_custom_fields == 'Y') {
         ### find the names of all custom fields, if any
