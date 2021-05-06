@@ -5746,7 +5746,7 @@ error_reporting(E_ERROR | E_PARSE);
 
 	// get script
 	public function getAgentScript($lead_id, $fullname, $first_name, $last_name, $middle_initial, $email, $phone_number, $alt_phone,
-		$address1, $address2, $address3, $city, $province, $state, $postal_code, $country_code) {
+		$address1, $address2, $address3, $city, $province, $state, $postal_code, $country_code, $social_form_id, $social_form_data, $social_form_image) {
 		$url = gourl."/goViewScripts/goAPI.php"; # URL to GoAutoDial API filem (required)
          $postfields["goUser"] = goUser; #Username goes here. (required)
          $postfields["goPass"] = goPass; #Password goes here. (required)
@@ -5770,6 +5770,9 @@ error_reporting(E_ERROR | E_PARSE);
          $postfields["state"] = $state; #Lead state (required)
          $postfields["postal_code"] = $postal_code; #Lead postal_code (required)
          $postfields["country_code"] = $country_code; #Lead country_code(required)
+		 $postfields["social_form_id"] = @$social_form_id; #Lead form id de facebook(required)
+		 $postfields["social_form_data"] = @$social_form_data; #Lead form data de facebook: questions, image, titulo del formulario(required)
+		 $postfields["social_form_image"] = @$social_form_image; #Lead form image. imagen del formulario(required)
 
          $ch = curl_init();
          curl_setopt($ch, CURLOPT_URL, $url);

@@ -72,13 +72,16 @@ if ($list_id_ct > 0) {
 		$title 			= $output->title[$i];
 		$call_count 	= $output->call_count[$i];
 		$last_local_call_time = $output->last_local_call_time[$i];
+		$social_form_id = $output->social_form_id[$i];
+		$social_form_data = $output->social_form_data[$i];
+		$social_form_image = $output->social_form_image[$i];
 	}
 }
 $fullname = $title.' '.$first_name.' '.$middle_initial.' '.$last_name;
 $date_of_birth = date('Y-m-d', strtotime($date_of_birth));
 //var_dump($output);
  $output_script = $ui->getAgentScript($lead_id, $fullname, $first_name, $last_name, $middle_initial, $email, 
- 									  $phone_number, $alt_phone, $address1, $address2, $address3, $city, $province, $state, $postal_code, $country);
+ 									  $phone_number, $alt_phone, $address1, $address2, $address3, $city, $province, $state, $postal_code, $country, $social_form_id, $social_form_data, $social_form_image);
 
 
 if (isset($_GET["folder"])) {
@@ -2270,7 +2273,7 @@ function response($order_id,$amount,$response_code,$response_desc){
 					}
 				})
 				.done(function (result) {
-					console.log(result);
+					// console.log(result);
 					if (result.result == 'success') {
 						selectedMessages = [];
 						selectedAll = false;
