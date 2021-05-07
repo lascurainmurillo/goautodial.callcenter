@@ -328,9 +328,52 @@ if ($is_logged_in) {
         $did_description = preg_replace('/\s/i', '+', $did_description);
         $web_vars = preg_replace('/\s/i', '+', $web_vars);
         $social_form_id = preg_replace('/\s/i','+',@$social_form_id);
-	    $social_form_data = preg_replace('/\s/i','+',@$social_form_data);
+	    // $social_form_data = preg_replace('/\s/i','+',@$social_form_data);
 	    $social_form_image = preg_replace('/\s/i','+',@$social_form_image);
     }
+
+    /*preparar data de social form lead *****************************************************/
+    $social_form_data1 = stripslashes(@$social_form_data);
+    $htmls = "";
+    if(@$social_form_data1) {
+        $social_form_data_json = json_decode($social_form_data1, true);
+        $htmls = "<br><div>";
+        foreach ($social_form_data_json as $key => $value) {
+            switch ($key) {
+                case 'context_card':
+                    $htmls .=   "<div>".
+                                    '<div><strong>Titulo:</strong> ' . @$value['title'] . '</div>'.
+                                    '<div><strong>Contenido:</strong>' . @$value['content'][0] . '</div>'.
+                                "</div>";
+                    break;
+                case 'name':
+                        $htmls .=   "<div>".
+                                        '<div><strong>Nombre del formulario:</strong> ' . @$value . '</div>'.
+                                    "</div>";
+                        break;
+                case 'page':
+                    $htmls .=   "<div>".
+                                    '<div><strong>Pagina del lugar:</strong> <a href="https://facebook.com/'. $value['id'] .'" target="_blank">Click Aqui</a></div>'.
+                                "</div>";
+                    break;
+                case 'question_page_custom_headline':
+                    $htmls .=   "<div>".
+                                    '<div><strong>Más información:</strong> ' . @$value . '</div>'.
+                                "</div>";
+                    break;
+                case 'image':
+                    $htmls .=   "<div>".
+                                    '<div><img src="' . $value['source'] . '" alt="imagen"></div>'.
+                                "</div>";
+                    break;
+                default:
+                    # code...
+                    break;
+            }
+        }
+        $htmls = "</div>";
+    }
+    /* ******************************************************************** */
     
     $script_text = preg_replace('/--A--lead_id--B--/i', "$lead_id", $script_text);
     $script_text = preg_replace('/--A--vendor_id--B--/i', "$vendor_id", $script_text);
@@ -417,7 +460,7 @@ if ($is_logged_in) {
     $script_text = preg_replace('/--A--user_group--B--/i', "$user_group", $script_text);
     $script_text = preg_replace('/--A--web_vars--B--/i', "$web_vars", $script_text);
     $script_text = preg_replace('/--A--social_form_id--B--/i',"$social_form_id",$script_text);
-    $script_text = preg_replace('/--A--social_form_data--B--/i',"$social_form_data",$script_text);
+    $script_text = preg_replace('/--A--social_form_data--B--/i',"$htmls",$script_text);
     $script_text = preg_replace('/--A--social_form_image--B--/i',"$social_form_image",$script_text);
 
     
@@ -450,6 +493,7 @@ if ($is_logged_in) {
     if ($isPBP !== 'Y') {
         $script_text = preg_replace("/\n/i", "<BR style='clear: both;'>", $script_text);
     }
+    
     $script_text = stripslashes($script_text);
     
     $scriptHtml  = '';
@@ -469,7 +513,7 @@ if ($is_logged_in) {
         {$scriptHtml .= "</div>";}
     $scriptHtml .= "</TD></TR></TABLE>\n";
     
-    $APIResult = array( "result" => "success", "content" => $scriptHtml );
+    $APIResult = array( "result" => "success", "content" => $scriptHtml);
 } else {
     $APIResult = array( "result" => "error", "message" => "Agent '$goUser' is currently NOT logged in" );
 }

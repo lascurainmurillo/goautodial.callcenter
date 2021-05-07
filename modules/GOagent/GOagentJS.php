@@ -9079,9 +9079,7 @@ function LoadScriptContents() {
     
     var new_vars = {};
     var new_web_vars = web_form_vars.replace(/^\?/g, '');
-    console.log(web_form_vars);
     var web_vars_arr = new_web_vars.split('&');
-    console.log(web_vars_arr);
     $.each(web_vars_arr, function(idx, val) {
         if (val.length > 0) {
             var vars_arr = val.split('=');
