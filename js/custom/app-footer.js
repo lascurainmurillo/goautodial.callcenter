@@ -104,6 +104,8 @@ function checkPageFacebook(e) {
     var checkbox = ".checkbox .c-checkbox input[type=checkbox]";
     $(checkbox).prop("disabled", true);
 
+
+    var __id = $(e).attr("name").split("-")[1]; // id page de la lista
     var data = {
         log_user: "goadmin", // log_user,
         log_group: "ADMIN", // log_group,
@@ -113,7 +115,7 @@ function checkPageFacebook(e) {
         utjo: getCookie("utjo")
     }
 
-
+    $('#loader-check-' + __id).html('Cargando...');
     $.ajax({
         url: "./php/social_red/SocialCheckPage.php",
         type: 'POST',
@@ -121,6 +123,7 @@ function checkPageFacebook(e) {
         data: data,
         success: function(data) {
             // habilitar los checkbox
+            $('#loader-check-' + __id).html('');
             $(checkbox).prop("disabled", false);
             if (data.result == "success") {
                 // cambiar estado checkbox html
@@ -132,6 +135,7 @@ function checkPageFacebook(e) {
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
             // habilitar los checkbox
+            $('#loader-check-' + __id).html('');
             $(checkbox).prop("disabled", false);
             swal("Cerrar", "Sucedió un problema inténtelo nuevamente. " + errorThrown, "error");
         }

@@ -65,7 +65,7 @@ class Facebookgo
         new Facebookgo();
         try {
             // Returns a `Facebook\FacebookResponse` object
-            $response = self::$fb->get('/'.$user_face_id.'/accounts', $access_token);
+            $response = self::$fb->get('/'.$user_face_id.'/accounts?limit=800', $access_token);
         } catch(\Facebook\Exceptions\FacebookResponseException $e) {
             echo 'Graph returned an error: ' . $e->getMessage();
             exit;

@@ -10413,3 +10413,9 @@ ADDED FROM MATERIAL
         margin: 2px;
         width: 84px;
     }
+    
+    .loader-check {
+        position: absolute;
+        top: 0px;
+        left: 31px;
+    }

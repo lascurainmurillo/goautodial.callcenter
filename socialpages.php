@@ -95,34 +95,38 @@
 									</div>
 								</div>
 								<div class="col-lg-12 m-t-38">
-									<div class="row">
-										<?php foreach ($uisocial->listPage() as $key => $value) { ?>
-										<div class="col-lg-3">
-											<div class="panel panel-default">
-												<div class="panel-body">
-													<div class="panel-page">
-														<div class="panel-table" style="width: 75px;">
-															<img width="75" src="https://graph.facebook.com/<?php echo $value['page_id']; ?>/picture?type=large" alt="perfil">
-														</div>
-														<div class="panel-table">
-															<div style="margin-left: 7px;">
-																<h4><?php echo $value['name'] ?></h4>
+									<table class="table">
+										<thead>
+											<tr>
+												<th>Image</th>
+												<th>Nombre</th>
+												<th>Acciones</th>
+											</tr>
+										</thead>
+										<tbody>
+											<?php foreach ($uisocial->listPage() as $key => $value) { ?>
+												<tr>
+													<td>
+														<img width="35" src="https://graph.facebook.com/<?php echo $value['page_id']; ?>/picture?type=large" alt="perfil">
+													</td>
+													<td>
+														<h4><?php echo $value['name'] ?></h4>
+													</td>
+													<td>
+														<div class="checkbox">
+															<label for="name-<?php echo $value['id'] ?>" class="checkbox-inline c-checkbox" >
+																<input type="checkbox" id="name-<?php echo $value['id'] ?>" name="name-<?php echo $value['id'] ?>" onchange="checkPageFacebook(this);" value="1" <?php echo $value["status"] ? "checked" : "" ?> >
+																<span class="fa fa-check"></span>
+															</label>
+															<div class="loader-check" id="loader-check-<?php echo $value['id'] ?>">
+																
 															</div>
 														</div>
-														<div class="panel-table" style="width: 25px">
-															<div class="checkbox">
-																<label for="name-<?php echo $value['id'] ?>" class="checkbox-inline c-checkbox" >
-																	<input type="checkbox" id="name-<?php echo $value['id'] ?>" name="name-<?php echo $value['id'] ?>" onchange="checkPageFacebook(this);" value="1" <?php echo $value["status"] ? "checked" : "" ?> >
-																	<span class="fa fa-check"></span>
-																</label>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-										<?php } ?>
-									</div>
+													</td>
+												</tr>
+											<?php } ?>
+										</tbody>
+									</table>
 								</div>
 							</div>
 						</div><!-- /. body -->
