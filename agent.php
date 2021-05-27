@@ -634,12 +634,16 @@ function response($order_id,$amount,$response_code,$response_desc){
 								<!-- ECCS Customization-->
 						  <h4 id="cust_full_name" class="hidden">
 									<?php if(ECCS_BLIND_MODE === 'n'){ ?>
-									<span id="first_name_label" class="hidden"><?=$lh->translationFor('first_name')?>: </span><a href="#" id="first_name"></a> <span id="middle_initial_label" class="hidden"><?=$lh->translationFor('middle_initial')?>: </span><a href="#" id="middle_initial"></a> <span id="last_name_label" class="hidden"><?=$lh->translationFor('last_name')?>: </span><a href="#" id="last_name"></a>
+									<span id="first_name_label" class="hidden"><?=$lh->translationFor('first_name')?>: </span><a href="#" id="first_name"></a> 
+									<span id="middle_initial_label" class="hidden"><?=$lh->translationFor('middle_initial')?>: </span><a href="#" id="middle_initial"></a> 
+									<span id="last_name_label" class="hidden"><?=$lh->translationFor('last_name')?>: </span><a href="#" id="last_name"></a>
 									<?php } ?>
 									<!-- ECCS Customization -->
 									<?php if(ECCS_BLIND_MODE === 'y'){ ?>
 									<span id="cust_campaign_name"></span>
-									<span id="first_name_label" class="hidden"><?=$lh->translationFor('first_name')?>: </span><a href="#" id="first_name"></a> <span id="middle_initial_label" class="hidden"><?=$lh->translationFor('middle_initial')?>: </span><a href="#" id="middle_initial"></a> <span id="last_name_label" class="hidden"><?=$lh->translationFor('last_name')?>: </span><a href="#" id="last_name"></a>
+									<span id="first_name_label" class="hidden"><?=$lh->translationFor('first_name')?>: </span><a href="#" id="first_name"></a> 
+									<span id="middle_initial_label" class="hidden"><?=$lh->translationFor('middle_initial')?>: </span><a href="#" id="middle_initial"></a> 
+									<span id="last_name_label" class="hidden"><?=$lh->translationFor('last_name')?>: </span><a href="#" id="last_name"></a>
 									<span id="cust_call_type"></span>
 									<?php }//end if ?>
          <!-- /.ECCS Customization -->
@@ -666,18 +670,24 @@ function response($order_id,$amount,$response_code,$response_desc){
 									  <!-- Nav task panel tabs-->
 										 <li role="presentation" class="active">
 											<a href="#contact_info" aria-controls="home" role="tab" data-toggle="tab" class="bb0">
-												<span style="font-family:Arial; font-style:Bold;" class="fa fa-user hidden"></span>
+												<span style="font-style:Bold;" class="glyphicon glyphicon-user"></span>
 												<?=$lh->translationFor('contact_information')?></a>
 										 </li>
 										 <li role="presentation">
 											<a href="#comments_tab" aria-controls="home" role="tab" data-toggle="tab" class="bb0">
-												<span class="fa fa-comments-o hidden"></span>
+												<span class="glyphicon glyphicon-bullhorn"></span>
 											    <?=$lh->translationFor('comments')?></a>
 										 </li>
 										 <li role="presentation">
 											<a href="#scripts" aria-controls="home" role="tab" data-toggle="tab" class="bb0">
-												<span class="fa fa-file-text-o hidden"></span>
+												<span class="glyphicon glyphicon-list-alt"></span>
 												<?=$lh->translationFor('script')?></a>
+										 </li>
+										 <li role="presentation">
+										 	<a href="#chats" aria-controls="home" role="tab" data-toggle="tab" class="bb0">
+											 	<span class="fa fa-comments-o"></span>
+											 	Chat
+											</a>
 										 </li>
 									  </ul>
 									</div>
@@ -924,9 +934,175 @@ function response($order_id,$amount,$response_code,$response_desc){
 											</div><!-- /.row -->
 										</div>
 										<!-- End of Scripts -->
+
+										<!-- Chats  -------------------------------------------------------------------------------------------------------------------------->
+										<div id="chats" role="tabpanel" class="tab-pane">
+											<div class="row">
+												<div class="col-xs-12 col-md-6">
+													<div class="chats-whatsapp app">
+														<div class="row app-one">
+													
+															<div class="col-sm-4 side hidden">
+																<div class="side-one">
+																	<!-- Heading -->
+																	<div class="row heading">
+																		<div class="col-sm-3 col-xs-3 heading-avatar">
+																			<div class="heading-avatar-icon">
+																				<img src="http://shurl.esy.es/y">
+																			</div>
+																		</div>
+																		<div class="col-sm-1 col-xs-1  heading-dot  pull-right">
+																			<i class="fa fa-ellipsis-v fa-2x  pull-right" aria-hidden="true"></i>
+																		</div>
+																		<div class="col-sm-2 col-xs-2 heading-compose  pull-right">
+																			<i class="fa fa-comments fa-2x  pull-right" aria-hidden="true"></i>
+																		</div>
+																	</div>
+																	<!-- Heading End -->
+															
+																	<!-- SearchBox -->
+																	<div class="row searchBox">
+																		<div class="col-sm-12 searchBox-inner">
+																			<div class="form-group has-feedback">
+																				<input id="searchText" type="text" class="form-control" name="searchText" placeholder="Search">
+																				<span class="glyphicon glyphicon-search form-control-feedback"></span>
+																			</div>
+																		</div>
+																	</div>
+																	<!-- Search Box End -->
+
+																	<!-- sideBar -->
+																	<div class="row sideBar">
+																		<div class="row sideBar-body">
+																			<div class="col-sm-3 col-xs-3 sideBar-avatar">
+																				<div class="avatar-icon">
+																					<img src="http://shurl.esy.es/y">
+																				</div>
+																			</div>
+																			<div class="col-sm-9 col-xs-9 sideBar-main">
+																				<div class="row">
+																					<div class="col-sm-8 col-xs-8 sideBar-name">
+																						<span class="name-meta">Ankit Jain</span>
+																					</div>
+																					<div class="col-sm-4 col-xs-4 pull-right sideBar-time">
+																						<span class="time-meta pull-right">18:18</span>
+																					</div>
+																				</div>
+																			</div>
+																		</div>
+															
+																		<div class="row sideBar-body">
+																			<div class="col-sm-3 col-xs-3 sideBar-avatar">
+																				<div class="avatar-icon">
+																					<img src="http://shurl.esy.es/y">
+																				</div>
+																			</div>
+																			<div class="col-sm-9 col-xs-9 sideBar-main">
+																				<div class="row">
+																					<div class="col-sm-8 col-xs-8 sideBar-name">
+																						<span class="name-meta">Ankit Jain</span>
+																					</div>
+																					<div class="col-sm-4 col-xs-4 pull-right sideBar-time">
+																						<span class="time-meta pull-right">18:18</span>
+																					</div>
+																				</div>
+																			</div>
+																		</div>
+																	</div>
+																	<!-- Sidebar End -->
+																</div>
+															</div>
+													
+															<!-- New Message Sidebar End -->
+														
+															<!-- Conversation Start -->
+															<div class="col-sm-12 conversation">
+																<!-- Heading -->
+																<div class="row heading">
+																	<div class="col-sm-2 col-md-1 col-xs-3 heading-avatar">
+																		<div class="heading-avatar-icon">
+																		<div class="cust_avatar_chats">
+																			<avatar username="Dialed Client" src="<?php echo CRM_DEFAULTS_USER_AVATAR;?>" :size="45"></avatar>
+																		</div>
+																		</div>
+																	</div>
+																	<div class="col-sm-8 col-xs-7 heading-name">
+																		<span class="first_name_chats"></span>
+																		<span class="middle_initial_chats"></span>
+																		<span class="last_name_chats"></span>
+																	</div>
+																	<div class="col-sm-1 col-xs-1  heading-dot pull-right">
+																		<i class="fa fa-ellipsis-v fa-2x  pull-right" aria-hidden="true"></i>
+																	</div>
+																</div>
+																<!-- Heading End -->
+														
+																<!-- Message Box -->
+																<div class="row message" id="conversation">
+														
+																<div class="row message-previous">
+																	<div class="col-sm-12 previous">
+																		<a onclick="previous(this)" id="ankitjain28" name="20" class="hidden">
+																			Show Previous Message!
+																		</a>
+																	</div>
+																</div>
+														
+																<div class="row message-body">
+																	<div class="col-sm-12 message-main-receiver">
+																		<div class="receiver">
+																			<div class="message-text">
+																				Hyy, Its Awesome..!
+																			</div>
+																			<span class="message-time pull-right">Sun</span>
+																		</div>
+																	</div>
+																</div>
+														
+																<div class="row message-body">
+																	<div class="col-sm-12 message-main-sender">
+																		<div class="sender">
+																			<div class="message-text">
+																				Thanks n I know its awesome...!
+																			</div>
+																			<span class="message-time pull-right">Sun</span>
+																		</div>
+																	</div>
+																</div>
+																</div>
+																<!-- Message Box End -->
+														
+																<!-- Reply Box -->
+																<div class="row reply">
+																	<div class="col-sm-1 col-xs-1 reply-emojis">
+																		<i class="fa fa-smile-o fa-2x"></i>
+																	</div>
+																	<div class="col-sm-9 col-xs-9 reply-main">
+																		<textarea class="form-control" rows="1" id="comment"></textarea>
+																	</div>
+																	<div class="col-sm-1 col-xs-1 reply-recording hidden">
+																		<i class="fa fa-microphone fa-2x" aria-hidden="true"></i>
+																	</div>
+																	<div class="col-sm-1 col-xs-1 reply-send">
+																		<i class="fa fa-send fa-2x" aria-hidden="true"></i>
+																	</div>
+																</div>
+																<!-- Reply Box End -->
+															</div>
+															<!-- Conversation End -->
+														</div>
+														<!-- App One End -->
+													</div>
+													<?php // print $ui->getChats(); ?>
+												</div>
+												<div class="col-xs-12 col-md-6">
+												</div>
+											</div>
+										</div>
+										<!-- End chats---------------------------------------------------------------------------------------------------------------------------->
 									</div>
 								</div>
-								
+								<link href="css/dashboard/css/chats.css" rel="stylesheet" type="text/css" />
 						        <div id="custom_fields_content" class="card-body" style="border: 1px solid rgb(221, 230, 233); margin: 0 32px 0 22px; display: none;">
 									<h4 style="font-weight: 600;">
 										<?=$lh->translationFor('custom_forms')?>

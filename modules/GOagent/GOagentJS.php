@@ -3598,12 +3598,15 @@ function CheckForIncoming () {
             $(".formMain input[name='title']").val(this_VDIC_data.title).trigger('change');
             if (this_VDIC_data.first_name !== '') {
                 $("#cust_full_name a[id='first_name']").editable('setValue', this_VDIC_data.first_name, true);
+                $(".first_name_chats").html(this_VDIC_data.first_name);
             }
             if (this_VDIC_data.middle_initial !== '') {
                 $("#cust_full_name a[id='middle_initial']").editable('setValue', this_VDIC_data.middle_initial, true);
+                $(".middle_initial_chats").html(this_VDIC_data.middle_initial);
             }
             if (this_VDIC_data.last_name !== '') {
                 $("#cust_full_name a[id='last_name']").editable('setValue', this_VDIC_data.last_name, true);
+                $(".last_name_chats").html(this_VDIC_data.middle_initial);
             }
 
             $(".formMain input[name='address1']").val(this_VDIC_data.address1).trigger('change');
@@ -3740,6 +3743,7 @@ function CheckForIncoming () {
             $("#cust_number").html(phone_number_format(dispnum));
     	    <?php if(ECCS_BLIND_MODE === 'y'){ ?> $("span#span-cust-number").removeClass("hidden");  $("#cust_number").val(cust_phone_number); <?php } ?>
             $("#cust_avatar").html(goGetAvatar(this_VDIC_data.first_name+" "+this_VDIC_data.last_name));
+            $(".cust_avatar_chats").html(goGetAvatar(this_VDIC_data.first_name+" "+this_VDIC_data.last_name), '45');
             //goAvatar._init(goOptions);
 
             var status_display_content = '';
@@ -6205,6 +6209,7 @@ function DispoSelectSubmit() {
             $("#cust_number").empty();
 	    <?php if(ECCS_BLIND_MODE === 'y'){ ?> $("span#span-cust-number").addClass("hidden");  $("#cust_number").val(''); <?php } ?>
             $("#cust_avatar").html(goGetAvatar());
+            $(".cust_avatar_chats").html(goGetAvatar(), '45');
             //goAvatar._init(goOptions);
             //console.log(goGetAvatar());
     
@@ -6374,6 +6379,7 @@ function ManualDialSkip() {
                     $("#cust_number").empty();
 		    <?php if(ECCS_BLIND_MODE === 'y'){ ?> $("span#span-cust-number").addClass("hidden");  $("#cust_number").val(''); <?php } ?>
                     $("#cust_avatar").html(goGetAvatar());
+                    $(".cust_avatar_chats").html(goGetAvatar(), '45');
                     //goAvatar._init(goOptions);
 
                     if (post_phone_time_diff_alert_message.length > 10) {
@@ -7252,6 +7258,7 @@ function ManualDialNext(mdnCBid, mdnBDleadid, mdnDiaLCodE, mdnPhonENumbeR, mdnSt
                     $("#cust_number").html(phone_number_format(dispnum));
 	            <?php if(ECCS_BLIND_MODE === 'y'){ ?> $("span#span-cust-number").removeClass("hidden"); $("#cust_number").val(cust_phone_number); <?php } ?>
                     $("#cust_avatar").html(goGetAvatar(cust_first_name+" "+cust_last_name));
+                    $(".cust_avatar_chats").html(goGetAvatar(cust_first_name+" "+cust_last_name), '45');
                     //goAvatar._init(goOptions);
                     //console.log(goGetAvatar(dispnum));
                     

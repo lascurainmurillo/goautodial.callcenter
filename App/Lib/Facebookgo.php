@@ -62,6 +62,7 @@ class Facebookgo
      */
     public static function userAccounts($access_token, $user_face_id)
     {
+        ini_set('max_execution_time', 90);
         new Facebookgo();
         try {
             // Returns a `Facebook\FacebookResponse` object
