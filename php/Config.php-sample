@@ -6,6 +6,13 @@ define('DB_HOST', 'localhost');
 define('DB_NAME', 'goautodial'); 
 define('DB_PORT', '3306');
 define('DB_NAME_ASTERISK', 'asterisk');
+define('VERIFY_SSL', false);
+define('DOMAIN_SOCKET', 'http://localhost:3001');
 // other configuration parameters
 define('CRM_ADMIN_EMAIL', 'admin@localhost.com');
+
+//Config Facebook
+define('APP_ID_FACEBOOK', '');
+define('APP_SECRET_FACEBOOK', '');
+define('APP_VERSION_FACEBOOK', '');
 ?>

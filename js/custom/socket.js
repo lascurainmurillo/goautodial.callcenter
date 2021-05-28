@@ -1,14 +1,63 @@
 /**
  *
  * inicilizar conexion 
- * on_notify_leadgen
+ * Sockets Io
  * 
  */
 socketcus = {}
 socketcus.socket = null;
-socketcus.init = function() {
-    socketcus.socket = io.connect('https://goautodial-node.herokuapp.com', { 'forceNew': true });
+socketcus.init = function(DOMAIN) {
+    socketcus.socket = io.connect(DOMAIN, { 'forceNew': true });
 }
+
+
+/**/
+socketcus.chatwhatsapp = function(agent, client) {
+
+    const username = agent;
+    const client = cliente
+    const room = username + "-abc";
+
+    socketcus.socket.on('message', message => {
+        console.log(message);
+        // outputMessage(message);
+
+        // Scroll down
+        // chatMessages.scrollTop = chatMessages.scrollHeight;
+    });
+
+    // Join chatrrom
+    socketcus.socket.emit('joinRoom', { username, client, room });
+
+    // Get room and users
+    socketcus.socket.on('roomUsers', ({ room, users }) => {
+        console.log("------------- room users -----------");
+        console.log(users);
+    });
+
+}
+
+/**/
+socketcus.sendmessage = function() {
+
+    var msg_original = $('#comment-send').val();
+
+    // Emitir un mensaje hacia el server
+    socketcus.socket.emit('chatMessage', msg_original);
+    var msg = $("#comment-send").val().replace(/\n/g, "");
+
+    $("#comment-send").val("");
+    $('#comment-send').focus();
+}
+
+// Presionar enter para enviar mensaje
+$('#comment-send').keypress(function(event) {
+
+    if (event.keyCode != 13) return;
+    socketcus.sendmessage();
+    return false;
+});
+
 
 /**
  *

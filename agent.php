@@ -1040,35 +1040,35 @@ function response($order_id,$amount,$response_code,$response_desc){
 																<!-- Message Box -->
 																<div class="row message" id="conversation">
 														
-																<div class="row message-previous">
-																	<div class="col-sm-12 previous">
-																		<a onclick="previous(this)" id="ankitjain28" name="20" class="hidden">
-																			Show Previous Message!
-																		</a>
-																	</div>
-																</div>
-														
-																<div class="row message-body">
-																	<div class="col-sm-12 message-main-receiver">
-																		<div class="receiver">
-																			<div class="message-text">
-																				Hyy, Its Awesome..!
-																			</div>
-																			<span class="message-time pull-right">Sun</span>
+																	<div class="row message-previous">
+																		<div class="col-sm-12 previous">
+																			<a onclick="previous(this)" id="ankitjain28" name="20" class="hidden">
+																				Show Previous Message!
+																			</a>
 																		</div>
 																	</div>
-																</div>
-														
-																<div class="row message-body">
-																	<div class="col-sm-12 message-main-sender">
-																		<div class="sender">
-																			<div class="message-text">
-																				Thanks n I know its awesome...!
+															
+																	<div class="row message-body">
+																		<div class="col-sm-12 message-main-receiver">
+																			<div class="receiver">
+																				<div class="message-text">
+																					Hyy, Its Awesome..!
+																				</div>
+																				<span class="message-time pull-right">Sun</span>
 																			</div>
-																			<span class="message-time pull-right">Sun</span>
 																		</div>
 																	</div>
-																</div>
+															
+																	<div class="row message-body">
+																		<div class="col-sm-12 message-main-sender">
+																			<div class="sender">
+																				<div class="message-text">
+																					Thanks n I know its awesome...!
+																				</div>
+																				<span class="message-time pull-right">Sun</span>
+																			</div>
+																		</div>
+																	</div>
 																</div>
 																<!-- Message Box End -->
 														
@@ -1078,12 +1078,12 @@ function response($order_id,$amount,$response_code,$response_desc){
 																		<i class="fa fa-smile-o fa-2x"></i>
 																	</div>
 																	<div class="col-sm-9 col-xs-9 reply-main">
-																		<textarea class="form-control" rows="1" id="comment"></textarea>
+																		<textarea class="form-control" rows="1" id="comment-send"></textarea>
 																	</div>
 																	<div class="col-sm-1 col-xs-1 reply-recording hidden">
 																		<i class="fa fa-microphone fa-2x" aria-hidden="true"></i>
 																	</div>
-																	<div class="col-sm-1 col-xs-1 reply-send">
+																	<div id="message-send" class="col-sm-1 col-xs-1 reply-send" onclick="socketcus.sendmessage();">
 																		<i class="fa fa-send fa-2x" aria-hidden="true"></i>
 																	</div>
 																</div>
@@ -1103,6 +1103,10 @@ function response($order_id,$amount,$response_code,$response_desc){
 									</div>
 								</div>
 								<link href="css/dashboard/css/chats.css" rel="stylesheet" type="text/css" />
+
+
+
+
 						        <div id="custom_fields_content" class="card-body" style="border: 1px solid rgb(221, 230, 233); margin: 0 32px 0 22px; display: none;">
 									<h4 style="font-weight: 600;">
 										<?=$lh->translationFor('custom_forms')?>
@@ -2812,12 +2816,12 @@ function response($order_id,$amount,$response_code,$response_desc){
                                 $('#callback-list th:nth-of-type(6)').attr("title", "<?=$lh->translationFor('comments')?>");
                                 $('#callback-list th:nth-of-type(7)').attr("title", "<?=$lh->translationFor('action')?>");
 
-//				$('#callback-list').dataTable({
-//					"drawCallBack": function(){
-//						$('li#callback-list_previous').attr('title', 'Previous');
-//						$('li#callback-list_next').attr('title', 'Next');
-//					}
-//				});
+				//				$('#callback-list').dataTable({
+				//					"drawCallBack": function(){
+				//						$('li#callback-list_previous').attr('title', 'Previous');
+				//						$('li#callback-list_next').attr('title', 'Next');
+				//					}
+				//				});
 				// Dialer
 
 				 $('button#manual-dial-now').attr("data-tooltip", "tooltip");
@@ -2950,17 +2954,21 @@ function response($order_id,$amount,$response_code,$response_desc){
 		<script src="js/custom/global.js" type="text/javascript"></script>
 		<script type="text/javascript">
 			// $(document).ready(function() {
+				/*
 				countup.datenow("<?php echo date('r'); ?>");
 				countup.xcon_();
 				countup.xtimeCont();
+				*/
 			// });
 		</script>
-		<!-- <script src="https://goautodial-node.herokuapp.com/socket.io/socket.io.js" type="text/javascript"></script> -->
+		<script src="<?php echo DOMAIN_SOCKET ?>/socket.io/socket.io.js" type="text/javascript"></script>
 		<script src="js/custom/socket.js" type="text/javascript"></script>
 		<script>
 			// nodejs socket
+			
+			socketcus.init('<?php echo DOMAIN_SOCKET ?>');
+			socketcus.chatwhatsapp('<?php $user->getUserName() ?>', '997185474');
 			/*
-			socketcus.init();
 			socketcus.on_notify_leadgen();
 			
 			// notificaciones declaraciones
