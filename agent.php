@@ -942,7 +942,7 @@ function response($order_id,$amount,$response_code,$response_desc){
 													<div class="chats-whatsapp app">
 														<div class="row app-one">
 													
-															<div class="col-sm-4 side hidden">
+															<div class="col-sm-4 side">
 																<div class="side-one">
 																	<!-- Heading -->
 																	<div class="row heading">
@@ -963,51 +963,17 @@ function response($order_id,$amount,$response_code,$response_desc){
 																	<!-- SearchBox -->
 																	<div class="row searchBox">
 																		<div class="col-sm-12 searchBox-inner">
-																			<div class="form-group has-feedback">
-																				<input id="searchText" type="text" class="form-control" name="searchText" placeholder="Search">
-																				<span class="glyphicon glyphicon-search form-control-feedback"></span>
+																			<div class="input-group">
+																				<span class="input-group-addon" id="basic-addon1"><i class="glyphicon glyphicon-search"></i></span>
+																				<input id="searchText" name="searchText" type="text" class="form-control" placeholder="Buscar" aria-describedby="basic-addon1">
 																			</div>
 																		</div>
 																	</div>
 																	<!-- Search Box End -->
 
 																	<!-- sideBar -->
-																	<div class="row sideBar">
-																		<div class="row sideBar-body">
-																			<div class="col-sm-3 col-xs-3 sideBar-avatar">
-																				<div class="avatar-icon">
-																					<img src="http://shurl.esy.es/y">
-																				</div>
-																			</div>
-																			<div class="col-sm-9 col-xs-9 sideBar-main">
-																				<div class="row">
-																					<div class="col-sm-8 col-xs-8 sideBar-name">
-																						<span class="name-meta">Ankit Jain</span>
-																					</div>
-																					<div class="col-sm-4 col-xs-4 pull-right sideBar-time">
-																						<span class="time-meta pull-right">18:18</span>
-																					</div>
-																				</div>
-																			</div>
-																		</div>
-															
-																		<div class="row sideBar-body">
-																			<div class="col-sm-3 col-xs-3 sideBar-avatar">
-																				<div class="avatar-icon">
-																					<img src="http://shurl.esy.es/y">
-																				</div>
-																			</div>
-																			<div class="col-sm-9 col-xs-9 sideBar-main">
-																				<div class="row">
-																					<div class="col-sm-8 col-xs-8 sideBar-name">
-																						<span class="name-meta">Ankit Jain</span>
-																					</div>
-																					<div class="col-sm-4 col-xs-4 pull-right sideBar-time">
-																						<span class="time-meta pull-right">18:18</span>
-																					</div>
-																				</div>
-																			</div>
-																		</div>
+																	<div id="list-clients" class="row sideBar">
+
 																	</div>
 																	<!-- Sidebar End -->
 																</div>
@@ -1016,7 +982,7 @@ function response($order_id,$amount,$response_code,$response_desc){
 															<!-- New Message Sidebar End -->
 														
 															<!-- Conversation Start -->
-															<div class="col-sm-12 conversation">
+															<div class="col-sm-8 conversation">
 																<!-- Heading -->
 																<div class="row heading">
 																	<div class="col-sm-2 col-md-1 col-xs-3 heading-avatar">
@@ -1038,8 +1004,8 @@ function response($order_id,$amount,$response_code,$response_desc){
 																<!-- Heading End -->
 														
 																<!-- Message Box -->
-																<div class="row message" id="conversation">
-														
+																<div class="row message" id="conversation-whats">
+																	<!--
 																	<div class="row message-previous">
 																		<div class="col-sm-12 previous">
 																			<a onclick="previous(this)" id="ankitjain28" name="20" class="hidden">
@@ -1047,7 +1013,9 @@ function response($order_id,$amount,$response_code,$response_desc){
 																			</a>
 																		</div>
 																	</div>
-															
+																	-->
+
+																	<!--
 																	<div class="row message-body">
 																		<div class="col-sm-12 message-main-receiver">
 																			<div class="receiver">
@@ -1069,6 +1037,7 @@ function response($order_id,$amount,$response_code,$response_desc){
 																			</div>
 																		</div>
 																	</div>
+																	-->
 																</div>
 																<!-- Message Box End -->
 														
@@ -1078,12 +1047,12 @@ function response($order_id,$amount,$response_code,$response_desc){
 																		<i class="fa fa-smile-o fa-2x"></i>
 																	</div>
 																	<div class="col-sm-9 col-xs-9 reply-main">
-																		<textarea class="form-control" rows="1" id="comment-send"></textarea>
+																		<textarea class="form-control" rows="1" id="comment-send" client_id="+51997185474" client_name="mark Cornejo" list_id="1004"></textarea>
 																	</div>
 																	<div class="col-sm-1 col-xs-1 reply-recording hidden">
 																		<i class="fa fa-microphone fa-2x" aria-hidden="true"></i>
 																	</div>
-																	<div id="message-send" class="col-sm-1 col-xs-1 reply-send" onclick="socketcus.sendmessage();">
+																	<div id="message-send" class="col-sm-1 col-xs-1 reply-send" onclick="socketcus.sendmessage('+51997185474', 'mark Cornejo', '1004');">
 																		<i class="fa fa-send fa-2x" aria-hidden="true"></i>
 																	</div>
 																</div>
@@ -2965,9 +2934,10 @@ function response($order_id,$amount,$response_code,$response_desc){
 		<script src="js/custom/socket.js" type="text/javascript"></script>
 		<script>
 			// nodejs socket
-			
-			socketcus.init('<?php echo DOMAIN_SOCKET ?>');
-			socketcus.chatwhatsapp('<?php $user->getUserName() ?>', '997185474');
+			socketcus.init('<?php echo DOMAIN_SOCKET ?>', 'agentmark015');
+			<?php // echo $phone_code.$phone_number; ?> <?php // echo $list_id; ?>
+			<?php // $user->getUserName() ?> // +525585353729
+			socketcus.chatwhatsapp('+51997185474', 'mark Cornejo', '1004');
 			/*
 			socketcus.on_notify_leadgen();
 			

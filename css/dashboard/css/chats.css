@@ -131,6 +131,10 @@
     width: 100%;
 }
 
+.searchBox .input-group-addon {
+    border-color: white !important;
+}
+
 .searchBox-inner {
     height: 100%;
     width: 100%;
@@ -300,7 +304,7 @@
     padding: 0 !important;
     margin: 0 !important;
     height: 100%;
-    width: 100%;
+    /*width: 100%;*/
     border-left: 1px solid rgba(0, 0, 0, .08);
     /*overflow-y: auto;*/
 }
