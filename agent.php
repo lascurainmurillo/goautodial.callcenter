@@ -684,7 +684,7 @@ function response($order_id,$amount,$response_code,$response_desc){
 												<?=$lh->translationFor('script')?></a>
 										 </li>
 										 <li role="presentation">
-										 	<a href="#chats" aria-controls="home" role="tab" data-toggle="tab" class="bb0">
+										 	<a href="#chats" aria-controls="home" role="tab" data-toggle="tab" class="bb0" onclick="socketcus.scrollend(300);">
 											 	<span class="fa fa-comments-o"></span>
 											 	Chat
 											</a>
@@ -948,7 +948,7 @@ function response($order_id,$amount,$response_code,$response_desc){
 																	<div class="row heading">
 																		<div class="col-sm-3 col-xs-3 heading-avatar">
 																			<div class="heading-avatar-icon">
-																				<img src="http://shurl.esy.es/y">
+																				<?=$ui->getVueAvatar($user->getUserName(), $user->getUserAvatar(), 40, false, true, true)?>
 																			</div>
 																		</div>
 																		<div class="col-sm-1 col-xs-1  heading-dot  pull-right">
@@ -988,7 +988,7 @@ function response($order_id,$amount,$response_code,$response_desc){
 																	<div class="col-sm-2 col-md-1 col-xs-3 heading-avatar">
 																		<div class="heading-avatar-icon">
 																		<div class="cust_avatar_chats">
-																			<avatar username="Dialed Client" src="<?php echo CRM_DEFAULTS_USER_AVATAR;?>" :size="45"></avatar>
+																			<avatar username="Dialed Client" src="<?php echo CRM_DEFAULTS_USER_AVATAR;?>" :size="40"></avatar>
 																		</div>
 																		</div>
 																	</div>
@@ -1047,12 +1047,12 @@ function response($order_id,$amount,$response_code,$response_desc){
 																		<i class="fa fa-smile-o fa-2x"></i>
 																	</div>
 																	<div class="col-sm-9 col-xs-9 reply-main">
-																		<textarea class="form-control" rows="1" id="comment-send" client_id="+51997185474" client_name="mark Cornejo" list_id="1004"></textarea>
+																		<textarea class="form-control" rows="1" id="comment-send" client_id="+51955794343" client_name="Lili bon ifacio" list_id="1004"></textarea>
 																	</div>
 																	<div class="col-sm-1 col-xs-1 reply-recording hidden">
 																		<i class="fa fa-microphone fa-2x" aria-hidden="true"></i>
 																	</div>
-																	<div id="message-send" class="col-sm-1 col-xs-1 reply-send" onclick="socketcus.sendmessage('+51997185474', 'mark Cornejo', '1004');">
+																	<div id="message-send" class="col-sm-1 col-xs-1 reply-send" onclick="socketcus.sendmessage('+51955794343', 'Lili bon ifacio', '1004');">
 																		<i class="fa fa-send fa-2x" aria-hidden="true"></i>
 																	</div>
 																</div>
@@ -2924,7 +2924,7 @@ function response($order_id,$amount,$response_code,$response_desc){
 		<script type="text/javascript">
 			// $(document).ready(function() {
 				/*
-				countup.datenow("<?php echo date('r'); ?>");
+				countup.datenow("<?php // echo date('r'); ?>");
 				countup.xcon_();
 				countup.xtimeCont();
 				*/
@@ -2937,7 +2937,7 @@ function response($order_id,$amount,$response_code,$response_desc){
 			socketcus.init('<?php echo DOMAIN_SOCKET ?>', 'agentmark015');
 			<?php // echo $phone_code.$phone_number; ?> <?php // echo $list_id; ?>
 			<?php // $user->getUserName() ?> // +525585353729
-			socketcus.chatwhatsapp('+51997185474', 'mark Cornejo', '1004');
+			socketcus.chatwhatsapp('+51955794343', 'Lili bon ifacio', '1004');
 			/*
 			socketcus.on_notify_leadgen();
 			

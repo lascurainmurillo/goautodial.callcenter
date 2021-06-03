@@ -8,6 +8,7 @@ socketcus = {}
 socketcus.socket = null;
 socketcus.init = function(DOMAIN, agent_username) {
     socketcus.socket = io.connect(DOMAIN, { 'forceNew': true });
+    socketcus.domain = DOMAIN;
     socketcus.selectroom = "";
     socketcus.agent_username = agent_username;
 
@@ -19,6 +20,10 @@ socketcus.init = function(DOMAIN, agent_username) {
 
 /* Al momento que contesta un cliente la llamada */
 socketcus.chatwhatsapp = function(client_id, client_name, list_id) {
+
+    // obtener mensaje anteriores
+    socketcus.getMessagesClient(client_id);
+
 
     socketcus.selectroom = client_id;
     const data_room = {
@@ -40,7 +45,8 @@ socketcus.chatwhatsapp = function(client_id, client_name, list_id) {
         // console.log(clients);
         var list = "";
         clients.forEach(el => {
-            list = list + `<div class="row sideBar-body">
+            console.log(el);
+            list = list + `<div id="client${el.client_id}" class="row sideBar-body ${(socketcus.selectroom == el.client_id) ? 'sideBar-seleccionado': ''}" onclick="socketcus.selectRoom(this)">
                                 <div class="col-sm-3 col-xs-3 sideBar-avatar">
                                     <div class="avatar-icon">
                                         <img src="/img/avatars/default/defaultAvatar.png">
@@ -59,10 +65,6 @@ socketcus.chatwhatsapp = function(client_id, client_name, list_id) {
                             </div>`;
         });
 
-        // var color = ["red", "blue", "burlywood", "fuchsia", "yellow", "peachpuff", "orange", "limegreen"];
-        // console.log(Math.floor(Math.random() * color.length));
-
-
         var elegi = [];
         elegi[room] = "";
         $("#list-clients").html(list);
@@ -72,28 +74,8 @@ socketcus.chatwhatsapp = function(client_id, client_name, list_id) {
     socketcus.socket.on('message', message => {
         console.log("--------------- RESULT -----------------");
         console.log(message);
-        var color = ["red", "blue", "burlywood", "fuchsia", "yellow", "peachpuff", "orange", "limegreen"];
-        // if (message.type == "sender") {
-        var chatting = `<div class="row message-body">
-                                <div class="col-sm-12 message-main-sender">
-                                    <div class="${message.type}">
-                                        <div style="color: ${ (message.type == "sender" ? socketcus.color_agent_current : socketcus.color_client_current) }">
-                                            <strong>Agente015</strong>
-                                        </div>
-                                        <div class="message-text">
-                                            ${message.msg}
-                                        </div>
-                                        <span class="message-time pull-right">${message.time}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-        // }
-
-        $("#conversation-whats").append(chatting);
-        // Scroll down
-        var conver = document.getElementById('conversation-whats');
-        conver.scrollTop = conver.scrollHeight;
+        socketcus.htmlchatting(message);
+        socketcus.scrollend(); // colocar scrool al final
     });
 
 }
@@ -137,6 +119,90 @@ socketcus.getcolor = function() {
     socketcus.colores.splice(ele_index, 1);
     return color_client;
 }
+
+
+/**
+ * 
+ * Obtener mensajes
+ * @param {*} room 
+ */
+socketcus.getMessagesClient = function(room) {
+    $.ajax({
+        url: socketcus.domain + '/whatsapp/message',
+        type: 'GET',
+        data: { room },
+        datatype: 'json',
+        success: function(data) {
+            if (data.length) {
+                data.forEach(el => {
+                    socketcus.htmlchatting(el.message);
+                });
+                socketcus.scrollend();
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown);
+        }
+    });
+}
+
+
+/**
+ * Chatting mensajes
+ * @param {*} message 
+ */
+socketcus.htmlchatting = function(message) {
+    // if (message.type == "sender") {
+    var chatting = `<div class="row message-body">
+                                <div class="col-sm-12 message-main-${message.tipo}">
+                                    <div class="${message.tipo}">
+                                        <div style="color: ${ (message.tipo == "sender" ? socketcus.color_agent_current : socketcus.color_client_current) }">
+                                            <strong>Agente015</strong>
+                                        </div>
+                                        <div class="message-text">
+                                            ${message.msg}
+                                        </div>
+                                        <span class="message-time pull-right">${message.time}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+    // }
+
+    $("#conversation-whats").append(chatting);
+}
+
+/**
+ * 
+ * Seleccionar y mostar una sala
+ * 
+ */
+socketcus.selectRoom = function(e) {
+    $('.sideBar-body').removeClass('sideBar-seleccionado');
+    $(e).addClass('sideBar-seleccionado');
+}
+
+
+
+/**
+ * 
+ * Scroll down final
+ * 
+ */
+socketcus.scrollend = function(time = null) {
+    if (time) {
+        setTimeout(function() {
+            var conver = document.getElementById('conversation-whats');
+            conver.scrollTop = conver.scrollHeight;
+        }, 1000);
+    } else {
+        var conver = document.getElementById('conversation-whats');
+        conver.scrollTop = conver.scrollHeight;
+    }
+
+}
+
+
 
 
 

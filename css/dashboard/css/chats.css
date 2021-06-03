@@ -9,6 +9,7 @@
 }
 
 .app {
+    max-height: 500px;
     position: relative;
     overflow: hidden;
     /*top: 19px;*/
@@ -172,6 +173,10 @@
 }
 
 .sideBar-body:hover {
+    background-color: #f2f2f2;
+}
+
+.sideBar-seleccionado {
     background-color: #f2f2f2;
 }
 
