@@ -951,9 +951,11 @@ function response($order_id,$amount,$response_code,$response_desc){
 																				<?=$ui->getVueAvatar($user->getUserName(), $user->getUserAvatar(), 40, false, true, true)?>
 																			</div>
 																		</div>
+																		<!-- 
 																		<div class="col-sm-1 col-xs-1  heading-dot  pull-right">
 																			<i class="fa fa-ellipsis-v fa-2x  pull-right" aria-hidden="true"></i>
 																		</div>
+																		-->
 																		<div class="col-sm-2 col-xs-2 heading-compose  pull-right">
 																			<i class="fa fa-comments fa-2x  pull-right" aria-hidden="true"></i>
 																		</div>
@@ -961,6 +963,7 @@ function response($order_id,$amount,$response_code,$response_desc){
 																	<!-- Heading End -->
 															
 																	<!-- SearchBox -->
+																	<!--
 																	<div class="row searchBox">
 																		<div class="col-sm-12 searchBox-inner">
 																			<div class="input-group">
@@ -969,6 +972,7 @@ function response($order_id,$amount,$response_code,$response_desc){
 																			</div>
 																		</div>
 																	</div>
+																	-->
 																	<!-- Search Box End -->
 
 																	<!-- sideBar -->
@@ -985,21 +989,26 @@ function response($order_id,$amount,$response_code,$response_desc){
 															<div class="col-sm-8 conversation">
 																<!-- Heading -->
 																<div class="row heading">
-																	<div class="col-sm-2 col-md-1 col-xs-3 heading-avatar">
+																	<div class="col-lg-1 col-sm-2 col-md-2 col-xs-3 heading-avatar">
 																		<div class="heading-avatar-icon">
-																		<div class="cust_avatar_chats">
-																			<avatar username="Dialed Client" src="<?php echo CRM_DEFAULTS_USER_AVATAR;?>" :size="40"></avatar>
-																		</div>
+																			<div id="avatat_chats" class="cust_avatar_chats">
+																		   
+																			</div>
 																		</div>
 																	</div>
-																	<div class="col-sm-8 col-xs-7 heading-name">
+																	<div id="fullname_chats" class="col-sm-8 col-xs-7 heading-name">
+																		
+																		<!--
 																		<span class="first_name_chats"></span>
 																		<span class="middle_initial_chats"></span>
 																		<span class="last_name_chats"></span>
+																		-->
 																	</div>
+																	<!--
 																	<div class="col-sm-1 col-xs-1  heading-dot pull-right">
 																		<i class="fa fa-ellipsis-v fa-2x  pull-right" aria-hidden="true"></i>
 																	</div>
+																	-->
 																</div>
 																<!-- Heading End -->
 														
@@ -1043,18 +1052,29 @@ function response($order_id,$amount,$response_code,$response_desc){
 														
 																<!-- Reply Box -->
 																<div class="row reply">
-																	<div class="col-sm-1 col-xs-1 reply-emojis">
-																		<i class="fa fa-smile-o fa-2x"></i>
+																	<div class="dropup">
+																		<div id="what-emojis" class="col-sm-1 col-xs-1 reply-emojis dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+																			<i class="fa fa-smile-o fa-2x"></i>
+																		</div>
+																		<ul class="dropdown-menu" aria-labelledby="what-emojis">
+																			<li><a href="#">En construcción...</a></li>
+																		</ul>
 																	</div>
-																	<div class="col-sm-9 col-xs-9 reply-main">
-																		<textarea class="form-control" rows="1" id="comment-send" client_id="+51955794343" client_name="Lili bon ifacio" list_id="1004"></textarea>
+																	<div id="what-reply" class="col-sm-9 col-xs-9 reply-main">
+																		<!-- <textarea class="form-control" rows="1" id="comment-send" client_id="+51955794343" client_name="Lili bon ifacio" list_id="1004"></textarea> -->
+																		<textarea class="form-control" rows="1" id="comment-send"></textarea>
 																	</div>
-																	<div class="col-sm-1 col-xs-1 reply-recording hidden">
+																	<div id="what-microphone" class="col-sm-1 col-xs-1 reply-recording hidden">
 																		<i class="fa fa-microphone fa-2x" aria-hidden="true"></i>
 																	</div>
+																	<div id="message-send" class="col-sm-1 col-xs-1 reply-send" onclick="socketcus.sendmessage();">
+																		<i class="fa fa-send fa-2x" aria-hidden="true"></i>
+																	</div>
+																	<!--
 																	<div id="message-send" class="col-sm-1 col-xs-1 reply-send" onclick="socketcus.sendmessage('+51955794343', 'Lili bon ifacio', '1004');">
 																		<i class="fa fa-send fa-2x" aria-hidden="true"></i>
 																	</div>
+																	-->
 																</div>
 																<!-- Reply Box End -->
 															</div>
@@ -1072,9 +1092,6 @@ function response($order_id,$amount,$response_code,$response_desc){
 									</div>
 								</div>
 								<link href="css/dashboard/css/chats.css" rel="stylesheet" type="text/css" />
-
-
-
 
 						        <div id="custom_fields_content" class="card-body" style="border: 1px solid rgb(221, 230, 233); margin: 0 32px 0 22px; display: none;">
 									<h4 style="font-weight: 600;">
@@ -1957,6 +1974,9 @@ function response($order_id,$amount,$response_code,$response_desc){
 
 		<!-- Modal Dialogs -->
 		<?php include_once "./php/ModalPasswordDialogs.php" ?>
+
+<button onclick="socketcus.initCallWhatsapp('+5215585353729', 'Moises lascu', '1004')">iniciar simular llamada1</button>
+<button onclick="socketcus.initCallWhatsapp('+51955794343', 'Lili bon ifacio', '1004')">iniciar simular llamada2</button>
 
 		<?php print $ui->standardizedThemeJS();?>
 		<script type="text/javascript">									
@@ -2934,10 +2954,19 @@ function response($order_id,$amount,$response_code,$response_desc){
 		<script src="js/custom/socket.js" type="text/javascript"></script>
 		<script>
 			// nodejs socket
-			socketcus.init('<?php echo DOMAIN_SOCKET ?>', 'agentmark015');
+			socketcus.init('<?php echo DOMAIN_SOCKET ?>', '<?php echo $user->getUserA() ?>');
 			<?php // echo $phone_code.$phone_number; ?> <?php // echo $list_id; ?>
 			<?php // $user->getUserName() ?> // +525585353729
-			socketcus.chatwhatsapp('+51955794343', 'Lili bon ifacio', '1004');
+			// console.log('<?php // echo $list_id; ?>');
+			socketcus.chatwhatsapp(null, null, '1004');
+			const _styleRe = socketcus.detectResize();  // obtener class para resize
+
+			$('#what-emojis').addClass(_styleRe.class[2]);
+			$('#what-reply').addClass(_styleRe.class[3]);
+			$('#what-microphone').addClass(_styleRe.class[4]);
+			socketcus.initCallWhatsapp = function(phone, name, list) {
+				socketcus.chatwhatsapp(phone, name, list);
+			}
 			/*
 			socketcus.on_notify_leadgen();
 			

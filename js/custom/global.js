@@ -95,6 +95,61 @@ countup.xtimeCont = function() {
 
 
 
+/**
+ * 
+ * Obtener la hora am pm.
+ * @param {Date} date 
+ * @returns String
+ */
+function formatAMPM(date) {
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    var ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    var strTime = hours + ':' + minutes + ' ' + ampm;
+    return strTime;
+}
+
+/**
+ * 
+ * validar imagen obtener tag de imagen
+ * @param {String} img 
+ * @returns 
+ */
+function fileValidation(file, caption = null, send_tipo = null) {
+
+    var allowedExtensions = /(.jpg|.jpeg|.png|.gif)$/i;
+    if (allowedExtensions.exec(file) && send_tipo == 'image') {
+        return `<div><a href="${file}" target="_blank" ><img src="${file}" alt="Imagen antigua" width="150" /></a><div>${(caption != null) ? caption : '' }</div></div>`;
+    }
+
+    var allowedExtensions = /(.mp4|.wma|.avi)$/i;
+    if (allowedExtensions.exec(file) && send_tipo == 'video') {
+        return `<div align="center" class="embed-responsive embed-responsive-16by9" style="width: 150px;">
+                    <video controls loop class="embed-responsive-item">
+                        <source src="${file}" type="video/mp4">
+                    </video>
+                </div>
+                <div>${(caption != null) ? caption : '' }</div>`;
+    }
+
+    var allowedExtensions = /(.oga|.mp3)$/i;
+    if (allowedExtensions.exec(file) && send_tipo == 'ptt') {
+        return `<div><audio controls>
+            <source src="${file}" type="audio/ogg">
+            Your browser does not support the audio element.
+          </audio><div>${(caption != null) ? caption : '' }</div></div>`;
+    }
+
+    if (file == 'Video upload disabled') {
+        return `<div>${file}</div><div>${(caption != null) ? caption : '' }</div>`;
+    }
+
+    return file;
+}
+
 
 /**
  * ******************************************************************************************

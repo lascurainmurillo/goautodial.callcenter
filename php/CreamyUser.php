@@ -30,7 +30,11 @@ class CreamyUser {
 	protected $userid;
 	protected $userrole;
 	protected $avatar;
+	protected $usera;
 	public function __construct() {
+		// user
+		if (isset($_SESSION["user"])) { $this->usera = $_SESSION["user"]; }
+		else { throw new \Exception("Unable to create current user. Session not set."); }
 		// username
 		if (isset($_SESSION["username"])) { $this->username = $_SESSION["username"]; }
 		else { throw new \Exception("Unable to create current user. Session not set."); }
@@ -57,7 +61,7 @@ class CreamyUser {
     }
 		
 	// user access functions
-	
+	public function getUserA() { return $this->usera; }
 	public function getUserName() { return $this->username; }
 	public function getUserId() { return $this->userid; }
 	public function getUserRole() { return $this->userrole; }
