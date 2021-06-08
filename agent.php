@@ -1975,9 +1975,10 @@ function response($order_id,$amount,$response_code,$response_desc){
 		<!-- Modal Dialogs -->
 		<?php include_once "./php/ModalPasswordDialogs.php" ?>
 
+<!--
 <button onclick="socketcus.initCallWhatsapp('+5215585353729', 'Moises lascu', '1004')">iniciar simular llamada1</button>
 <button onclick="socketcus.initCallWhatsapp('+51955794343', 'Lili bon ifacio', '1004')">iniciar simular llamada2</button>
-
+-->
 		<?php print $ui->standardizedThemeJS();?>
 		<script type="text/javascript">									
 			$(document).ready(function() {
