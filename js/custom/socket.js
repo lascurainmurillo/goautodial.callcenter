@@ -8,6 +8,8 @@ socketcus = {}
 socketcus.socket = null;
 socketcus.init = function(DOMAIN, agent_username) {
     socketcus.socket = io.connect(DOMAIN, { 'forceNew': true });
+    $("#backtransparent").addClass('hidden');
+    $("#alert-socket").addClass('hidden');
     socketcus.domain = DOMAIN;
     socketcus.selectroom = null;
     socketcus.agent_username = agent_username;
@@ -18,6 +20,17 @@ socketcus.init = function(DOMAIN, agent_username) {
     socketcus.room = {};
     socketcus.key_enable = 0; // llave para saber si ya esta cargada la info al carga la página, 1 => no volver a cargar la info, por si otra pagina se abre y carga la info.
     socketcus.data_room = {};
+
+    socketcus.socket.on('connect_error', function(err) {
+        // handle server error here
+        // ocultar chat si sucede un error
+        if ($("#backtransparent").hasClass('hidden')) {
+            $("#alert-socket").html(`<div>Hubo un problema en la conexión. Click aquí para continuar o recargue la página.</div><button class="btn btn-warning" onclick="socketcus.showchat();">Click aquí</button>`);
+            $("#backtransparent").removeClass('hidden');
+            $("#alert-socket").removeClass('hidden');
+        }
+        console.log('Error connecting to server');
+    });
 
     // Obtiene y renderisa la lista de clientes 
     socketcus.socket.on('roomUsers', ({ room, agent_fromsocket }) => {
@@ -69,7 +82,8 @@ socketcus.init = function(DOMAIN, agent_username) {
                         // obtener mensaje anteriores
                         if (socketcus.selectroom == el.client_id) {
                             $("#conversation-whats").append(`<div id="client${el.client_id}" class="room-conversation"></div>`);
-                            socketcus.getMessagesClient(socketcus.selectroom);
+
+                            socketcus.getMessagesClient(socketcus.selectroom, new Date().toISOString());
 
                             socketcus.headernameWhatsapp(el.image, el.client_name);
                         }
@@ -150,6 +164,7 @@ socketcus.sendmessage = function() {
     }
 }
 
+
 // Presionar enter para enviar mensaje
 $('#comment-send').keypress(function(event) {
     var com = $('#comment-send');
@@ -171,18 +186,30 @@ socketcus.getcolor = function() {
  * Obtener mensajes
  * @param {*} room 
  */
-socketcus.getMessagesClient = function(room) {
+socketcus.getMessagesClient = function(room, date, append = 1) {
+
+    var end_previous = true;
     $.ajax({
         url: socketcus.domain + '/whatsapp/message',
         type: 'GET',
-        data: { room },
+        data: { room, date },
         datatype: 'json',
         success: function(data) {
             if (data.length) {
                 data.forEach(el => {
-                    socketcus.htmlchatting(el.message, room);
+                    if (el["previous"] !== undefined) {
+                        end_previous = false;
+                        socketcus.htmlprevious(room, data[0].created_at);
+                    } else {
+                        socketcus.htmlchatting(el.message, room, append);
+                    }
                 });
-                socketcus.scrollend();
+                if(append) {
+                    socketcus.scrollend();
+                }
+                if(end_previous) {
+                    $("#message-previous" + room.replace(/\+/g, '\\+')).remove(); // eliminar definitivamente el boton previous
+                }
             }
         },
         error: function(jqXHR, textStatus, errorThrown) {
@@ -192,6 +219,11 @@ socketcus.getMessagesClient = function(room) {
 }
 
 
+/**
+ * 
+ * 
+ * 
+ */
 socketcus.getRoomUsers = async function(agent_username, client_id = null) {
 
     let result;
@@ -218,7 +250,7 @@ socketcus.getRoomUsers = async function(agent_username, client_id = null) {
  * Chatting mensajes
  * @param {*} message 
  */
-socketcus.htmlchatting = function(message, room) {
+socketcus.htmlchatting = function(message, room, append = 1) {
     // if (message.type == "sender") {
     // var date = new Date(message.time);
     var timeampm = formatAMPM(new Date(message.time));
@@ -241,7 +273,11 @@ socketcus.htmlchatting = function(message, room) {
     // }
     // $("#conversation-whats").append(chatting);
     if ($("#client" + room.replace(/\+/g, '\\+')).length > 0) {
-        $("#client" + room.replace(/\+/g, '\\+')).append(chatting);
+        if(append) {
+            $("#client" + room.replace(/\+/g, '\\+')).append(chatting);
+        } else {
+            $(chatting).insertBefore("#message-previous" + room.replace(/\+/g, '\\+'));
+        }
     }
 }
 
@@ -271,7 +307,11 @@ socketcus.select_room = function(e, room, client_name, image) {
     socketcus.scrollend(); // scrollear hasta el final del chat
 }
 
-
+/**
+ * 
+ * @param {*} image 
+ * @param {*} client_name 
+ */
 socketcus.headernameWhatsapp = function(image, client_name) {
     //colocar imagen
     $("#avatat_chats").html(`<div>
@@ -280,6 +320,44 @@ socketcus.headernameWhatsapp = function(image, client_name) {
     `);
     //colocar nombre
     $("#fullname_chats").html(`<span class="first_name_chats">${client_name}</span>`);
+}
+
+/**
+ * 
+ * 
+ * 
+ */
+socketcus.showchat = function() {
+    if (!$("#backtransparent").hasClass('hidden')) {
+        $("#backtransparent").addClass('hidden');
+        $("#alert-socket").addClass('hidden');
+    }
+    socketcus.chatwhatsapp(null, null, 1004);
+}
+
+
+/**
+ * 
+ * 
+ * 
+ */
+socketcus.htmlprevious = function(room, date) {
+
+    var previ = `<div id="message-previous${room}" class="row message-previous">
+                    <div class="col-sm-12 previous">
+                        <a onClick="socketcus.getMessagesClient('${room}', '${date}', 0)" name="20">
+                            Mostrar mensajes previos!
+                        </a>
+                    </div>
+                </div>`;
+    
+    if($("#message-previous" + room.replace(/\+/g, '\\+')).length > 0) {
+        $("#message-previous" + room.replace(/\+/g, '\\+')).remove();
+    }
+
+    if ($("#client" + room.replace(/\+/g, '\\+')).length > 0) {
+        $("#client" + room.replace(/\+/g, '\\+')).prepend(previ);
+    }
 }
 
 
@@ -300,6 +378,7 @@ socketcus.scrollend = function(time = null) {
     }
 
 }
+
 
 /**
  * 

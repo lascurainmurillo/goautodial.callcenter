@@ -937,8 +937,17 @@ function response($order_id,$amount,$response_code,$response_desc){
 
 										<!-- Chats  -------------------------------------------------------------------------------------------------------------------------->
 										<div id="chats" role="tabpanel" class="tab-pane">
+											
 											<div class="row">
 												<div class="col-xs-12 col-md-6">
+												    <div id="backtransparent" class=""></div>
+													<div id="alert-socket" class="alert-socket">
+														<div class="alert-form">
+															<div>
+																Hay problemas de conexión en el chat.
+															</div>
+														</div>
+													</div>
 													<div class="chats-whatsapp app">
 														<div class="row app-one">
 													
@@ -1014,15 +1023,8 @@ function response($order_id,$amount,$response_code,$response_desc){
 														
 																<!-- Message Box -->
 																<div class="row message" id="conversation-whats">
-																	<!--
-																	<div class="row message-previous">
-																		<div class="col-sm-12 previous">
-																			<a onclick="previous(this)" id="ankitjain28" name="20" class="hidden">
-																				Show Previous Message!
-																			</a>
-																		</div>
-																	</div>
-																	-->
+
+																	
 
 																	<!--
 																	<div class="row message-body">

@@ -3651,7 +3651,7 @@ function CheckForIncoming () {
             custom_field_values                         = this_VDIC_data.custom_field_values;
             custom_field_types                          = this_VDIC_data.custom_field_types;
 
-var socket_phone_number = (this_VDIC_data.country_code == "52" ? "+" EAphone_code + "1" + EAphone_number : "+" + EAphone_code + EAphone_number);
+var socket_phone_number = (this_VDIC_data.country_code == "52") ? "+" + EAphone_code + "1" + EAphone_number : "+" + EAphone_code + EAphone_number;
             socketcus.chatwhatsapp(socket_phone_number, this_VDIC_data.first_name + " " + this_VDIC_data.last_name, '1004'); // socket obtener cliente llamada
             //Added By Poundteam for Audited Comments (Manual Dial Section Only)
             //if (qc_enabled > 0)
