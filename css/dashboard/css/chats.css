@@ -608,7 +608,7 @@
         margin-left: 17px !important;
     }
     .message-cont {
-        font-size: 9px;
+        font-size: 11px;
     }
 }
 
@@ -630,7 +630,7 @@
         margin-left: 17px !important;
     }
     .message-cont {
-        font-size: 9px;
+        font-size: 11px;
     }
 }
 
@@ -658,7 +658,7 @@
     margin: 22px auto;
 }
 
-#backtransparent{
+#backtransparent {
     position: absolute;
     z-index: 7;
     width: 100%;

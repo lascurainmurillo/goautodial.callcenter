@@ -204,10 +204,10 @@ socketcus.getMessagesClient = function(room, date, append = 1) {
                         socketcus.htmlchatting(el.message, room, append);
                     }
                 });
-                if(append) {
+                if (append) {
                     socketcus.scrollend();
                 }
-                if(end_previous) {
+                if (end_previous) {
                     $("#message-previous" + room.replace(/\+/g, '\\+')).remove(); // eliminar definitivamente el boton previous
                 }
             }
@@ -273,7 +273,7 @@ socketcus.htmlchatting = function(message, room, append = 1) {
     // }
     // $("#conversation-whats").append(chatting);
     if ($("#client" + room.replace(/\+/g, '\\+')).length > 0) {
-        if(append) {
+        if (append) {
             $("#client" + room.replace(/\+/g, '\\+')).append(chatting);
         } else {
             $(chatting).insertBefore("#message-previous" + room.replace(/\+/g, '\\+'));
@@ -301,9 +301,9 @@ socketcus.select_room = function(e, room, client_name, image) {
         $('#client' + room.replace(/\+/g, '\\+')).removeClass('hidden');
     } else {
         $("#conversation-whats").append(`<div id="client${room}" class="room-conversation"></div>`);
-        socketcus.getMessagesClient(room);
+        socketcus.getMessagesClient(room, new Date().toISOString());
     }
-    socketcus.headernameWhatsapp(image, client_name);
+    socketcus.headernameWhatsapp(image, client_name); // cambiar nombre e imagen del header del cliente
     socketcus.scrollend(); // scrollear hasta el final del chat
 }
 
@@ -350,8 +350,8 @@ socketcus.htmlprevious = function(room, date) {
                         </a>
                     </div>
                 </div>`;
-    
-    if($("#message-previous" + room.replace(/\+/g, '\\+')).length > 0) {
+
+    if ($("#message-previous" + room.replace(/\+/g, '\\+')).length > 0) {
         $("#message-previous" + room.replace(/\+/g, '\\+')).remove();
     }
 
