@@ -143,7 +143,7 @@ function fileValidation(file, caption = null, send_tipo = null) {
           </audio><div>${(caption != null) ? caption : '' }</div></div>`;
     }
 
-    var allowedExtensions = /(.xlsx|.xls|.cvs|.rar|.zip|.pdf|.txt|.docx|.doc|.ppt|.pptx)$/i;
+    var allowedExtensions = /(.xlsx|.xls|.cvs|.rar|.zip|.pdf|.txt|.docx|.doc|.ppt|.pptx|.sql)$/i;
     if (allowedExtensions.exec(file) && send_tipo == 'document') {
         return `<div><div><a href="${file}" target="_blank">Click aquí para descargar archivo</a></div><div>${(caption != null) ? caption : '' }</div></div>`;
     }

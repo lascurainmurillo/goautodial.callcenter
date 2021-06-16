@@ -307,8 +307,8 @@
 /*Conversation*/
 
 .conversation {
-    padding: 0 !important;
-    margin: 0 !important;
+    /*padding: 0 !important;
+    margin: 0 !important;*/
     height: 100%;
     /*width: 100%;*/
     border-left: 1px solid rgba(0, 0, 0, .08);
@@ -412,12 +412,14 @@
     width: 100%;
     background-color: #f5f1ee;
     padding: 10px 5px 10px 5px !important;
-    margin: 0 !important;
+    /*margin: 0 !important;*/
     z-index: 1000;
+    position: absolute;
+    bottom: 0px;
 }
 
 .reply-emojis {
-    padding: 5px !important;
+    padding: 5px 0px !important;
 }
 
 .reply-emojis i {
@@ -439,7 +441,7 @@
 }
 
 .reply-send {
-    padding: 5px !important;
+    padding: 5px 0px !important;
 }
 
 .reply-send i {
@@ -553,6 +555,7 @@
         /*width: 100%;*/
         border-left: 1px solid rgba(0, 0, 0, .08);
         /*overflow-y: auto;*/
+        position: relative;
     }
     .message {
         height: calc(100% - 140px);
@@ -664,4 +667,28 @@
     width: 100%;
     height: 100%;
     background-color: #71717170;
+}
+
+#whats-previous-file {
+    position: absolute;
+    bottom: 60px;
+    width: 100%;
+    height: 125px;
+    background: #f5f1ee;
+}
+
+#file-previous {
+    width: 200px;
+    margin-top: 10px;
+}
+
+#comment-send {
+    border: 1px solid #93918f;
+    border-radius: 10px !important;
+    /*
+    height: 60px;
+    width: 230px;*/
+    -webkit-border-radius: 10px !important;
+    -moz-border-radius: 10px !important;
+    border-radius: 10px !important;
 }

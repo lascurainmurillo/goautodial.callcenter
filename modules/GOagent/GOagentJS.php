@@ -3423,6 +3423,8 @@ var social_form_id = "";
 var social_form_data = "";
 var social_form_image = "";
 
+var list_id_main = '<?=LIST_ID?>'; // iniciar list
+
 function CheckForIncoming () {
     all_record = 'NO';
     all_record_count = 0;
@@ -3652,7 +3654,7 @@ function CheckForIncoming () {
             custom_field_types                          = this_VDIC_data.custom_field_types;
 
 var socket_phone_number = (this_VDIC_data.country_code == "52") ? "+" + EAphone_code + "1" + EAphone_number : "+" + EAphone_code + EAphone_number;
-            socketcus.chatwhatsapp(socket_phone_number, this_VDIC_data.first_name + " " + this_VDIC_data.last_name, '1004'); // socket obtener cliente llamada
+            socketcus.chatwhatsapp(socket_phone_number, this_VDIC_data.first_name + " " + this_VDIC_data.last_name, list_id_main); // socket obtener cliente llamada
             //Added By Poundteam for Audited Comments (Manual Dial Section Only)
             //if (qc_enabled > 0)
             //{

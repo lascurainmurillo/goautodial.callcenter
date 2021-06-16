@@ -102,8 +102,13 @@ socketcus.init = function(DOMAIN, agent_username) {
     socketcus.socket.on('message', message => {
         console.log("--------------- RESULT -----------------");
         console.log(message);
+        // limpiar files y mostrar loader
+        socketcus.clearfiles();
+
         socketcus.htmlchatting(message, message.room);
-        socketcus.scrollend(); // colocar scrool al final
+
+        // colocar scrool al final
+        socketcus.scrollend(null, message.send_tipo);
     });
 }
 
@@ -135,35 +140,147 @@ socketcus.chatwhatsapp = function(client_id = null, client_name = null, list_id 
 
 
 /* Emitir mensaje */
-// socketcus.sendmessage = function(client_id, client_name, list_id) {
 socketcus.sendmessage = function() {
 
-    if ($("#comment-send").val().trim() != "" && socketcus.selectroom != null) {
-        var msg_original = $('#comment-send').val();
-        const data_call = {
-            agent_username: socketcus.agent_username,
-            client_id: socketcus.selectroom,
-            client_name: socketcus.select_client_name,
-            list_id: socketcus.select_list_id,
-            room: socketcus.selectroom, // phone number
-            message: {
-                user: socketcus.agent_username,
-                msg: msg_original,
-                tipo: 'sender',
-                caption: null,
-                send_tipo: 'chat'
+    let data_call = {
+        agent_username: socketcus.agent_username,
+        client_id: socketcus.selectroom,
+        client_name: socketcus.select_client_name,
+        list_id: socketcus.select_list_id,
+        room: socketcus.selectroom, // phone number
+        message: {
+            user: socketcus.agent_username,
+            msg: "",
+            tipo: 'sender',
+            caption: null,
+            send_tipo: ""
+        },
+    }
+
+    var fd = new FormData();
+
+    // Si se está suficiente archivo
+    if (socketcus.filesTemp.file.length > 0) {
+
+        // cambiar boton a loader
+        $("#message-send").addClass("hidden");
+        $("#loader-send").removeClass("hidden");
+
+        fd.append('file', socketcus.filesTemp.file[0]);
+        // console.log(socketcus.filesTemp.file[0]);
+        $.ajax({
+            url: socketcus.domain + '/whatsapp/send-file',
+            type: 'POST',
+            data: fd,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                // console.log(response);
+                if (response.status == 200 || response.status == 201) {
+                    data_call.message.msg = response.url_file;
+                    data_call.message.send_tipo = socketcus.filesTemp.type;
+                    data_call.message.filename = socketcus.filesTemp.file[0].name;
+
+                    // Emitir un mensaje hacia el server
+                    socketcus.socket.emit('chatMessage', data_call);
+                } else {
+                    alert('file not uploaded');
+                }
             },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log(errorThrown);
+                // limpiar files y mostrar loader
+                $("#comment-send").prop('disabled', false);
+                socketcus.clearfiles();
+            }
+        });
+
+    } else {
+        // enviar mensaje de texto
+        if ($("#comment-send").val().trim() != "" && socketcus.selectroom != null) {
+
+            // cambiar boton a loader
+            $("#message-send").addClass("hidden");
+            $("#loader-send").removeClass("hidden");
+
+            var msg_original = $('#comment-send').val();
+            data_call.message.msg = msg_original;
+            data_call.message.send_tipo = 'chat';
+
+            // Emitir un mensaje hacia el server
+            socketcus.socket.emit('chatMessage', data_call);
+            var msg = $("#comment-send").val().trim().replace(/\n/g, "");
+
+            $("#comment-send").val("");
+            $('#comment-send').focus();
         }
 
-        // Emitir un mensaje hacia el server
-        socketcus.socket.emit('chatMessage', data_call);
-        var msg = $("#comment-send").val().trim().replace(/\n/g, "");
-
-        $("#comment-send").val("");
-        $('#comment-send').focus();
     }
+
 }
 
+socketcus.filesTemp = {
+    file: {},
+    type: "",
+}; //variable global del tipo de archivo
+/**
+ * 
+ * Detect que tipo de archivo se está subiendo
+ * 
+ */
+socketcus.fileselect = function(tag) {
+    if ($('#whats_attach_multimedia')[0].files != null && tag == "#whats_attach_multimedia") { // si es imagen o video
+        socketcus.filesTemp.file = $('#whats_attach_multimedia')[0].files;
+        // console.log(URL.createObjectURL(socketcus.filesTemp[0]));
+        switch (socketcus.filesTemp.file[0].type) {
+            case 'video/mp4':
+            case 'video/m4v':
+            case 'video/avi':
+                $("#file-previous").html(`<div align="center" class="embed-responsive embed-responsive-16by9" style="width: 150px;">
+                                                <video controls loop class="embed-responsive-item">
+                                                    <source src="${URL.createObjectURL(socketcus.filesTemp.file[0])}" type="video/mp4">
+                                                </video>
+                                            </div>`);
+                if ($("#whats-previous-file").hasClass('hidden')) {
+                    $("#whats-previous-file").removeClass('hidden');
+                }
+                socketcus.filesTemp.type = 'video';
+                break;
+            case 'image/jpeg':
+            case 'image/png':
+            case 'image/gif':
+            case 'image/jpg':
+                $("#file-previous").html(`<div><img src="${URL.createObjectURL(socketcus.filesTemp.file[0])}" alt="Imagen upload" style="height: 100%;" /></div>`);
+                if ($("#whats-previous-file").hasClass('hidden')) {
+                    $("#whats-previous-file").removeClass('hidden');
+                }
+                socketcus.filesTemp.type = 'image';
+                break;
+            default:
+                socketcus.filesTemp = {
+                    file: {},
+                    type: "",
+                };
+                $("#whats-previous-file").addClass('hidden');
+                alert("No es un archivo válido");
+                break;
+        }
+
+
+
+        // console.log(socketcus.filesTemp);
+    } else if ($('#whats_attach_files')[0].files != null && tag == "#whats_attach_files") { // si es archivo
+        socketcus.filesTemp.file = $('#whats_attach_files')[0].files
+        $("#file-previous").html(`<div>
+        <i class="fa fa-file-text-o" aria-hidden="true" style="font-size:90px"></i> 
+        </div><div>${socketcus.filesTemp.file[0].name}</div>`);
+        if ($("#whats-previous-file").hasClass('hidden')) {
+            $("#whats-previous-file").removeClass('hidden');
+        }
+        socketcus.filesTemp.type = 'document';
+        // console.log(socketcus.filesTemp);
+    }
+}
 
 // Presionar enter para enviar mensaje
 $('#comment-send').keypress(function(event) {
@@ -309,6 +426,39 @@ socketcus.select_room = function(e, room, client_name, image) {
 
 /**
  * 
+ * 
+ * Subir archivo para whatsapp
+ * 
+ */
+$("#what-attach-multimedia").click(function() {
+    $("#whats_attach_multimedia").click();
+});
+$("#what-attach-files").click(function() {
+    $("#whats_attach_files").click();
+});
+$("#whats_attach_multimedia").change(function() {
+    socketcus.filesTemp = {
+        file: {},
+        type: "",
+    };
+    $("#comment-send").prop('disabled', true);
+    $("#comment-send").val("");
+    socketcus.fileselect("#whats_attach_multimedia");
+});
+$("#whats_attach_files").change(function() {
+    socketcus.filesTemp = {
+        file: {},
+        type: "",
+    };
+    $("#comment-send").prop('disabled', true);
+    $("#comment-send").val("");
+    socketcus.fileselect("#whats_attach_files");
+});
+
+
+
+/**
+ * 
  * @param {*} image 
  * @param {*} client_name 
  */
@@ -320,6 +470,37 @@ socketcus.headernameWhatsapp = function(image, client_name) {
     `);
     //colocar nombre
     $("#fullname_chats").html(`<span class="first_name_chats">${client_name}</span>`);
+}
+
+
+/**
+ * 
+ * 
+ * 
+ */
+socketcus.clearfiles = function() {
+    // limpiar filesTemp
+    socketcus.filesTemp = {
+        file: {},
+        type: "",
+    };
+
+    // Limpiar inputs files
+    document.getElementById("whats_attach_multimedia").value = "";
+    document.getElementById("whats_attach_files").value = "";
+
+    // ocultar previous
+    if (!$("#whats-previous-file").hasClass('hidden')) {
+        $("#whats-previous-file").addClass('hidden');
+        $("#file-previous").html("");
+    }
+
+    $("#comment-send").prop('disabled', false);
+
+    if (!$("#loader-send").hasClass('hidden')) {
+        $("#loader-send").addClass("hidden");
+        $("#message-send").removeClass("hidden");
+    }
 }
 
 /**
@@ -366,15 +547,20 @@ socketcus.htmlprevious = function(room, date) {
  * Scroll down final
  * 
  */
-socketcus.scrollend = function(time = null) {
+socketcus.scrollend = function(time = null, send_tipo = null) {
     if (time) {
         setTimeout(function() {
             var conver = document.getElementById('conversation-whats');
             conver.scrollTop = conver.scrollHeight;
         }, time);
-    } else {
+    } else if (send_tipo == null || send_tipo == 'chat') {
         var conver = document.getElementById('conversation-whats');
         conver.scrollTop = conver.scrollHeight;
+    } else {
+        setTimeout(function() {
+            var conver = document.getElementById('conversation-whats');
+            conver.scrollTop = conver.scrollHeight;
+        }, 1000);
     }
 
 }
@@ -397,7 +583,7 @@ socketcus.detectResize = function() {
     _styless.class[2] = "col-sm-1 col-xs-1";
     _styless.class[3] = "col-sm-9 col-xs-9";
     _styless.class[4] = "col-sm-1 col-xs-1";
-    if (768 <= parseInt($(window).width()) && parseInt($(window).width()) < 991.98) {
+    if (768 <= parseInt($(window).width()) && parseInt($(window).width()) < 991.98) { //md
         _styless.class[0] = 'col-xs-3 col-sm-3 col-md-12 col-lg-12';
         _styless.class[1] = 'col-xs-9 col-sm-9 col-md-12 col-lg-12';
 
@@ -406,13 +592,13 @@ socketcus.detectResize = function() {
         _styless.class[4] = "col-lg-1 col-lg-1 col-sm-1 col-xs-1";
     };
 
-    if (992 <= parseInt($(window).width()) && parseInt($(window).width()) < 1199.98) {
+    if (992 <= parseInt($(window).width()) && parseInt($(window).width()) < 1281) { //lg
         _styless.class[0] = 'col-xs-3 col-sm-3 col-md-12 col-lg-12';
         _styless.class[1] = 'col-xs-9 col-sm-9 col-md-12 col-lg-12';
 
         _styless.class[2] = "col-lg-2 col-md-2 col-sm-1 col-xs-1";
-        _styless.class[3] = "col-lg-8 col-md-8 col-sm-9 col-xs-9";
-        _styless.class[4] = "col-lg-1 col-lg-1 col-sm-1 col-xs-1";
+        _styless.class[3] = "col-lg-6 col-md-6 col-sm-9 col-xs-9";
+        _styless.class[4] = "col-lg-2 col-lg-1 col-sm-1 col-xs-1";
     };
 
     return _styless;
