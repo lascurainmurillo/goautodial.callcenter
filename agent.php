@@ -1001,18 +1001,10 @@ function response($order_id,$amount,$response_code,$response_desc){
 																	<div class="col-lg-1 col-sm-2 col-md-2 col-xs-3 heading-avatar">
 																		<div class="heading-avatar-icon">
 																			<div id="avatat_chats" class="cust_avatar_chats">
-																		   
 																			</div>
 																		</div>
 																	</div>
-																	<div id="fullname_chats" class="col-sm-8 col-xs-7 heading-name">
-																		
-																		<!--
-																		<span class="first_name_chats"></span>
-																		<span class="middle_initial_chats"></span>
-																		<span class="last_name_chats"></span>
-																		-->
-																	</div>
+																	<div id="fullname_chats" class="col-sm-8 col-xs-7 heading-name"></div>
 																	<!--
 																	<div class="col-sm-1 col-xs-1  heading-dot pull-right">
 																		<i class="fa fa-ellipsis-v fa-2x  pull-right" aria-hidden="true"></i>
@@ -1023,32 +1015,6 @@ function response($order_id,$amount,$response_code,$response_desc){
 														
 																<!-- Message Box -->
 																<div class="row message" id="conversation-whats">
-
-																	
-
-																	<!--
-																	<div class="row message-body">
-																		<div class="col-sm-12 message-main-receiver">
-																			<div class="receiver">
-																				<div class="message-text">
-																					Hyy, Its Awesome..!
-																				</div>
-																				<span class="message-time pull-right">Sun</span>
-																			</div>
-																		</div>
-																	</div>
-															
-																	<div class="row message-body">
-																		<div class="col-sm-12 message-main-sender">
-																			<div class="sender">
-																				<div class="message-text">
-																					Thanks n I know its awesome...!
-																				</div>
-																				<span class="message-time pull-right">Sun</span>
-																			</div>
-																		</div>
-																	</div>
-																	-->
 																</div>
 																<!-- Message Box End -->
 
@@ -1056,13 +1022,12 @@ function response($order_id,$amount,$response_code,$response_desc){
 																	<div class="col-xs-12">
 																	<button type="button" class="close" onclick="socketcus.clearfiles();"><span aria-hidden="true">×</span><span class="sr-only">Cerrar</span></button>
 																		<div id="file-previous">
-
 																		</div>
 																	</div>
 																</div>
-																<!-- Reply Box -->
-																<div class="row reply">
 
+																<!-- Reply Box -->
+																<div class="row reply" id="reply-whats">
 																	<div id="what-emojis" class="dropup">
 																		<div class="reply-emojis dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 																			<i class="fa fa-smile-o fa-2x"></i>
@@ -1089,7 +1054,6 @@ function response($order_id,$amount,$response_code,$response_desc){
 
 																	<!-- text area -->
 																	<div id="what-reply" class="reply-main">
-																		<!-- <textarea class="form-control" rows="1" id="comment-send" client_id="+51955794343" client_name="Lili bon ifacio" list_id="1004"></textarea> -->
 																		<textarea class="" rows="1" id="comment-send"></textarea>
 																	</div>
 
@@ -1100,7 +1064,6 @@ function response($order_id,$amount,$response_code,$response_desc){
 																	<div id="loader-send" class="reply-send hidden">
 																		<i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw "></i>
 																	</div>
-
 																</div>
 																<!-- Reply Box End -->
 															</div>

@@ -390,6 +390,7 @@
     text-shadow: 0 1px 1px rgba(0, 0, 0, .2);
     word-wrap: break-word;
     display: inline-block;
+    box-shadow: 1px 1px 3.5px #00000045;
 }
 
 .sender {
@@ -402,6 +403,7 @@
     text-shadow: 0 1px 1px rgba(0, 0, 0, .2);
     display: inline-block;
     word-wrap: break-word;
+    box-shadow: 1px 1px 3.5px #00000045;
 }
 
 
@@ -692,3 +694,21 @@
     -moz-border-radius: 10px !important;
     border-radius: 10px !important;
 }
+
+
+/*
+.date-chat {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: 10px 0px;
+}
+
+.date-chat .date-box {
+    padding: 5px 12px 6px;
+    text-align: center;
+    background-color: #e1f5feeb;
+    border-radius: 7.5px;
+    box-shadow: 0 1px .5px #00000045;
+}
+*/

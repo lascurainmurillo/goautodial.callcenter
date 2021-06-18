@@ -102,9 +102,8 @@ socketcus.init = function(DOMAIN, agent_username) {
     socketcus.socket.on('message', message => {
         console.log("--------------- RESULT -----------------");
         console.log(message);
-        // limpiar files y mostrar loader
-        socketcus.clearfiles();
 
+        // escribir chat en pantalla
         socketcus.htmlchatting(message, message.room);
 
         // colocar scrool al final
@@ -183,6 +182,7 @@ socketcus.sendmessage = function() {
 
                     // Emitir un mensaje hacia el server
                     socketcus.socket.emit('chatMessage', data_call);
+
                 } else {
                     alert('file not uploaded');
                 }
@@ -193,6 +193,9 @@ socketcus.sendmessage = function() {
                 $("#comment-send").prop('disabled', false);
                 socketcus.clearfiles();
             }
+        }).always(function(response) {
+            // limpiar files y mostrar loader
+            socketcus.clearfiles();
         });
 
     } else {
@@ -209,7 +212,11 @@ socketcus.sendmessage = function() {
 
             // Emitir un mensaje hacia el server
             socketcus.socket.emit('chatMessage', data_call);
+
             var msg = $("#comment-send").val().trim().replace(/\n/g, "");
+
+            // limpiar files y mostrar loader
+            socketcus.clearfiles();
 
             $("#comment-send").val("");
             $('#comment-send').focus();
@@ -363,6 +370,7 @@ socketcus.getRoomUsers = async function(agent_username, client_id = null) {
 }
 
 
+socketcus.dateChat = "";
 /**
  * Chatting mensajes
  * @param {*} message 
@@ -373,7 +381,10 @@ socketcus.htmlchatting = function(message, room, append = 1) {
     var timeampm = formatAMPM(new Date(message.time));
     var msg = fileValidation(message.msg, message.caption, message.send_tipo);
 
-    var chatting = `<div class="row message-body">
+    var date_chat_temp = formatDate(message.time, '-');
+
+    var chatting = `
+                    <div class="row message-body">
                         <div class="col-sm-12 message-main-${message.tipo}">
                             <div class="${message.tipo}">
                                 <div class="message-cont" style="color: ${ (message.tipo == "sender" ? socketcus.color_agent_current : socketcus.color_client_current) }">
@@ -382,11 +393,12 @@ socketcus.htmlchatting = function(message, room, append = 1) {
                                 <div class="message-cont message-text">
                                     ${msg}
                                 </div>
-                                <span class="message-cont message-time pull-right">${timeampm}</span>
+                                <span class="message-cont message-time pull-right">${ date_chat_temp + '&nbsp;&nbsp;&nbsp;' + timeampm}</span>
                             </div>
                         </div>
                     </div>
                 `;
+
     // }
     // $("#conversation-whats").append(chatting);
     if ($("#client" + room.replace(/\+/g, '\\+')).length > 0) {
@@ -548,15 +560,16 @@ socketcus.htmlprevious = function(room, date) {
  * 
  */
 socketcus.scrollend = function(time = null, send_tipo = null) {
+    var conver = document.getElementById('conversation-whats');
     if (time) {
         setTimeout(function() {
             var conver = document.getElementById('conversation-whats');
             conver.scrollTop = conver.scrollHeight;
         }, time);
-    } else if (send_tipo == null || send_tipo == 'chat') {
+    } else if ((send_tipo == null || send_tipo == 'chat') && socketcus.scrollCurrent < (conver.scrollTop - 10)) {
         var conver = document.getElementById('conversation-whats');
         conver.scrollTop = conver.scrollHeight;
-    } else {
+    } else if (send_tipo != 'chat') {
         setTimeout(function() {
             var conver = document.getElementById('conversation-whats');
             conver.scrollTop = conver.scrollHeight;
@@ -565,6 +578,11 @@ socketcus.scrollend = function(time = null, send_tipo = null) {
 
 }
 
+socketcus.scrollCurrent = 0;
+$("#conversation-whats").scroll(function() {
+    socketcus.scrollCurrent = $("#conversation-whats").scrollTop();
+    // console.log($("#conversation-whats").scrollTop())
+});
 
 /**
  * 

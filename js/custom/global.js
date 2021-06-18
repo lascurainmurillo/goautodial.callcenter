@@ -112,6 +112,28 @@ function formatAMPM(date) {
     return strTime;
 }
 
+
+/**
+ * 
+ * Obtener Date() en formato yyyy-mm-dd
+ * @param {*} date 
+ * @param {*} separacion
+ * @returns 
+ */
+function formatDate(date, separacion = "-") {
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2)
+        month = '0' + month;
+    if (day.length < 2)
+        day = '0' + day;
+
+    return [year, month, day].join(separacion);
+}
+
 /**
  * 
  * validar imagen obtener tag de imagen
