@@ -662,7 +662,7 @@ function response($order_id,$amount,$response_code,$response_desc){
 									</div>
 								</div>
 							<!-- /.card heading -->
-								
+						
 							<!-- Card body -->
 						        <div class="card-body custom-tabpanel">
 				                	<div role="tabpanel" class="panel panel-transparent">
@@ -1018,52 +1018,20 @@ function response($order_id,$amount,$response_code,$response_desc){
 																</div>
 																<!-- Message Box End -->
 
-																<div class="row hidden" id="whats-previous-file">
-																	<div class="col-xs-12">
-																	<button type="button" class="close" onclick="socketcus.clearfiles();"><span aria-hidden="true">×</span><span class="sr-only">Cerrar</span></button>
-																		<div id="file-previous">
+																<div class="row" id="previous-whats">
+																	<!--
+																	<div id="whats-previous-file">
+																		<div class="col-xs-12">
+																			<button type="button" class="close" onclick="socketcus.clearfiles();"><span aria-hidden="true">×</span><span class="sr-only">Cerrar</span></button>
+																			<div id="file-previous">
+																			</div>
 																		</div>
 																	</div>
+																	-->
 																</div>
 
 																<!-- Reply Box -->
 																<div class="row reply" id="reply-whats">
-																	<div id="what-emojis" class="dropup">
-																		<div class="reply-emojis dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-																			<i class="fa fa-smile-o fa-2x"></i>
-																		</div>
-																		<ul class="dropdown-menu" aria-labelledby="what-emojis">
-																			<li><a href="#">En construcción...</a></li>
-																		</ul>
-																	</div>
-
-																	<!-- Adjuntar archivo -->
-																	<div id="what-attach" class="dropup">
-																		<div class="reply-send" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-																			<i class="fa fa-paperclip fa-2x" aria-hidden="true"></i>
-																		</div>
-																		<ul class="dropdown-menu" aria-labelledby="what-attach">
-																			<li>
-																				<a id="what-attach-multimedia"><i class="fa fa-picture-o" aria-hidden="true"></i> Fotos y videos</a>
-																			</li>
-																			<li>
-																				<a id="what-attach-files"><i class="fa fa-file" aria-hidden="true"></i> Archivos</a>
-																			</li>
-																		</ul>
-																	</div>
-
-																	<!-- text area -->
-																	<div id="what-reply" class="reply-main">
-																		<textarea class="" rows="1" id="comment-send"></textarea>
-																	</div>
-
-																	<!--  Enviar mensaje -->
-																	<div id="message-send" class="reply-send" onclick="socketcus.sendmessage();">
-																		<i class="fa fa-send fa-2x" aria-hidden="true"></i>
-																	</div>
-																	<div id="loader-send" class="reply-send hidden">
-																		<i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw "></i>
-																	</div>
 																</div>
 																<!-- Reply Box End -->
 															</div>
@@ -1080,14 +1048,7 @@ function response($order_id,$amount,$response_code,$response_desc){
 										<!-- End chats---------------------------------------------------------------------------------------------------------------------------->
 									</div>
 								</div>
-								<form method="post" action="" enctype="multipart/form-data" id="myform-multimedia" class="hidden">
-									<input accept="image/png, image/jpeg, image/gif, image/jpg, video/mp4, video/avi, video/wmv" type="file" id="whats_attach_multimedia" name="file" />
-								</form>
-								<form method="post" action="" enctype="multipart/form-data" id="myform-files" class="hidden">
-									<input accept="*/*" type="file" id="whats_attach_files" name="file" />
-								</form>
-
-								<link href="css/dashboard/css/chats.css" rel="stylesheet" type="text/css" />
+		
 						        <div id="custom_fields_content" class="card-body" style="border: 1px solid rgb(221, 230, 233); margin: 0 32px 0 22px; display: none;">
 									<h4 style="font-weight: 600;">
 										<?=$lh->translationFor('custom_forms')?>
@@ -1970,9 +1931,8 @@ function response($order_id,$amount,$response_code,$response_desc){
 		<!-- Modal Dialogs -->
 		<?php include_once "./php/ModalPasswordDialogs.php" ?>
 
-
-<button onclick="socketcus.initCallWhatsapp('+5215585353729', 'Moises lascu', '1004')" class="hidden">iniciar simular llamada1</button>
-<button onclick="socketcus.initCallWhatsapp('+51955794343', 'Lili bon ifacio', '1004')" class="hidden">iniciar simular llamada2</button>
+<button onclick="socketcus.initCallWhatsapp('+5215585353729', 'Moises lascu', '1004')" class="">iniciar simular llamada1</button>
+<button onclick="socketcus.initCallWhatsapp('+51955794343', 'Lili bon ifacio', '1004')" class="">iniciar simular llamada2</button>
 
 		<?php print $ui->standardizedThemeJS();?>
 		<script type="text/javascript">									
@@ -2935,6 +2895,13 @@ function response($order_id,$amount,$response_code,$response_desc){
 			});
 		</script>
 		<?php } //end if ECCS_BLIND_MODE ?>
+	
+		<!-- emojionearea -->
+	<link rel="stylesheet" href="js/node_modules/emojionearea/dist/emojionearea.min.css">
+    <script type="text/javascript" src="js/node_modules/emojionearea/dist/emojionearea.min.js"></script>
+		
+	<!-- Chat whatsapp -->
+	<link href="css/dashboard/css/chats.css" rel="stylesheet" type="text/css" />
 
 		<script src="js/custom/global.js" type="text/javascript"></script>
 		<script type="text/javascript">
@@ -2955,12 +2922,12 @@ function response($order_id,$amount,$response_code,$response_desc){
 			<?php // $user->getUserName() ?> // +525585353729
 			// console.log('<?php // echo $list_id; ?>');
 			socketcus.chatwhatsapp(null, null, '<?php echo LIST_ID ?>');
-			const _styleRe = socketcus.detectResize();  // obtener class para resize
-
+			/*
 			$('#what-emojis').addClass(_styleRe.class[2]);
 			$('#what-attach').addClass(_styleRe.class[2]);
 			$('#what-reply').addClass(_styleRe.class[3]);
 			$('#message-send').addClass(_styleRe.class[4]);
+			*/
 			// $('#what-microphone').addClass(_styleRe.class[4]);
 			socketcus.initCallWhatsapp = function(phone, name, list) {
 				socketcus.chatwhatsapp(phone, name, list);

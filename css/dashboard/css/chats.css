@@ -679,6 +679,14 @@
     background: #f5f1ee;
 }
 
+.whatspreviousfile {
+    position: absolute;
+    bottom: 60px;
+    width: 100%;
+    height: 125px;
+    background: #f5f1ee;
+}
+
 #file-previous {
     width: 200px;
     margin-top: 10px;
@@ -695,20 +703,15 @@
     border-radius: 10px !important;
 }
 
-
-/*
-.date-chat {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    padding: 10px 0px;
+.reply-main .emojionearea {
+    height: 40px;
 }
 
-.date-chat .date-box {
-    padding: 5px 12px 6px;
-    text-align: center;
-    background-color: #e1f5feeb;
-    border-radius: 7.5px;
-    box-shadow: 0 1px .5px #00000045;
+.reply-main .emojionearea .emojionearea-editor {
+    height: 40px !important;
+    position: absolute;
+    width: 100%;
+    /* z-index: 5; */
+    overflow-y: hidden !important;
+    min-height: auto !important;
 }
-*/
