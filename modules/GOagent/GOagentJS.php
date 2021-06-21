@@ -3461,6 +3461,7 @@ function CheckForIncoming () {
         }
 
         var this_VDIC_data = result.data;
+        console.log(this_VDIC_data);
         has_inbound_call = this_VDIC_data.has_call;
         if (this_VDIC_data.has_call == '1') {
             AutoDialWaiting = 0;
@@ -9103,7 +9104,7 @@ function LoadScriptContents() {
     postData.social_form_id = social_form_id;
     postData.social_form_data = social_form_data;
     postData.social_form_image = social_form_image;
-console.log(postData);
+// console.log(postData);
     $.ajax({
         type: 'POST',
         url: '<?=$goAPI?>/goAgent/goAPI.php',
