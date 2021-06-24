@@ -83,6 +83,21 @@ template.previousimage = function(room) {
             </div>`;
 }
 
+
+template.previousShowVideo = function(objectURL) {
+    return `div align="center" class="embed-responsive embed-responsive-16by9" style="width: 150px;">
+                <video controls loop class="embed-responsive-item">
+                    <source src="${objectURL}" type="video/mp4">
+                </video>
+            </div>`;
+}
+
+
+template.previousShowImage = function(objectURL) {
+    return `<div><img src="${objectURL}" alt="Imagen upload" style="height: 100%;" /></div>`;
+}
+
+
 template.htmlchatting = function(message, msg, color_agent_current, color_client_current, date_chat_temp, timeampm) {
     return `<div class="row message-body">
                 <div class="col-sm-12 message-main-${message.tipo}">
@@ -98,6 +113,7 @@ template.htmlchatting = function(message, msg, color_agent_current, color_client
                 </div>
             </div>`;
 }
+
 
 template.previouschat = function(room, date) {
     return `<div id="message-previous${room}" class="row message-previous">

@@ -10446,3 +10446,20 @@ ADDED FROM MATERIAL
         position: absolute;
         top: 393px;
     }
+    
+    .loader-custom {
+        height: 500px;
+        text-align: center;
+        position: relative;
+    }
+    
+    .loader-custom i {
+        font-size: 50px;
+        color: #3c8dbc;
+        margin: 0;
+        position: absolute;
+        top: 40%;
+        left: 47%;
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+    }

@@ -247,6 +247,7 @@ socketcus.fileselect = function(tag, room) {
     var reply = "#reply" + room.replace(/\+/g, '\\+');
     var previous = "#whatspreviousfile" + room.replace(/\+/g, '\\+');
     var onlyroom = room.replace(/\+/g, '\\+');
+    $(reply + " #comment-send")[0].emojioneArea.disable();
 
     // si es multimedia imagen o video
     if ($(reply + ' #whats_attach_multimedia')[0].files != null && tag == "#whats_attach_multimedia") { // si es imagen o video
@@ -257,11 +258,7 @@ socketcus.fileselect = function(tag, room) {
                 case 'video/mp4':
                 case 'video/m4v':
                 case 'video/avi':
-                    $(previous + " #file-previous").html(`<div align="center" class="embed-responsive embed-responsive-16by9" style="width: 150px;">
-                                                    <video controls loop class="embed-responsive-item">
-                                                        <source src="${URL.createObjectURL(socketcus.filesTemp[onlyroom].file[0])}" type="video/mp4">
-                                                    </video>
-                                                </div>`);
+                    $(previous + " #file-previous").html(template.previousShowVideo(URL.createObjectURL(socketcus.filesTemp[onlyroom].file[0]))); // usando template
                     if ($(previous).hasClass('hidden')) {
                         $(previous).removeClass('hidden');
                     }
@@ -271,7 +268,7 @@ socketcus.fileselect = function(tag, room) {
                 case 'image/png':
                 case 'image/gif':
                 case 'image/jpg':
-                    $(previous + " #file-previous").html(`<div><img src="${URL.createObjectURL(socketcus.filesTemp[onlyroom].file[0])}" alt="Imagen upload" style="height: 100%;" /></div>`);
+                    $(previous + " #file-previous").html(template.previousShowImage(URL.createObjectURL(socketcus.filesTemp[onlyroom].file[0]))); // usando template
                     if ($(previous).hasClass('hidden')) {
                         $(previous).removeClass('hidden');
                     }
@@ -303,6 +300,26 @@ socketcus.fileselect = function(tag, room) {
             socketcus.clearfiles(room);
         }
     }
+}
+
+/**
+ * 
+ * Enviar archivo seleccionado desde Galery
+ * @param {String} room 
+ * @param {object} data  // 
+ * @param {object} type  // imagen, video o file
+ */
+socketcus.sendGalery = function(room, data, type) {
+    console.log(room, data, type);
+    var reply = "#reply" + room.replace(/\+/g, '\\+');
+    var previous = "#whatspreviousfile" + room.replace(/\+/g, '\\+');
+
+    $(reply + " #comment-send")[0].emojioneArea.disable();
+    $(previous + " #file-previous").html(template.previousShowImage(data.image)); // usando template
+    if ($(previous).hasClass('hidden')) {
+        $(previous).removeClass('hidden');
+    }
+
 }
 
 
@@ -426,7 +443,7 @@ socketcus.makeReply = function(room) {
 
             $(reply + " #whats_attach_multimedia").change(function() {
                 socketcus.declareFilesRoom(room); // limpiar files
-                $(reply + " #comment-send")[0].emojioneArea.disable();
+                // $(reply + " #comment-send")[0].emojioneArea.disable();
                 // $(reply + " #comment-send").prop('disabled', true);
                 // $(reply + " #comment-send").val("");
                 socketcus.fileselect("#whats_attach_multimedia", room); // enviar variable para indicar que es un archivo multimedia
@@ -441,7 +458,7 @@ socketcus.makeReply = function(room) {
 
             $(reply + " #whats_attach_files").change(function() {
                 socketcus.declareFilesRoom(room); // limpiar files
-                $(reply + " #comment-send")[0].emojioneArea.disable();
+                // $(reply + " #comment-send")[0].emojioneArea.disable();
                 // $(reply + " #comment-send").prop('disabled', true);
                 // $(reply + " #comment-send").val("");
                 socketcus.fileselect("#whats_attach_files", room); // enviar variable para indicar que es cualquier tipo de archivo

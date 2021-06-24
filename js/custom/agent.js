@@ -1,8 +1,10 @@
 var agent = {}
-console.log("estoy en agente");
-agent.objectSelected = []; // object seleccionado para enviarlo via chat
+
+agent.objectSelected = {}; // object seleccionado para enviarlo via chat
+agent.typeChat = "";
 agent.tags = {
-    contentImages: $("#content-images")
+    contentImages: $("#content-images"),
+    chatGalery: $("#chat-galery") // id del modal
 }
 
 agent.modalGalery = function(room, typeChat = 'whatsapp') {
@@ -11,11 +13,15 @@ agent.modalGalery = function(room, typeChat = 'whatsapp') {
     agent.arrImages = []; // todas las imagenes
     agent.arrVideos = []; // todos los videos
     agent.arrFiles = []; // todos los files
+    agent.typeChat = typeChat;
 
     // activar modal
-    $("#chat-galery").modal();
+    agent.tags.chatGalery.modal();
 
-    // consultar
+    // activar loader
+    agent.tags.contentImages.html(agent.templateloader());
+
+    // consultar Imagenes
     agent.arrImages = [{
             id: 1,
             image: "http://localhost:3001/assets/whatsapp-files/i1.jpg",
@@ -52,20 +58,42 @@ agent.modalGalery = function(room, typeChat = 'whatsapp') {
     // crear tags para IMAGENES
     var thumbImagesHtml = "";
     agent.arrImages.forEach(el => {
-        thumbImagesHtml += agent.templateimage(el);
+        thumbImagesHtml += agent.templateimage(el, room);
     });
 
-    if (agent.arrImages.length > 0) {
-        agent.tags.contentImages.html(thumbImagesHtml);
-    } else {
-        agent.tags.contentImages.html(`<div class="col-xs-12"><div class="text-center" >No hay ninguna imagen</div></div>`);
-    }
+    setTimeout(function() {
 
+        if (agent.arrImages.length > 0) {
+            agent.tags.contentImages.html(thumbImagesHtml);
+        } else {
+            agent.tags.contentImages.html(`<div class="col-xs-12"><div class="text-center" style="height: 500px">No hay ninguna imagen</div></div>`);
+        }
+
+    }, 2000);
 
 
 }
 
-agent.templateimage = function(img) {
+
+agent.galeryImageSelected = function(id, room, type) {
+    console.log(id, room, type);
+    if (type == "image") {
+        agent.objectSelected = agent.arrImages.filter(el => el.id == id)[0];
+        if (agent.typeChat == "whatsapp") {
+            socketcus.sendGalery(room, agent.objectSelected, type);
+            agent.tags.chatGalery.modal('hidden');
+        }
+    }
+    
+
+}
+
+agent.uploadimage = function() {
+
+}
+
+/** ----------- TEMPLATE -------------------------------------------------------------------------------------------------------------- */
+agent.templateimage = function(img, room) {
     return `<div class="col-xs-12 col-sm-12 col-md-6">
                 <div class="thumbnail-content">
                     <div class="thumbnail">
@@ -75,7 +103,7 @@ agent.templateimage = function(img) {
                         <div class="caption">
                             <h3>${img.name}</h3>
                             <p>
-                                <button class="btn btn-success" role="button" onclick="agent.galeryImageSelected('${img.id}', 'image')">
+                                <button class="btn btn-success" role="button" onclick="agent.galeryImageSelected('${img.id}', '${room}', 'image')">
                                     <i class="fa fa-check-circle" aria-hidden="true"></i> Seleccionar
                                 </button>
                                 <button class="btn btn-danger" role="button" onclick="agent.galeryImageDelete('${img.id}')">
@@ -88,15 +116,10 @@ agent.templateimage = function(img) {
             </div>`;
 }
 
-agent.galeryImageSelected = function(id, type) {
-
-    if (type == "image") {
-        agent.arraySelected = agent.arrImages.filter(el => el.id == id);
-        console.log(agent.arraySelected);
-    }
-
-}
-
-agent.uploadimage = function() {
-
+agent.templateloader = function() {
+    return `<div>
+                <div class="loader-custom">
+                    <i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw "></i>
+                </div>
+            </div>`;
 }
