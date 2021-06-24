@@ -20,6 +20,7 @@ socketcus.init = function(DOMAIN, agent_username) {
     socketcus.room = {};
     socketcus.key_enable = 0; // llave para saber si ya esta cargada la info al carga la página, 1 => no volver a cargar la info, por si otra pagina se abre y carga la info.
     socketcus.data_room = {};
+    socketcus.filesTemp = {}; //inicializar variable para los upload archivos
 
     socketcus.socket.on('connect_error', function(err) {
         // handle server error here
@@ -55,28 +56,13 @@ socketcus.init = function(DOMAIN, agent_username) {
 
                     var list = "";
                     $('.sideBar-body').removeClass('sideBar-seleccionado');
-                    $("#conversation-whats").html('');
+                    $("#conversation-whats").html(''); // limpiar tag de conversaciones
+                    $("#reply-whats").html(''); // limpiar tag controles del chat
+                    $("#previous-whats").html(''); // limpiar tag boton de previous o mensaje anteriores
 
                     clients.forEach(el => {
 
-                        list = list + `<div id="list${el.client_id}" class="row sideBar-body ${(socketcus.selectroom == el.client_id) ? 'sideBar-seleccionado': ''}" onclick="socketcus.select_room(this, '${el.client_id}', '${el.client_name}', ${(el.image != null) ? 'la_imagen': null})">
-                                <div class="${_styleRe.class[0]} sideBar-avatar">
-                                    <div class="avatar-icon">
-                                        <img src="${(el.image != null) ? 'la_imagen': '/img/avatars/default/defaultAvatar.png'}">
-                                    </div>
-                                </div>
-                                <div class="${_styleRe.class[1]} sideBar-main">
-                                    <div class="row">
-                                        <div class="col-sm-8 col-xs-8 sideBar-name">
-                                            <span class="name-meta">${el.client_name}</span>
-                                        </div>
-                                        <div class="col-sm-4 col-xs-4 pull-right sideBar-time">
-                                            <!-- <span class="time-meta pull-right">18:18</span> -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>`;
-
+                        list = list + template.chatconversation(el, socketcus.selectroom, _styleRe); // usando template
 
                         if (socketcus.selectroom == el.client_id) {
                             // crear tag para el Chat de este cliente
@@ -118,6 +104,8 @@ socketcus.init = function(DOMAIN, agent_username) {
         socketcus.scrollend(null, message.send_tipo);
     });
 }
+
+
 
 /* Al momento que contesta un cliente la llamada */
 socketcus.chatwhatsapp = function(client_id = null, client_name = null, list_id = null) {
@@ -264,51 +252,56 @@ socketcus.fileselect = function(tag, room) {
     if ($(reply + ' #whats_attach_multimedia')[0].files != null && tag == "#whats_attach_multimedia") { // si es imagen o video
         socketcus.filesTemp[onlyroom].file = $(reply + ' #whats_attach_multimedia')[0].files;
 
-        switch (socketcus.filesTemp[onlyroom].file[0].type) {
-            case 'video/mp4':
-            case 'video/m4v':
-            case 'video/avi':
-                $(previous + " #file-previous").html(`<div align="center" class="embed-responsive embed-responsive-16by9" style="width: 150px;">
-                                                <video controls loop class="embed-responsive-item">
-                                                    <source src="${URL.createObjectURL(socketcus.filesTemp[onlyroom].file[0])}" type="video/mp4">
-                                                </video>
-                                            </div>`);
-                if ($(previous).hasClass('hidden')) {
-                    $(previous).removeClass('hidden');
-                }
-                socketcus.filesTemp[onlyroom].type = 'video';
-                break;
-            case 'image/jpeg':
-            case 'image/png':
-            case 'image/gif':
-            case 'image/jpg':
-                $(previous + " #file-previous").html(`<div><img src="${URL.createObjectURL(socketcus.filesTemp[onlyroom].file[0])}" alt="Imagen upload" style="height: 100%;" /></div>`);
-                if ($(previous).hasClass('hidden')) {
-                    $(previous).removeClass('hidden');
-                }
-                socketcus.filesTemp[onlyroom].type = 'image';
-                break;
-            default:
-                socketcus.filesTemp[onlyroom] = {
-                    file: {},
-                    type: "",
-                };
-                $(previous).addClass('hidden');
-                alert("No es un archivo válido");
-                break;
+        if (socketcus.filesTemp[onlyroom].file.length === 1) {
+            switch (socketcus.filesTemp[onlyroom].file[0].type) {
+                case 'video/mp4':
+                case 'video/m4v':
+                case 'video/avi':
+                    $(previous + " #file-previous").html(`<div align="center" class="embed-responsive embed-responsive-16by9" style="width: 150px;">
+                                                    <video controls loop class="embed-responsive-item">
+                                                        <source src="${URL.createObjectURL(socketcus.filesTemp[onlyroom].file[0])}" type="video/mp4">
+                                                    </video>
+                                                </div>`);
+                    if ($(previous).hasClass('hidden')) {
+                        $(previous).removeClass('hidden');
+                    }
+                    socketcus.filesTemp[onlyroom].type = 'video';
+                    break;
+                case 'image/jpeg':
+                case 'image/png':
+                case 'image/gif':
+                case 'image/jpg':
+                    $(previous + " #file-previous").html(`<div><img src="${URL.createObjectURL(socketcus.filesTemp[onlyroom].file[0])}" alt="Imagen upload" style="height: 100%;" /></div>`);
+                    if ($(previous).hasClass('hidden')) {
+                        $(previous).removeClass('hidden');
+                    }
+                    socketcus.filesTemp[onlyroom].type = 'image';
+                    break;
+                default:
+                    socketcus.declareFilesRoom(room); // limpiar files
+                    $(previous).addClass('hidden');
+                    alert("No es un archivo válido");
+                    break;
+            }
+        } else {
+            socketcus.clearfiles(room);
         }
 
         // si es archivo *.*
     } else if ($(reply + ' #whats_attach_files')[0].files != null && tag == "#whats_attach_files") { // si es archivo
-        socketcus.filesTemp[onlyroom].file = $(reply + ' #whats_attach_files')[0].files
-        $(previous + " #file-previous").html(`<div>
-        <i class="fa fa-file-text-o" aria-hidden="true" style="font-size:90px"></i> 
-        </div><div>${socketcus.filesTemp[onlyroom].file[0].name}</div>`);
-        if ($(previous).hasClass('hidden')) {
-            $(previous).removeClass('hidden');
+        if (socketcus.filesTemp[onlyroom].file.length === 1) {
+            socketcus.filesTemp[onlyroom].file = $(reply + ' #whats_attach_files')[0].files
+            $(previous + " #file-previous").html(`<div>
+            <i class="fa fa-file-text-o" aria-hidden="true" style="font-size:90px"></i> 
+            </div><div>${socketcus.filesTemp[onlyroom].file[0].name}</div>`);
+            if ($(previous).hasClass('hidden')) {
+                $(previous).removeClass('hidden');
+            }
+            socketcus.filesTemp[onlyroom].type = 'document';
+            // console.log(socketcus.filesTemp);
+        } else {
+            socketcus.clearfiles(room);
         }
-        socketcus.filesTemp[onlyroom].type = 'document';
-        // console.log(socketcus.filesTemp);
     }
 }
 
@@ -387,7 +380,6 @@ socketcus.getRoomUsers = async function(agent_username, client_id = null) {
 }
 
 
-socketcus.filesTemp = {};
 /**
  * 
  * crear botones de envio de mensaje
@@ -397,54 +389,7 @@ socketcus.makeReply = function(room) {
 
     var reply = "#reply" + room.replace(/\+/g, '\\+');
     var onlyroom = room.replace(/\+/g, '\\+');
-    var htmlreply = `
-                <!-- Emojis -->
-                <div id="what-emojis" class="dropup">
-                    <div class="reply-emojis dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fa fa-smile-o fa-2x"></i>
-                    </div>
-                    <ul class="dropdown-menu" aria-labelledby="what-emojis">
-                        <li><a href="#">En construcción...</a></li>
-                    </ul>
-                </div>
-
-                <!-- Adjuntar archivo -->
-                <div id="what-attach" class="dropup">
-                    <div class="reply-send" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fa fa-paperclip fa-2x" aria-hidden="true"></i>
-                    </div>
-                    <ul class="dropdown-menu" aria-labelledby="what-attach">
-                        <li>
-                            <a id="what-attach-multimedia"><i class="fa fa-picture-o" aria-hidden="true"></i> Fotos y videos</a>
-                        </li>
-                        <li>
-                            <a id="what-attach-files"><i class="fa fa-file" aria-hidden="true"></i> Archivos</a>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- text area -->
-                <div id="what-reply" class="reply-main">
-                    <textarea class="" rows="1" id="comment-send"></textarea>
-                </div>
-
-                <!-- Enviar mensaje -->
-                <div id="message-send" class="reply-send" onclick="socketcus.sendmessage('${room}');">
-                    <i class="fa fa-send fa-2x" aria-hidden="true"></i>
-                </div>
-                <div id="loader-send" class="reply-send hidden">
-                    <i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw "></i>
-                </div>
-
-                <!-- files -->
-                <form method="post" action="" enctype="multipart/form-data" id="myform-multimedia" class="hidden">
-                    <input accept="image/png, image/jpeg, image/gif, image/jpg, video/mp4, video/avi, video/wmv" type="file" id="whats_attach_multimedia" name="file" />
-                </form>
-                <form method="post" action="" enctype="multipart/form-data" id="myform-files" class="hidden">
-                    <input accept="*/*" type="file" id="whats_attach_files" name="file" />
-                </form>
-    `;
-
+    var htmlreply = template.reply(room); // usando template
 
     if ($(reply).length > 0) {
 
@@ -466,49 +411,42 @@ socketcus.makeReply = function(room) {
             }
         });
 
-        // Presionar enter para enviar mensaje
-        /*
-        $(reply + ' #comment-send').keypress(function(event) {
-            if (event.keyCode != 13) return;
-            socketcus.sendmessage(room);
-            return false;
-        });
-        */
-
         //variable para controlar los archivos cargados
-        socketcus.filesTemp[onlyroom] = {
-            file: {},
-            type: "",
-        };
+        socketcus.declareFilesRoom(room); // limpiar files
+
         /**
          * Para subir archivo para whatsapp
          */
-        $(reply + " #what-attach-multimedia").click(function() {
-            $(reply + " #whats_attach_multimedia").click();
-        });
-        $(reply + " #what-attach-files").click(function() {
-            $(reply + " #whats_attach_files").click();
-        });
-        $(reply + " #whats_attach_multimedia").change(function() {
-            socketcus.filesTemp[onlyroom] = {
-                file: {},
-                type: "",
-            };
-            $(reply + " #comment-send")[0].emojioneArea.disable();
-            // $(reply + " #comment-send").prop('disabled', true);
-            // $(reply + " #comment-send").val("");
-            socketcus.fileselect("#whats_attach_multimedia", room); // enviar variable para indicar que es un archivo multimedia
-        });
-        $(reply + " #whats_attach_files").change(function() {
-            socketcus.filesTemp[onlyroom] = {
-                file: {},
-                type: "",
-            };
-            $(reply + " #comment-send")[0].emojioneArea.disable();
-            // $(reply + " #comment-send").prop('disabled', true);
-            // $(reply + " #comment-send").val("");
-            socketcus.fileselect("#whats_attach_files", room); // enviar variable para indicar que es cualquier tipo de archivo
-        });
+        var faa = $._data($(reply + " #what-attach-multimedia").get(0), "events");
+        if (typeof faa == 'undefined') {
+            console.log("estoy creando el click");
+            $(reply + " #what-attach-multimedia").click(function() {
+                $(reply + " #whats_attach_multimedia").click();
+            });
+
+            $(reply + " #whats_attach_multimedia").change(function() {
+                socketcus.declareFilesRoom(room); // limpiar files
+                $(reply + " #comment-send")[0].emojioneArea.disable();
+                // $(reply + " #comment-send").prop('disabled', true);
+                // $(reply + " #comment-send").val("");
+                socketcus.fileselect("#whats_attach_multimedia", room); // enviar variable para indicar que es un archivo multimedia
+            });
+        }
+
+        var faa = $._data($(reply + " #what-attach-files").get(0), "events");
+        if (typeof faa == 'undefined') {
+            $(reply + " #what-attach-files").click(function() {
+                $(reply + " #whats_attach_files").click();
+            });
+
+            $(reply + " #whats_attach_files").change(function() {
+                socketcus.declareFilesRoom(room); // limpiar files
+                $(reply + " #comment-send")[0].emojioneArea.disable();
+                // $(reply + " #comment-send").prop('disabled', true);
+                // $(reply + " #comment-send").val("");
+                socketcus.fileselect("#whats_attach_files", room); // enviar variable para indicar que es cualquier tipo de archivo
+            });
+        }
 
         // agregar columnas
         $(reply + ' #what-emojis').addClass(_styleRe.class[2]);
@@ -523,13 +461,7 @@ socketcus.makePrevious = function(room) {
     var previous = "#whatspreviousfile" + room.replace(/\+/g, '\\+');
     var onlyroom = room.replace(/\+/g, '\\+');
 
-    var htmlprevious = `
-        <div class="col-xs-12">
-            <button type="button" class="close" onclick="socketcus.clearfiles('${room}');"><span aria-hidden="true">×</span><span class="sr-only">Cerrar</span></button>
-            <div id="file-previous">
-            </div>
-        </div>
-    `;
+    var htmlprevious = template.previousimage(room);
 
     if ($(previous).length > 0) {
         // agregar al html
@@ -550,21 +482,7 @@ socketcus.htmlchatting = function(message, room, append = 1) {
 
     var date_chat_temp = formatDate(message.time, '-');
 
-    var chatting = `
-                    <div class="row message-body">
-                        <div class="col-sm-12 message-main-${message.tipo}">
-                            <div class="${message.tipo}">
-                                <div class="message-cont" style="color: ${ (message.tipo == "sender" ? socketcus.color_agent_current : socketcus.color_client_current) }">
-                                    <strong>${message.user}</strong>
-                                </div>
-                                <div class="message-cont message-text">
-                                    ${msg}
-                                </div>
-                                <span class="message-cont message-time pull-right">${ date_chat_temp + '&nbsp;&nbsp;&nbsp;' + timeampm}</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
+    var chatting = template.htmlchatting(message, msg, socketcus.color_agent_current, socketcus.color_client_current, date_chat_temp, timeampm); // usando template
 
     if ($("#client" + room.replace(/\+/g, '\\+')).length > 0) {
         if (append) {
@@ -657,10 +575,7 @@ socketcus.clearfiles = function(room) {
     var onlyroom = room.replace(/\+/g, '\\+');
 
     // limpiar filesTemp
-    socketcus.filesTemp[onlyroom] = {
-        file: {},
-        type: "",
-    };
+    socketcus.declareFilesRoom(room);
 
     // Limpiar inputs files
     $(reply + "#whats_attach_multimedia").val("");
@@ -704,13 +619,7 @@ socketcus.showchat = function() {
  */
 socketcus.htmlprevious = function(room, date) {
 
-    var previ = `<div id="message-previous${room}" class="row message-previous">
-                    <div class="col-sm-12 previous">
-                        <a onClick="socketcus.getMessagesClient('${room}', '${date}', 0)" name="20">
-                            Mostrar mensajes previos!
-                        </a>
-                    </div>
-                </div>`;
+    var previ = template.previouschat(room, date); // usando template
 
     if ($("#message-previous" + room.replace(/\+/g, '\\+')).length > 0) {
         $("#message-previous" + room.replace(/\+/g, '\\+')).remove();
@@ -751,6 +660,21 @@ $("#conversation-whats").scroll(function() {
     socketcus.scrollCurrent = $("#conversation-whats").scrollTop();
     // console.log($("#conversation-whats").scrollTop())
 });
+
+
+/**
+ * 
+ * Declarar filesTemp
+ * @param {*} room 
+ */
+socketcus.declareFilesRoom = function(room) {
+    // limpiar filesTemp
+    var onlyroom = room.replace(/\+/g, '\\+');
+    socketcus.filesTemp[onlyroom] = {
+        file: {},
+        type: "",
+    };
+}
 
 /**
  * 

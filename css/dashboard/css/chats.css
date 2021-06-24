@@ -307,8 +307,8 @@
 /*Conversation*/
 
 .conversation {
-    /*padding: 0 !important;
-    margin: 0 !important;*/
+    padding: 0 !important;
+    /*margin: 0 !important;*/
     height: 100%;
     /*width: 100%;*/
     border-left: 1px solid rgba(0, 0, 0, .08);
@@ -414,8 +414,8 @@
     width: 100%;
     background-color: #f5f1ee;
     padding: 10px 5px 10px 5px !important;
-    /*margin: 0 !important;*/
-    z-index: 1000;
+    margin: 0 !important;
+    z-index: 2;
     position: absolute;
     bottom: 0px;
 }
@@ -714,4 +714,18 @@
     /* z-index: 5; */
     overflow-y: hidden !important;
     min-height: auto !important;
+}
+
+.header-whatsapp {
+    /*height: 55px;*/
+    background: #005e54;
+    color: #fff;
+    padding: 1px;
+    font-size: 24px;
+    text-align: center;
+}
+
+.header-whatsapp p {
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
 }

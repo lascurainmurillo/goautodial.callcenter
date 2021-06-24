@@ -940,104 +940,116 @@ function response($order_id,$amount,$response_code,$response_desc){
 											
 											<div class="row">
 												<div class="col-xs-12 col-md-6">
-												    <div id="backtransparent" class=""></div>
-													<div id="alert-socket" class="alert-socket">
-														<div class="alert-form">
-															<div>
-																Hay problemas de conexión en el chat.
+													<div class="row">
+														<div class="col-xs-12">
+															<div class="header-whatsapp">
+																<p><i class="fa fa-whatsapp" aria-hidden="true"></i>
+																<span>Whatsapp</span></p>
 															</div>
 														</div>
 													</div>
-													<div class="chats-whatsapp app">
-														<div class="row app-one">
-													
-															<div class="col-sm-4 side">
-																<div class="side-one">
-																	<!-- Heading -->
-																	<div class="row heading">
-																		<div class="col-sm-3 col-xs-3 heading-avatar">
-																			<div class="heading-avatar-icon">
-																				<?=$ui->getVueAvatar($user->getUserName(), $user->getUserAvatar(), 40, false, true, true)?>
-																			</div>
-																		</div>
-																		<!-- 
-																		<div class="col-sm-1 col-xs-1  heading-dot  pull-right">
-																			<i class="fa fa-ellipsis-v fa-2x  pull-right" aria-hidden="true"></i>
-																		</div>
-																		-->
-																		<div class="col-sm-2 col-xs-2 heading-compose  pull-right">
-																			<i class="fa fa-comments fa-2x  pull-right" aria-hidden="true"></i>
-																		</div>
+													<div class="row">
+														<div class="col-xs-12">
+															<div id="backtransparent" class=""></div>
+															<div id="alert-socket" class="alert-socket">
+																<div class="alert-form">
+																	<div>
+																		Hay problemas de conexión en el chat.
 																	</div>
-																	<!-- Heading End -->
+																</div>
+															</div>
+															<div class="chats-whatsapp app">
+																<div class="row app-one">
 															
-																	<!-- SearchBox -->
-																	<!--
-																	<div class="row searchBox">
-																		<div class="col-sm-12 searchBox-inner">
-																			<div class="input-group">
-																				<span class="input-group-addon" id="basic-addon1"><i class="glyphicon glyphicon-search"></i></span>
-																				<input id="searchText" name="searchText" type="text" class="form-control" placeholder="Buscar" aria-describedby="basic-addon1">
+																	<div class="col-sm-4 side">
+																		<div class="side-one">
+																			<!-- Heading -->
+																			<div class="row heading">
+																				<div class="col-sm-3 col-xs-3 heading-avatar">
+																					<div class="heading-avatar-icon">
+																						<?=$ui->getVueAvatar($user->getUserName(), $user->getUserAvatar(), 40, false, true, true)?>
+																					</div>
+																				</div>
+																				<!-- 
+																				<div class="col-sm-1 col-xs-1  heading-dot  pull-right">
+																					<i class="fa fa-ellipsis-v fa-2x  pull-right" aria-hidden="true"></i>
+																				</div>
+																				-->
+																				<div class="col-sm-2 col-xs-2 heading-compose  pull-right">
+																					<i class="fa fa-comments fa-2x  pull-right" aria-hidden="true"></i>
+																				</div>
 																			</div>
+																			<!-- Heading End -->
+																	
+																			<!-- SearchBox -->
+																			<!--
+																			<div class="row searchBox">
+																				<div class="col-sm-12 searchBox-inner">
+																					<div class="input-group">
+																						<span class="input-group-addon" id="basic-addon1"><i class="glyphicon glyphicon-search"></i></span>
+																						<input id="searchText" name="searchText" type="text" class="form-control" placeholder="Buscar" aria-describedby="basic-addon1">
+																					</div>
+																				</div>
+																			</div>
+																			-->
+																			<!-- Search Box End -->
+
+																			<!-- sideBar -->
+																			<div id="list-clients" class="row sideBar">
+
+																			</div>
+																			<!-- Sidebar End -->
 																		</div>
 																	</div>
-																	-->
-																	<!-- Search Box End -->
+															
+																	<!-- New Message Sidebar End -->
+																
+																	<!-- Conversation Start -->
+																	<div class="col-sm-8 conversation">
+																		<!-- Heading -->
+																		<div class="row heading">
+																			<div class="col-lg-1 col-sm-2 col-md-2 col-xs-3 heading-avatar">
+																				<div class="heading-avatar-icon">
+																					<div id="avatat_chats" class="cust_avatar_chats">
+																					</div>
+																				</div>
+																			</div>
+																			<div id="fullname_chats" class="col-sm-8 col-xs-7 heading-name"></div>
+																			<!--
+																			<div class="col-sm-1 col-xs-1  heading-dot pull-right">
+																				<i class="fa fa-ellipsis-v fa-2x  pull-right" aria-hidden="true"></i>
+																			</div>
+																			-->
+																		</div>
+																		<!-- Heading End -->
+																
+																		<!-- Message Box -->
+																		<div class="row message" id="conversation-whats">
+																		</div>
+																		<!-- Message Box End -->
 
-																	<!-- sideBar -->
-																	<div id="list-clients" class="row sideBar">
+																		<div class="row" id="previous-whats">
+																			<!--
+																			<div id="whats-previous-file">
+																				<div class="col-xs-12">
+																					<button type="button" class="close" onclick="socketcus.clearfiles();"><span aria-hidden="true">×</span><span class="sr-only">Cerrar</span></button>
+																					<div id="file-previous">
+																					</div>
+																				</div>
+																			</div>
+																			-->
+																		</div>
 
+																		<!-- Reply Box -->
+																		<div class="row reply" id="reply-whats">
+																		</div>
+																		<!-- Reply Box End -->
 																	</div>
-																	<!-- Sidebar End -->
+																	<!-- Conversation End -->
 																</div>
+																<!-- App One End -->
 															</div>
-													
-															<!-- New Message Sidebar End -->
-														
-															<!-- Conversation Start -->
-															<div class="col-sm-8 conversation">
-																<!-- Heading -->
-																<div class="row heading">
-																	<div class="col-lg-1 col-sm-2 col-md-2 col-xs-3 heading-avatar">
-																		<div class="heading-avatar-icon">
-																			<div id="avatat_chats" class="cust_avatar_chats">
-																			</div>
-																		</div>
-																	</div>
-																	<div id="fullname_chats" class="col-sm-8 col-xs-7 heading-name"></div>
-																	<!--
-																	<div class="col-sm-1 col-xs-1  heading-dot pull-right">
-																		<i class="fa fa-ellipsis-v fa-2x  pull-right" aria-hidden="true"></i>
-																	</div>
-																	-->
-																</div>
-																<!-- Heading End -->
-														
-																<!-- Message Box -->
-																<div class="row message" id="conversation-whats">
-																</div>
-																<!-- Message Box End -->
-
-																<div class="row" id="previous-whats">
-																	<!--
-																	<div id="whats-previous-file">
-																		<div class="col-xs-12">
-																			<button type="button" class="close" onclick="socketcus.clearfiles();"><span aria-hidden="true">×</span><span class="sr-only">Cerrar</span></button>
-																			<div id="file-previous">
-																			</div>
-																		</div>
-																	</div>
-																	-->
-																</div>
-
-																<!-- Reply Box -->
-																<div class="row reply" id="reply-whats">
-																</div>
-																<!-- Reply Box End -->
-															</div>
-															<!-- Conversation End -->
 														</div>
-														<!-- App One End -->
 													</div>
 													<?php // print $ui->getChats(); ?>
 												</div>
@@ -1046,6 +1058,57 @@ function response($order_id,$amount,$response_code,$response_desc){
 											</div>
 										</div>
 										<!-- End chats---------------------------------------------------------------------------------------------------------------------------->
+
+										<!-- MODAL GALERIA CHAT ---------------------------------->
+										<div id="chat-galery" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+											<div class="modal-dialog modal-lg" role="document">
+												<div class="modal-content">
+													<div class="modal-header">
+														<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+														<h4 class="modal-title" id="myModalLabel">Mi Galeria</h4>
+													</div>
+													<div class="modal-body">
+
+														<ul class="nav nav-tabs" role="tablist">
+															<li role="presentation" class="active"><a href="#galery-imagenes" aria-controls="imagenes" role="tab" data-toggle="tab">Imagenes</a></li>
+															<li role="presentation"><a href="#galery-videos" aria-controls="galery-videos" role="tab" data-toggle="tab">Videos</a></li>
+															<li role="presentation"><a href="#galery-files" aria-controls="galery-files" role="tab" data-toggle="tab">Archivos</a></li>
+														</ul>
+
+														<!-- Tab panes -->
+														<div class="tab-content">
+															<div role="tabpanel" class="tab-pane active" id="galery-imagenes">
+																<div class="row">
+																	<div class="col-xs-12">
+																		<div class="text-right" style="margin-bottom: 10px;">
+																			<button class="btn btn-primary" onclick="agent.uploadimage();">
+																				<i class="fa fa-cloud-upload" aria-hidden="true"></i> Subir imagen
+																			</button>
+																		</div>
+																	</div>
+																</div>
+																<div class="row" id="content-images">
+																</div>
+															</div>
+															<div role="tabpanel" class="tab-pane" id="galery-videos">
+																<div class="row" id="content-videos">
+																</div>
+																galerya... Cargar videos
+															</div>
+															<div role="tabpanel" class="tab-pane" id="galery-files">
+																<div class="row" id="content-files">
+																</div>
+																videos... Cargar files
+															</div>
+														</div>
+
+													</div>
+												</div>
+											</div>
+										</div>
+										<!-- END MODAL -->
+
+
 									</div>
 								</div>
 		
@@ -1079,6 +1142,10 @@ function response($order_id,$amount,$response_code,$response_desc){
 						            </div><!-- /.modal-content -->
 						        </div><!-- /.modal-dialog -->
 						    </div><!-- /.modal -->
+
+										<div id="template-container">
+										</div>
+
 
 						</div>
 					<?php if(ECCS_BLIND_MODE === 'y'){ ?>
@@ -1930,6 +1997,10 @@ function response($order_id,$amount,$response_code,$response_desc){
 
 		<!-- Modal Dialogs -->
 		<?php include_once "./php/ModalPasswordDialogs.php" ?>
+
+		
+
+
 
 <button onclick="socketcus.initCallWhatsapp('+5215585353729', 'Moises lascu', '1004')" class="">iniciar simular llamada1</button>
 <button onclick="socketcus.initCallWhatsapp('+51955794343', 'Lili bon ifacio', '1004')" class="">iniciar simular llamada2</button>
@@ -2903,6 +2974,9 @@ function response($order_id,$amount,$response_code,$response_desc){
 	<!-- Chat whatsapp -->
 	<link href="css/dashboard/css/chats.css" rel="stylesheet" type="text/css" />
 
+
+		<script src="/js/custom/template-socket.js" type="text/javascript"></script>
+
 		<script src="js/custom/global.js" type="text/javascript"></script>
 		<script type="text/javascript">
 			// $(document).ready(function() {
@@ -2918,20 +2992,12 @@ function response($order_id,$amount,$response_code,$response_desc){
 		<script>
 			// nodejs socket
 			socketcus.init('<?php echo DOMAIN_SOCKET ?>', '<?php echo $user->getUserA() ?>');
-			<?php // echo $phone_code.$phone_number; ?> <?php // echo $list_id; ?>
-			<?php // $user->getUserName() ?> // +525585353729
-			// console.log('<?php // echo $list_id; ?>');
 			socketcus.chatwhatsapp(null, null, '<?php echo LIST_ID ?>');
-			/*
-			$('#what-emojis').addClass(_styleRe.class[2]);
-			$('#what-attach').addClass(_styleRe.class[2]);
-			$('#what-reply').addClass(_styleRe.class[3]);
-			$('#message-send').addClass(_styleRe.class[4]);
-			*/
-			// $('#what-microphone').addClass(_styleRe.class[4]);
+			
 			socketcus.initCallWhatsapp = function(phone, name, list) {
 				socketcus.chatwhatsapp(phone, name, list);
 			}
+
 			/*
 			socketcus.on_notify_leadgen();
 			
@@ -2940,5 +3006,6 @@ function response($order_id,$amount,$response_code,$response_desc){
 			notify.events('notify_leadgen');
 			*/
 		</script>
+		<script src="/js/custom/agent.js" type="text/javascript"></script>
     </body>
 </html>

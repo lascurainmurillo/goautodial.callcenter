@@ -9,6 +9,7 @@
   "author": "Mark",
   "license": "MIT",
   "dependencies": {
-    "emojionearea": "^3.4.2"
+    "emojionearea": "^3.4.2",
+    "jquery.loadtemplate": "^1.5.10"
   }
 }
