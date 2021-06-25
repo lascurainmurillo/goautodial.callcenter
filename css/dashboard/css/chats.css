@@ -680,11 +680,12 @@
 }
 
 .whatspreviousfile {
-    position: absolute;
-    bottom: 60px;
+    position: inherit;
+    bottom: 125px;
     width: 100%;
     height: 125px;
     background: #f5f1ee;
+    padding: 1px 26px;
 }
 
 #file-previous {
@@ -728,4 +729,8 @@
 .header-whatsapp p {
     margin-top: 10px !important;
     margin-bottom: 10px !important;
+}
+.roomprevios{
+    position: relative;
+    height: 125px;
 }

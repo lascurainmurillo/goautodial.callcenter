@@ -76,7 +76,7 @@ template.reply = function(room) {
 
 
 template.previousimage = function(room) {
-    return `<div class="col-xs-12">
+    return `<div>
                 <button type="button" class="close" onclick="socketcus.clearfiles('${room}');"><span aria-hidden="true">×</span><span class="sr-only">Cerrar</span></button>
                 <div id="file-previous">
                 </div>
@@ -85,7 +85,7 @@ template.previousimage = function(room) {
 
 
 template.previousShowVideo = function(objectURL) {
-    return `div align="center" class="embed-responsive embed-responsive-16by9" style="width: 150px;">
+    return `<div align="center" class="embed-responsive embed-responsive-16by9" style="width: 150px;">
                 <video controls loop class="embed-responsive-item">
                     <source src="${objectURL}" type="video/mp4">
                 </video>

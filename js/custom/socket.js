@@ -21,6 +21,8 @@ socketcus.init = function(DOMAIN, agent_username) {
     socketcus.key_enable = 0; // llave para saber si ya esta cargada la info al carga la página, 1 => no volver a cargar la info, por si otra pagina se abre y carga la info.
     socketcus.data_room = {};
     socketcus.filesTemp = {}; //inicializar variable para los upload archivos
+    socketcus.dataGalerySelected = {}; //object de data seleccionada
+    socketcus.usegalery = {} // si se esta usando galeria;
 
     socketcus.socket.on('connect_error', function(err) {
         // handle server error here
@@ -157,8 +159,20 @@ socketcus.sendmessage = function(room, enter = false) {
 
     var fd = new FormData();
 
-    // Si se está suficiente archivo
-    if (socketcus.filesTemp[onlyroom].file.length > 0) {
+    // si el mensaje proviene de galery
+    if (socketcus.usegalery[onlyroom] && Object.keys(socketcus.dataGalerySelected[onlyroom]).length > 0) {
+
+        data_call.message.msg = socketcus.dataGalerySelected[onlyroom].file;
+        data_call.message.send_tipo = socketcus.dataGalerySelected[onlyroom].type;
+        data_call.message.filename = socketcus.dataGalerySelected[onlyroom].name;
+
+        // Emitir un mensaje hacia el server
+        socketcus.socket.emit('chatMessage', data_call);
+
+        // limpiar files y mostrar loader
+        socketcus.clearfiles(room);
+
+    } else if (socketcus.filesTemp[onlyroom].file.length > 0) { // Si se está enviando archivo
 
         // cambiar boton a loader
         $(reply + " #message-send").addClass("hidden");
@@ -198,8 +212,8 @@ socketcus.sendmessage = function(room, enter = false) {
             socketcus.clearfiles(room);
         });
 
-    } else {
-        // enviar mensaje de texto
+    } else { // enviar mensaje de texto
+
         var comment_emoji = reply + " #comment-send";
         var contar = $(comment_emoji)[0].emojioneArea.getText().length;
         if (enter) {
@@ -248,7 +262,7 @@ socketcus.fileselect = function(tag, room) {
     var previous = "#whatspreviousfile" + room.replace(/\+/g, '\\+');
     var onlyroom = room.replace(/\+/g, '\\+');
     $(reply + " #comment-send")[0].emojioneArea.disable();
-
+    // console.log($(reply + ' #whats_attach_files')[0].files, tag);
     // si es multimedia imagen o video
     if ($(reply + ' #whats_attach_multimedia')[0].files != null && tag == "#whats_attach_multimedia") { // si es imagen o video
         socketcus.filesTemp[onlyroom].file = $(reply + ' #whats_attach_multimedia')[0].files;
@@ -286,8 +300,9 @@ socketcus.fileselect = function(tag, room) {
 
         // si es archivo *.*
     } else if ($(reply + ' #whats_attach_files')[0].files != null && tag == "#whats_attach_files") { // si es archivo
+        socketcus.filesTemp[onlyroom].file = $(reply + ' #whats_attach_files')[0].files;
         if (socketcus.filesTemp[onlyroom].file.length === 1) {
-            socketcus.filesTemp[onlyroom].file = $(reply + ' #whats_attach_files')[0].files
+            // socketcus.filesTemp[onlyroom].file = $(reply + ' #whats_attach_files')[0].files
             $(previous + " #file-previous").html(`<div>
             <i class="fa fa-file-text-o" aria-hidden="true" style="font-size:90px"></i> 
             </div><div>${socketcus.filesTemp[onlyroom].file[0].name}</div>`);
@@ -309,17 +324,39 @@ socketcus.fileselect = function(tag, room) {
  * @param {object} data  // 
  * @param {object} type  // imagen, video o file
  */
-socketcus.sendGalery = function(room, data, type) {
-    console.log(room, data, type);
+socketcus.sendGalery = function(room, data) {
+
+    var onlyroom = room.replace(/\+/g, '\\+');
     var reply = "#reply" + room.replace(/\+/g, '\\+');
     var previous = "#whatspreviousfile" + room.replace(/\+/g, '\\+');
 
+    // usando galeria true
+    socketcus.usegalery[onlyroom] = true;
+
+    // setiando datos en variable global
+    socketcus.dataGalerySelected[onlyroom] = data;
+
+    //mostrando previous de la imagen seleccionada
     $(reply + " #comment-send")[0].emojioneArea.disable();
-    $(previous + " #file-previous").html(template.previousShowImage(data.image)); // usando template
+
+    switch (data.type) {
+        case 'imagen':
+            $(previous + " #file-previous").html(template.previousShowImage(data.file)); // usando template
+            break;
+        case 'video':
+            $(previous + " #file-previous").html(template.previousShowVideo(data.file)); // usando template
+            break;
+        case 'document':
+            // $(previous + " #file-previous").html(template.previousShowImage(data.file)); // usando template
+            break;
+
+        default:
+            alert("problema en galery");
+            break;
+    }
     if ($(previous).hasClass('hidden')) {
         $(previous).removeClass('hidden');
     }
-
 }
 
 
@@ -600,6 +637,9 @@ socketcus.clearfiles = function(room) {
     // document.getElementById("whats_attach_multimedia").value = "";
     // document.getElementById("whats_attach_files").value = "";
 
+    // no usando galeria
+    socketcus.usegalery[onlyroom] = false;
+
     // ocultar previous
     if (!$(previous).hasClass('hidden')) {
         $(previous).addClass('hidden');
@@ -691,6 +731,17 @@ socketcus.declareFilesRoom = function(room) {
         file: {},
         type: "",
     };
+}
+
+/**
+ * 
+ * Declarar filesTemp
+ * @param {*} room 
+ */
+socketcus.declareDataGalery = function(room) {
+    // limpiar filesTemp
+    var onlyroom = room.replace(/\+/g, '\\+');
+    socketcus.dataGalerySelected[onlyroom] = {};
 }
 
 /**

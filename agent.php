@@ -1091,9 +1091,17 @@ function response($order_id,$amount,$response_code,$response_desc){
 																</div>
 															</div>
 															<div role="tabpanel" class="tab-pane" id="galery-videos">
+																<div class="row">
+																	<div class="col-xs-12">
+																		<div class="text-right" style="margin-bottom: 10px;">
+																			<button class="btn btn-primary" onclick="agent.uploadimage();">
+																				<i class="fa fa-cloud-upload" aria-hidden="true"></i> Subir video
+																			</button>
+																		</div>
+																	</div>
+																</div>
 																<div class="row" id="content-videos">
 																</div>
-																galerya... Cargar videos
 															</div>
 															<div role="tabpanel" class="tab-pane" id="galery-files">
 																<div class="row" id="content-files">
