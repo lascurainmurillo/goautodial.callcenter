@@ -10420,20 +10420,20 @@ ADDED FROM MATERIAL
         left: 31px;
     }
     
-    .thumbnail-content {
+    #content-images .thumbnail-content {
         height: 523px;
         background-color: #e1e2e3;
         margin-bottom: 15px;
     }
     
-    .thumbnail-content .thumbnail {
+    #content-images .thumbnail-content .thumbnail {
         position: relative !important;
         width: 93%;
         right: 43%;
         transform: translateX(50%);
     }
     
-    .thumbnail-content .thumbnail .image-content {
+    #content-images .thumbnail-content .thumbnail .image-content {
         position: absolute;
         width: 100%;
         height: 380px;
@@ -10442,7 +10442,7 @@ ADDED FROM MATERIAL
         top: 13px;
     }
     
-    .thumbnail-content .thumbnail .caption {
+    #content-images .thumbnail-content .thumbnail .caption {
         position: absolute;
         top: 393px;
     }
@@ -10462,4 +10462,12 @@ ADDED FROM MATERIAL
         left: 47%;
         -ms-transform: translate(-50%, -50%);
         transform: translate(-50%, -50%);
+    }
+    
+    #form-upload-galery .error {
+        top: auto;
+        left: auto;
+        font-size: inherit;
+        opacity: 1;
+        position: initial;
     }

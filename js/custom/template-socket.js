@@ -98,6 +98,11 @@ template.previousShowImage = function(objectURL) {
 }
 
 
+template.previousShowDocument = function(objectURL) {
+    return `<div><i class="fa fa-file-text-o" aria-hidden="true" style="font-size:90px"></i> </div><div>${objectURL}</div>`;
+}
+
+
 template.htmlchatting = function(message, msg, color_agent_current, color_client_current, date_chat_temp, timeampm) {
     return `<div class="row message-body">
                 <div class="col-sm-12 message-main-${message.tipo}">

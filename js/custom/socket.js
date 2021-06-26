@@ -303,9 +303,7 @@ socketcus.fileselect = function(tag, room) {
         socketcus.filesTemp[onlyroom].file = $(reply + ' #whats_attach_files')[0].files;
         if (socketcus.filesTemp[onlyroom].file.length === 1) {
             // socketcus.filesTemp[onlyroom].file = $(reply + ' #whats_attach_files')[0].files
-            $(previous + " #file-previous").html(`<div>
-            <i class="fa fa-file-text-o" aria-hidden="true" style="font-size:90px"></i> 
-            </div><div>${socketcus.filesTemp[onlyroom].file[0].name}</div>`);
+            $(previous + " #file-previous").html(template.previousShowDocument(URL.createObjectURL(socketcus.filesTemp[onlyroom].file[0].name)));
             if ($(previous).hasClass('hidden')) {
                 $(previous).removeClass('hidden');
             }
@@ -347,7 +345,7 @@ socketcus.sendGalery = function(room, data) {
             $(previous + " #file-previous").html(template.previousShowVideo(data.file)); // usando template
             break;
         case 'document':
-            // $(previous + " #file-previous").html(template.previousShowImage(data.file)); // usando template
+            $(previous + " #file-previous").html(template.previousShowDocument(data.file)); // usando template
             break;
 
         default:

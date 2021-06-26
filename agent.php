@@ -1059,66 +1059,94 @@ function response($order_id,$amount,$response_code,$response_desc){
 										</div>
 										<!-- End chats---------------------------------------------------------------------------------------------------------------------------->
 
+										
 										<!-- MODAL GALERIA CHAT ---------------------------------->
-										<div id="chat-galery" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
-											<div class="modal-dialog modal-lg" role="document">
-												<div class="modal-content">
-													<div class="modal-header">
-														<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-														<h4 class="modal-title" id="myModalLabel">Mi Galeria</h4>
-													</div>
-													<div class="modal-body">
-
-														<ul class="nav nav-tabs" role="tablist">
-															<li role="presentation" class="active"><a href="#galery-imagenes" aria-controls="imagenes" role="tab" data-toggle="tab">Imagenes</a></li>
-															<li role="presentation"><a href="#galery-videos" aria-controls="galery-videos" role="tab" data-toggle="tab">Videos</a></li>
-															<li role="presentation"><a href="#galery-files" aria-controls="galery-files" role="tab" data-toggle="tab">Archivos</a></li>
-														</ul>
-
-														<!-- Tab panes -->
-														<div class="tab-content">
-															<div role="tabpanel" class="tab-pane active" id="galery-imagenes">
-																<div class="row">
-																	<div class="col-xs-12">
-																		<div class="text-right" style="margin-bottom: 10px;">
-																			<button class="btn btn-primary" onclick="agent.uploadimage();">
-																				<i class="fa fa-cloud-upload" aria-hidden="true"></i> Subir imagen
-																			</button>
-																		</div>
-																	</div>
-																</div>
-																<div class="row" id="content-images">
-																</div>
-															</div>
-															<div role="tabpanel" class="tab-pane" id="galery-videos">
-																<div class="row">
-																	<div class="col-xs-12">
-																		<div class="text-right" style="margin-bottom: 10px;">
-																			<button class="btn btn-primary" onclick="agent.uploadimage();">
-																				<i class="fa fa-cloud-upload" aria-hidden="true"></i> Subir video
-																			</button>
-																		</div>
-																	</div>
-																</div>
-																<div class="row" id="content-videos">
-																</div>
-															</div>
-															<div role="tabpanel" class="tab-pane" id="galery-files">
-																<div class="row" id="content-files">
-																</div>
-																videos... Cargar files
-															</div>
+											<div id="chat-galery" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+												<div class="modal-dialog modal-lg" role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+															<h4 class="modal-title" id="myModalLabel">Mi Galeria</h4>
 														</div>
+														<div class="modal-body">
 
+															<ul class="nav nav-tabs" role="tablist">
+																<li role="presentation" class="active"><a href="#galery-imagenes" aria-controls="imagenes" role="tab" data-toggle="tab">Imagenes</a></li>
+																<li role="presentation"><a href="#galery-videos" aria-controls="galery-videos" role="tab" data-toggle="tab">Videos</a></li>
+																<li role="presentation"><a href="#galery-documents" aria-controls="galery-documents" role="tab" data-toggle="tab">Archivos</a></li>
+															</ul>
+
+															<!-- Tab panes -->
+															<div class="tab-content">
+																<div role="tabpanel" class="tab-pane active" id="galery-imagenes">
+																	<div class="row">
+																		<div class="col-xs-12">
+																			<div class="text-right" style="margin-bottom: 10px;">
+																				<button class="btn btn-primary" onclick="agent.modaluploadimage('image');">
+																					<i class="fa fa-cloud-upload" aria-hidden="true"></i> Subir imagen
+																				</button>
+																			</div>
+																		</div>
+																	</div>
+																	<div class="row" id="content-images">
+																	</div>
+																</div>
+																<div role="tabpanel" class="tab-pane" id="galery-videos">
+																	<div class="row">
+																		<div class="col-xs-12">
+																			<div class="text-right" style="margin-bottom: 10px;">
+																				<button class="btn btn-primary" onclick="agent.modaluploadimage('video');">
+																					<i class="fa fa-cloud-upload" aria-hidden="true"></i> Subir video
+																				</button>
+																			</div>
+																		</div>
+																	</div>
+																	<div class="row" id="content-videos">
+																	</div>
+																</div>
+																<div role="tabpanel" class="tab-pane" id="galery-documents">
+																	<div class="row">
+																		<div class="col-xs-12">
+																			<div class="text-right" style="margin-bottom: 10px;">
+																				<button class="btn btn-primary" onclick="agent.modaluploadimage('document');">
+																					<i class="fa fa-cloud-upload" aria-hidden="true"></i> Subir document
+																				</button>
+																			</div>
+																		</div>
+																	</div>
+																	<div class="row" id="content-documents">
+																	</div>
+																</div>
+															</div>
+
+														</div>
 													</div>
 												</div>
 											</div>
-										</div>
-										<!-- END MODAL -->
 
+											<div id="upload-galery" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+												<div class="modal-dialog modal-sm" role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+															<h4 class="modal-title" id="myModalLabel">Subir archivo</h4>
+														</div>
+														<div class="modal-body">
+															<div>
+																<form id="form-upload-galery" method="post" action="" enctype="multipart/form-data" class="">
+																</form>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+
+										<!-- END MODAL -->
 
 									</div>
 								</div>
+
+										
 		
 						        <div id="custom_fields_content" class="card-body" style="border: 1px solid rgb(221, 230, 233); margin: 0 32px 0 22px; display: none;">
 									<h4 style="font-weight: 600;">
@@ -2982,7 +3010,9 @@ function response($order_id,$amount,$response_code,$response_desc){
 	<!-- Chat whatsapp -->
 	<link href="css/dashboard/css/chats.css" rel="stylesheet" type="text/css" />
 
-
+	<!--  Jquery Validate additional-methods -->
+	<script src="/js/additional-methods.js"></script>
+	
 		<script src="/js/custom/template-socket.js" type="text/javascript"></script>
 
 		<script src="js/custom/global.js" type="text/javascript"></script>
