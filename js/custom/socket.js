@@ -163,8 +163,8 @@ socketcus.sendmessage = function(room, enter = false) {
     if (socketcus.usegalery[onlyroom] && Object.keys(socketcus.dataGalerySelected[onlyroom]).length > 0) {
 
         data_call.message.msg = socketcus.dataGalerySelected[onlyroom].file;
-        data_call.message.send_tipo = socketcus.dataGalerySelected[onlyroom].type;
-        data_call.message.filename = socketcus.dataGalerySelected[onlyroom].name;
+        data_call.message.send_tipo = socketcus.dataGalerySelected[onlyroom].tipo;
+        data_call.message.name = socketcus.dataGalerySelected[onlyroom].name;
 
         // Emitir un mensaje hacia el server
         socketcus.socket.emit('chatMessage', data_call);
@@ -337,8 +337,8 @@ socketcus.sendGalery = function(room, data) {
     //mostrando previous de la imagen seleccionada
     $(reply + " #comment-send")[0].emojioneArea.disable();
 
-    switch (data.type) {
-        case 'imagen':
+    switch (data.tipo) {
+        case 'image':
             $(previous + " #file-previous").html(template.previousShowImage(data.file)); // usando template
             break;
         case 'video':

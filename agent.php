@@ -1061,7 +1061,8 @@ function response($order_id,$amount,$response_code,$response_desc){
 
 										
 										<!-- MODAL GALERIA CHAT ---------------------------------->
-											<div id="chat-galery" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+											<!-- Se agregó style="overflow: hidden auto;" porque cuando hay un modal sobre otro y este ultimo agrega html ocurre un error de scroll -->
+											<div id="chat-galery" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" style="overflow: hidden auto;">
 												<div class="modal-dialog modal-lg" role="document">
 													<div class="modal-content">
 														<div class="modal-header">
@@ -1135,6 +1136,28 @@ function response($order_id,$amount,$response_code,$response_desc){
 															<div>
 																<form id="form-upload-galery" method="post" action="" enctype="multipart/form-data" class="">
 																</form>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+
+											<div id="delete-galery" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+												<div class="modal-dialog modal-sm" role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+															<h4 class="modal-title" id="myModalLabel">Eliminar</h4>
+														</div>
+														<div class="modal-body">
+															<div>
+																<h3>
+																¿Está seguro que desea eliminar este archivo?
+																</h3>
+															</div>
+															<div class="text-center">
+															<button class="btn btn-primary">No</button>
+															<button class="btn btn-danger" onClick="agent.deleteGalery()">Si</button>
 															</div>
 														</div>
 													</div>
@@ -3045,5 +3068,8 @@ function response($order_id,$amount,$response_code,$response_desc){
 			*/
 		</script>
 		<script src="/js/custom/agent.js" type="text/javascript"></script>
+		<script>
+			agent.loadVar('<?php echo DOMAIN_SOCKET ?>', '<?php echo $user->getUserA() ?>');
+		</script>
     </body>
 </html>

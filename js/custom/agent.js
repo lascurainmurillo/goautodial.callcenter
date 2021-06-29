@@ -2,18 +2,28 @@ var agent = {}
 
 agent.objectSelected = {}; // object seleccionado para enviarlo via chat
 agent.typeChat = "";
+agent.room = "";
 agent.tags = {
     contentImages: $("#content-images"),
     contentVideos: $("#content-videos"),
     contentDocument: $("#content-documents"),
     chatGalery: $("#chat-galery"), // id del modal
     modalFormUploadGalery: $("#form-upload-galery"), // formulario de modal upload
-    modalUploadGalery: $("#upload-galery") // modal upload files
+    modalUploadGalery: $("#upload-galery"), // modal upload files
+    modaldeleteGalery: $("#delete-galery") // modal eliminar
 }
 
-agent.modalGalery = function(room, typeChat = 'whatsapp') {
+agent.loadVar = function(domain, agent_username) {
+    agent.domain = domain;
+    agent.agent_username = agent_username;
+}
+
+
+
+agent.modalGalery = async(room, typeChat = 'whatsapp') => {
 
     agent.objectSelected = {}; // object seleccionado para enviarlo via chat
+    agent.room = room;
 
     // inicializando
     agent.arrImages = []; // todas las imagenes
@@ -27,158 +37,75 @@ agent.modalGalery = function(room, typeChat = 'whatsapp') {
     // activar loader
     agent.tags.contentImages.html(agent.templateloader());
 
-    // consultar Imagenes
-    agent.arrImages = [{
-            id: 1,
-            file: "http://localhost:3001/assets/whatsapp-files/i1.jpg",
-            name: "Imange 1 de mi",
-            agent_username: "agentmark015",
-            create_at: "2021-06-23T22:38:27.207Z",
-            type: "imagen",
-        }, {
-            id: 2,
-            file: "http://localhost:3001/assets/whatsapp-files/i2.jpg",
-            name: "Imange 1 de mi",
-            agent_username: "agentmark015",
-            create_at: "2021-06-23T22:38:27.207Z",
-            type: "imagen",
-        },
-        {
-            id: 3,
-            file: "http://localhost:3001/assets/whatsapp-files/i3.png",
-            name: "Imange 1 de mi",
-            agent_username: "agentmark015",
-            create_at: "2021-06-23T22:38:27.207Z",
-            type: "imagen",
-        },
-        {
-            id: 4,
-            file: "http://localhost:3001/assets/whatsapp-files/i4.jpg",
-            name: "Imange 1 de mi",
-            agent_username: "agentmark015",
-            create_at: "2021-06-23T22:38:27.207Z",
-            type: "imagen",
-        }
-    ];
+    var result = await agent.getFileGalery();
 
+    agent.arrImages = result.filter(el => el.tipo == 'image')[0].data;
+    agent.arrVideos = result.filter(el => el.tipo == 'video')[0].data;
+    agent.arrDocument = result.filter(el => el.tipo == 'document')[0].data;
 
-    // consultar Videos
-    agent.arrVideos = [{
-        id: 5,
-        file: "http://localhost:3001/assets/whatsapp-files/v1.mp4",
-        name: "Video 1 de mi",
-        agent_username: "agentmark015",
-        create_at: "2021-06-23T22:38:27.207Z",
-        type: "video",
-    }, {
-        id: 6,
-        file: "http://localhost:3001/assets/whatsapp-files/v2.mp4",
-        name: "Video 2 de mi",
-        agent_username: "agentmark015",
-        create_at: "2021-06-23T22:38:27.207Z",
-        type: "video",
-    }, ];
+    // console.log(agent.arrImages);
 
+    // crear tags para IMAGENES
+    agent.crearTagDeFile(room, 'arrImages', 'contentImages', 'imagen', agent.templateimage);
 
-    // consultar Archivos
-    agent.arrDocument = [{
-        id: 7,
-        file: "http://localhost:3001/assets/whatsapp-files/a1.txt",
-        name: "Dcoumento 1 de mi",
-        agent_username: "agentmark015",
-        create_at: "2021-06-23T22:38:27.207Z",
-        type: "document",
-    }, {
-        id: 8,
-        file: "http://localhost:3001/assets/whatsapp-files/a2.sql",
-        name: "Dcoumento 3 de mi",
-        agent_username: "agentmark015",
-        create_at: "2021-06-23T22:38:27.207Z",
-        type: "document",
-    }, {
-        id: 9,
-        file: "http://localhost:3001/assets/whatsapp-files/a3.txt",
-        name: "Dcoumento 2 de mi",
-        agent_username: "agentmark015",
-        create_at: "2021-06-23T22:38:27.207Z",
-        type: "document",
-    }, {
-        id: 10,
-        file: "http://localhost:3001/assets/whatsapp-files/a4.txt",
-        name: "Dcoumento 4 de mi",
-        agent_username: "agentmark015",
-        create_at: "2021-06-23T22:38:27.207Z",
-        type: "document",
-    }];
+    // crear tags para VIDEOS
+    agent.crearTagDeFile(room, 'arrVideos', 'contentVideos', 'video', agent.templatevideo);
 
-
-    setTimeout(function() {
-
-        // crear tags para IMAGENES
-        var thumbImagesHtml = "";
-        agent.arrImages.forEach(el => {
-            thumbImagesHtml += agent.templateimage(el, room);
-        });
-
-        if (agent.arrImages.length > 0) {
-            agent.tags.contentImages.html(thumbImagesHtml);
-        } else {
-            agent.tags.contentImages.html(`<div class="col-xs-12"><div class="text-center" style="height: 500px">No hay ninguna imagen</div></div>`);
-        }
-
-        // crear tags para VIDEOS
-        var thumbVideosHtml = "";
-        agent.arrVideos.forEach(el => {
-            thumbVideosHtml += agent.templatevideo(el, room);
-        });
-        if (agent.arrVideos.length > 0) {
-            agent.tags.contentVideos.html(thumbVideosHtml);
-        } else {
-            agent.tags.contentVideos.html(`<div class="col-xs-12"><div class="text-center" style="height: 500px">No hay ningun video</div></div>`);
-        }
-
-        // crear tags para Documentos
-        var thumbDocumentHtml = "";
-        agent.arrDocument.forEach(el => {
-            thumbDocumentHtml += agent.templatedocument(el, room);
-        });
-        if (agent.arrDocument.length > 0) {
-            agent.tags.contentDocument.html(thumbDocumentHtml);
-        } else {
-            agent.tags.contentDocument.html(`<div class="col-xs-12"><div class="text-center" style="height: 500px">No hay ningun video</div></div>`);
-        }
-
-    }, 2000);
+    // crear tags para Documentos
+    agent.crearTagDeFile(room, 'arrDocument', 'contentDocument', 'documento', agent.templatedocument);
 
 }
 
+/**
+ * 
+ * Crear tags y vistas de imagenes, videos y documentos
+ * 
+ */
+agent.crearTagDeFile = function(room, nameArray, contentFile, nametipo, funtiontemplate) {
+    var thumbHtml = "";
+    agent[nameArray].forEach(el => {
+        thumbHtml += funtiontemplate(el, room);
+    });
 
+    if (agent[nameArray].length > 0) {
+        agent.tags[contentFile].html(thumbHtml);
+    } else {
+        agent.tags[contentFile].html(`<div class="col-xs-12"><div class="text-center" style="height: 500px">No hay ninguna ${nametipo}</div></div>`);
+    }
+}
+
+
+/**
+ * 
+ * 
+ * @param {*} id 
+ * @param {*} room 
+ * @param {*} type 
+ */
 agent.galerySelected = function(id, room, type) {
-    console.log(id, room);
     if (type == "image") {
-        agent.objectSelected = agent.arrImages.filter(el => el.id == id)[0];
+        agent.objectSelected = agent.arrImages.filter(el => el._id == id)[0];
         if (agent.typeChat == "whatsapp") {
-            socketcus.sendGalery(room, agent.objectSelected);
+            socketcus.sendGalery(room, agent.objectSelected); // enviar info a socket
             agent.tags.chatGalery.modal('hide');
         }
     }
     if (type == "video") {
-        agent.objectSelected = agent.arrVideos.filter(el => el.id == id)[0];
+        agent.objectSelected = agent.arrVideos.filter(el => el._id == id)[0];
         if (agent.typeChat == "whatsapp") {
-            socketcus.sendGalery(room, agent.objectSelected);
+            socketcus.sendGalery(room, agent.objectSelected); // enviar info a socket
             agent.tags.chatGalery.modal('hide');
         }
     }
     if (type == "document") {
-        agent.objectSelected = agent.arrDocument.filter(el => el.id == id)[0];
+        agent.objectSelected = agent.arrDocument.filter(el => el._id == id)[0];
         if (agent.typeChat == "whatsapp") {
-            socketcus.sendGalery(room, agent.objectSelected);
+            socketcus.sendGalery(room, agent.objectSelected); // enviar info a socket
             agent.tags.chatGalery.modal('hide');
         }
     }
-
-
 }
+
 
 /**
  * Abrir modal de upload file
@@ -190,19 +117,50 @@ agent.modaluploadimage = function(type) {
         $("#upload-galery #myModalLabel").html("Subir imagen"); // cambiar titulo del modal upload
         agent.tags.modalFormUploadGalery.html(agent.templateuploadgaleryImage());
     } else if (type == 'video') {
-
+        $("#upload-galery #myModalLabel").html("Subir video"); // cambiar titulo del modal upload
+        agent.tags.modalFormUploadGalery.html(agent.templateuploadgaleryVideo());
     } else {
-
+        $("#upload-galery #myModalLabel").html("Subir documento"); // cambiar titulo del modal upload
+        agent.tags.modalFormUploadGalery.html(agent.templateuploadgaleryDocument());
     }
 }
 
+
 /**
  * 
- * Boton subir
- * @param {*} e 
+ * Agregar nuevo data al arrImages, arrVideos o arrDocument y mostrar en pantalla 
+ * @param {*} data 
+ */
+agent.pushArray = function(data) {
+    if (data.tipo == 'image') {
+        agent.arrImages.push(data);
+        agent.tags.contentImages.prepend(agent.templateimage(data, agent.room));
+    }
+    if (data.tipo == 'video') {
+        agent.arrVideos.push(data);
+        agent.tags.contentVideos.prepend(agent.templatevideo(data, agent.room));
+    }
+    if (data.tipo == 'document') {
+        agent.arrDocument.push(data);
+        agent.tags.contentDocument.prepend(agent.templatedocument(data, agent.room));
+    }
+}
+
+agent.id_delete = "";
+agent.modalDelete = function(id) {
+    agent.id_delete = id;
+    agent.tags.modaldeleteGalery.modal();
+}
+
+
+/**
+ * 
+ * Ejecutar submit de Btn SUBIR
+ * @param {*} evt 
  * @param {*} type 
  */
-agent.uploadimagen = function(e, type) {
+agent.uploadGalery = function(evt, type) {
+    evt.preventDefault();
     agent.tags.modalFormUploadGalery.trigger('submit');
 }
 
@@ -228,20 +186,68 @@ agent.tags.modalFormUploadGalery.validate({
  */
 agent.postFileGalery = function(form) {
 
+    var btn1 = $("#btn-upl-gal1");
+    var btn2 = $("#btn-upl-gal2");
+    btn1.addClass('hidden');
+    btn2.removeClass('hidden');
+
     var fd = new FormData();
     fd.append('file', $(form).find(`[name='file']`)[0].files[0]);
-    fd.append('filename', $(form).find(`[name='filename']`).val());
-    fd.append('type', $(form).find(`[name='type']`).val());
-
+    fd.append('name', $(form).find(`[name='filename']`).val());
+    fd.append('tipo', $(form).find(`[name='tipo']`).val());
+    fd.append('agent_username', agent.agent_username);
 
     $.ajax({
-        url: socketcus.domain + '/whatsapp/send-file',
+        url: agent.domain + '/galery/file',
         type: 'POST',
         data: fd,
         contentType: false,
         processData: false,
         success: function(response) {
-            console.log(response);
+            if (response.ok) {
+                agent.pushArray(response.data);
+                agent.tags.modalUploadGalery.modal('hide');
+            }
+            console.log(agent.arrImages);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown);
+        },
+    }).always(function(response) {
+        btn1.removeClass('hidden');
+        btn2.addClass('hidden');
+    });
+}
+
+
+
+agent.getFileGalery = async() => {
+    let result;
+    try {
+
+        result = await $.ajax({
+            url: socketcus.domain + '/galery/file',
+            type: 'GET',
+            data: {},
+            datatype: 'json',
+        });
+
+        return result;
+    } catch (error) {
+        console.error(error);
+        alert(error);
+    }
+}
+
+
+agent.deleteGalery = () => {
+    $.ajax({
+        url: agent.domain + '/galery/file/' + agent.id_delete,
+        type: 'DELETE',
+        data: {},
+        success: function(response) {
+            $("#t-" + agent.id_delete).remove(); //eliminar de la vista
+            // agent.arrImages = result.filter(el => el.tipo == 'image')[0].data;
         },
         error: function(jqXHR, textStatus, errorThrown) {
             console.log(errorThrown);
@@ -249,26 +255,17 @@ agent.postFileGalery = function(form) {
     }).always(function(response) {
 
     });
-
 }
 
 
 /** ----------- TEMPLATE -------------------------------------------------------------------------------------------------------------- */
 agent.templateimage = function(img, room) {
-    return `<div class="col-xs-12 col-sm-12 col-md-6">
+    return `<div id="t-${$img.id}" class="col-xs-12 col-sm-12 col-md-6">
                 <div class="thumbnail-content">
                     <div class="thumbnail">
-                        <div class="image-content" style="background-image: url(${img.file});"></div>
+                        <div class="image-content" style="background-image: url('${img.file}');"></div>
                         <div class="caption">
-                            <h3>${img.name}</h3>
-                            <p>
-                                <button class="btn btn-success" role="button" onclick="agent.galerySelected('${img.id}', '${room}', 'image')">
-                                    <i class="fa fa-check-circle" aria-hidden="true"></i> Seleccionar
-                                </button>
-                                <button class="btn btn-danger" role="button" onclick="agent.galeryImageDelete('${img.id}')">
-                                    <i class="fa fa-trash" aria-hidden="true"></i> Eliminar
-                                </button>
-                            </p>
+                            ${agent.btnbottomthumb(img, room, 'image')}
                         </div>
                     </div>
                 </div>
@@ -276,7 +273,7 @@ agent.templateimage = function(img, room) {
 }
 
 agent.templatevideo = function(vid, room) {
-    return `<div class="col-xs-12 col-sm-12 col-md-6">
+    return `<div id="t-${$vid.id}" class="col-xs-12 col-sm-12 col-md-6">
                 <div class="thumbnail-content">
                     <div class="thumbnail">
                         <div align="center" class="embed-responsive embed-responsive-16by9">
@@ -285,15 +282,7 @@ agent.templatevideo = function(vid, room) {
                             </video>
                         </div>
                         <div class="caption">
-                            <h3>${vid.name}</h3>
-                            <p>
-                                <button class="btn btn-success" role="button" onclick="agent.galerySelected('${vid.id}', '${room}', 'video')">
-                                    <i class="fa fa-check-circle" aria-hidden="true"></i> Seleccionar
-                                </button>
-                                <button class="btn btn-danger" role="button" onclick="agent.galeryImageDelete('${vid.id}')">
-                                    <i class="fa fa-trash" aria-hidden="true"></i> Eliminar
-                                </button>
-                            </p>
+                            ${agent.btnbottomthumb(vid, room, 'video')}
                         </div>
                     </div>
                 </div>
@@ -302,26 +291,31 @@ agent.templatevideo = function(vid, room) {
 }
 
 agent.templatedocument = function(doc, room) {
-    return `<div class="col-xs-12 col-sm-6 col-md-4 col-lg-4" style="margin-top: 10px;">
+    return `<div id="t-${$vid.id}" class="col-xs-12 col-sm-6 col-md-4 col-lg-4" style="margin-top: 10px;">
                 <div class="panel panel-default">
                     <div class="panel-body">
                         <div class="text-center">
                             <i class="fa fa-file-text-o" aria-hidden="true" style="font-size:90px; color: #3c8dbc;"></i> 
                         </div>
                         <div>
-                            <h4>${doc.name}</h4>
-                            <p>
-                                <button class="btn btn-success" role="button" onclick="agent.galerySelected('${doc.id}', '${room}', 'document')">
-                                    <i class="fa fa-check-circle" aria-hidden="true"></i> Seleccionar
-                                </button>
-                                <button class="btn btn-danger" role="button" onclick="agent.galeryImageDelete('${doc.id}')">
-                                    <i class="fa fa-trash" aria-hidden="true"></i> Eliminar
-                                </button>
-                            </p>
+                            ${agent.btnbottomthumb(doc, room, 'document')}
                         </div>
                     </div>
                 </div>
             </div>`;
+}
+
+
+agent.btnbottomthumb = function(data, room, tipo) {
+    return `<h4>${data.name}</h4>
+            <p>
+                <button class="btn btn-success" role="button" onclick="agent.galerySelected('${data._id}', '${room}', '${tipo}')">
+                    <i class="fa fa-check-circle" aria-hidden="true"></i> Seleccionar
+                </button>
+                <button class="btn btn-danger" type="button" role="button" onclick="agent.modalDelete('${data._id}')">
+                    <i class="fa fa-trash" aria-hidden="true"></i> Eliminar
+                </button>
+            </p>`;
 }
 
 
@@ -342,17 +336,48 @@ agent.templateuploadgaleryImage = function() {
             <div class="form-group">
                 <label for="filename">Nombre</label>
                 <input name="filename" type="text" class="form-control" id="filename" placeholder="Nombre del archivo" required>
-                <input name="type" type="text" class="hidden" value="image" required>
+                <input name="tipo" type="text" class="hidden" value="image" required>
             </div>
             <div>
-                <button onlick="agent.uploadimagen(this, 'image');" type="text" class="btn btn-warning">Subir</button>
+                <button id="btn-upl-gal1" onclick="agent.uploadGalery(event, 'image');" type="button" class="btn btn-warning">Subir</button>
+                <button id="btn-upl-gal2" type="button" class="btn btn-warning hidden">
+                    <i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw "></i>
+                </button>
             </div>`;
 }
 
 agent.templateuploadgaleryVideo = function() {
-    return `<input accept="video/mp4, video/avi, video/wmv" type="file" id="upload-galery-image" name="file" />`;
+    return `<div class="">
+                <label for="upload-galery-video">Subir video</label>
+                <input name="file" type="file" accept="video/mp4, video/avi, video/wmv" id="upload-galery-video"  required/>
+            </div>
+            <div class="form-group">
+                <label for="filename">Nombre</label>
+                <input name="filename" type="text" class="form-control" id="filename" placeholder="Nombre del archivo" required>
+                <input name="tipo" type="text" class="hidden" value="video" required>
+            </div>
+            <div>
+                <button id="btn-upl-gal1" onclick="agent.uploadGalery(event, 'video');" type="button" class="btn btn-warning">Subir</button>
+                <button id="btn-upl-gal2" type="button" class="btn btn-warning hidden">
+                    <i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw "></i>
+                </button>
+            </div>`;
 }
 
 agent.templateuploadgaleryDocument = function() {
-    return `<input accept="*/*" type="file" id="upload-galery-document" name="file" />`;
+    return `<div class="">
+                <label for="upload-galery-document">Subir documento</label>
+                <input name="file" type="file" id="upload-galery-document"  required/>
+            </div>
+            <div class="form-group">
+                <label for="filename">Nombre</label>
+                <input name="filename" type="text" class="form-control" id="filename" placeholder="Nombre del archivo" required>
+                <input name="tipo" type="text" class="hidden" value="document" required>
+            </div>
+            <div>
+                <button id="btn-upl-gal1" onclick="agent.uploadGalery(event, 'document');" type="button" class="btn btn-warning">Subir</button>
+                <button id="btn-upl-gal2" type="button" class="btn btn-warning hidden">
+                    <i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw "></i>
+                </button>
+            </div>`;
 }
