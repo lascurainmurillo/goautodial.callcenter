@@ -39,20 +39,20 @@ agent.modalGalery = async(room, typeChat = 'whatsapp') => {
 
     var result = await agent.getFileGalery();
 
-    agent.arrImages = result.filter(el => el.tipo == 'image')[0].data;
-    agent.arrVideos = result.filter(el => el.tipo == 'video')[0].data;
-    agent.arrDocument = result.filter(el => el.tipo == 'document')[0].data;
+    agent.arrImages = (result.filter(el => el.tipo == 'image')[0] != null ? result.filter(el => el.tipo == 'image')[0].data : []);
+    agent.arrVideos = (result.filter(el => el.tipo == 'video')[0] != null ? result.filter(el => el.tipo == 'video')[0].data : []);
+    agent.arrDocument = (result.filter(el => el.tipo == 'document')[0] != null ? result.filter(el => el.tipo == 'document')[0].data : []);
 
     // console.log(agent.arrImages);
 
     // crear tags para IMAGENES
-    agent.crearTagDeFile(room, 'arrImages', 'contentImages', 'imagen', agent.templateimage);
+    agent.crearTagDeFile(agent.room, 'arrImages', 'contentImages', 'images', agent.templateimage);
 
     // crear tags para VIDEOS
-    agent.crearTagDeFile(room, 'arrVideos', 'contentVideos', 'video', agent.templatevideo);
+    agent.crearTagDeFile(agent.room, 'arrVideos', 'contentVideos', 'videos', agent.templatevideo);
 
     // crear tags para Documentos
-    agent.crearTagDeFile(room, 'arrDocument', 'contentDocument', 'documento', agent.templatedocument);
+    agent.crearTagDeFile(agent.room, 'arrDocument', 'contentDocument', 'documents', agent.templatedocument);
 
 }
 
@@ -70,7 +70,7 @@ agent.crearTagDeFile = function(room, nameArray, contentFile, nametipo, funtiont
     if (agent[nameArray].length > 0) {
         agent.tags[contentFile].html(thumbHtml);
     } else {
-        agent.tags[contentFile].html(`<div class="col-xs-12"><div class="text-center" style="height: 500px">No hay ninguna ${nametipo}</div></div>`);
+        agent.tags[contentFile].html(`<div id="not-found-${nametipo}" class="col-xs-12"><div class="text-center" style="height: 500px">No hay ninguna ${nametipo}</div></div>`);
     }
 }
 
@@ -135,20 +135,60 @@ agent.pushArray = function(data) {
     if (data.tipo == 'image') {
         agent.arrImages.push(data);
         agent.tags.contentImages.prepend(agent.templateimage(data, agent.room));
+        agent.tags.contentImages.children("#not-found-images").remove();
     }
     if (data.tipo == 'video') {
         agent.arrVideos.push(data);
         agent.tags.contentVideos.prepend(agent.templatevideo(data, agent.room));
+        agent.tags.contentVideos.children("#not-found-videos").remove();
     }
     if (data.tipo == 'document') {
         agent.arrDocument.push(data);
         agent.tags.contentDocument.prepend(agent.templatedocument(data, agent.room));
+        agent.tags.contentDocument.children("#not-found-documents").remove();
     }
 }
 
-agent.id_delete = "";
-agent.modalDelete = function(id) {
-    agent.id_delete = id;
+/**
+ * 
+ * Agregar nuevo data al arrImages, arrVideos o arrDocument y mostrar en pantalla 
+ * @param {*} data 
+ */
+agent.deleteArray = function(_id, tipo) {
+    if (tipo == 'image') {
+        agent.arrImages = agent.arrImages.filter(el => el._id != _id);
+        console.log(agent.arrImages);
+        $("#t-" + agent.delete_id).remove(); //eliminar de la vista
+        if (agent.arrImages.length <= 0) {
+            agent.tags.contentImages.html(`<div id="not-found-images" class="col-xs-12"><div class="text-center" style="height: 500px">No hay ninguna Imagen</div></div>`);
+        }
+    }
+    if (tipo == 'video') {
+        agent.arrVideos = agent.arrVideos.filter(el => el._id != _id);
+        $("#t-" + agent.delete_id).remove(); //eliminar de la vista
+        if (agent.arrVideos.length <= 0) {
+            agent.tags.contentVideos.html(`<div id="not-found-videos" class="col-xs-12"><div class="text-center" style="height: 500px">No hay ninguna Imagen</div></div>`);
+        }
+    }
+    if (tipo == 'document') {
+        agent.arrDocument = agent.arrDocument.filter(el => el._id != _id);
+        $("#t-" + agent.delete_id).remove(); //eliminar de la vista
+        if (agent.arrDocument.length <= 0) {
+            agent.tags.contentDocument.html(`<div id="not-found-documents" class="col-xs-12"><div class="text-center" style="height: 500px">No hay ninguna Imagen</div></div>`);
+        }
+    }
+}
+
+/**
+ * 
+ * Abrir modal delete
+ * 
+ */
+agent.delete_id = "";
+agent.delete_tipo = "";
+agent.modalDelete = function(id, tipo) {
+    agent.delete_id = id;
+    agent.delete_tipo = tipo;
     agent.tags.modaldeleteGalery.modal();
 }
 
@@ -242,11 +282,14 @@ agent.getFileGalery = async() => {
 
 agent.deleteGalery = () => {
     $.ajax({
-        url: agent.domain + '/galery/file/' + agent.id_delete,
+        url: agent.domain + '/galery/file/' + agent.delete_id,
         type: 'DELETE',
         data: {},
         success: function(response) {
-            $("#t-" + agent.id_delete).remove(); //eliminar de la vista
+            if (response.ok) {
+                agent.deleteArray(agent.delete_id, agent.delete_tipo); // borrar object de la lista de files segun el tipo
+                agent.tags.modaldeleteGalery.modal('hide');
+            }
             // agent.arrImages = result.filter(el => el.tipo == 'image')[0].data;
         },
         error: function(jqXHR, textStatus, errorThrown) {
@@ -260,7 +303,7 @@ agent.deleteGalery = () => {
 
 /** ----------- TEMPLATE -------------------------------------------------------------------------------------------------------------- */
 agent.templateimage = function(img, room) {
-    return `<div id="t-${$img.id}" class="col-xs-12 col-sm-12 col-md-6">
+    return `<div id="t-${img._id}" class="col-xs-12 col-sm-12 col-md-6">
                 <div class="thumbnail-content">
                     <div class="thumbnail">
                         <div class="image-content" style="background-image: url('${img.file}');"></div>
@@ -273,7 +316,7 @@ agent.templateimage = function(img, room) {
 }
 
 agent.templatevideo = function(vid, room) {
-    return `<div id="t-${$vid.id}" class="col-xs-12 col-sm-12 col-md-6">
+    return `<div id="t-${vid._id}" class="col-xs-12 col-sm-12 col-md-6">
                 <div class="thumbnail-content">
                     <div class="thumbnail">
                         <div align="center" class="embed-responsive embed-responsive-16by9">
@@ -291,7 +334,7 @@ agent.templatevideo = function(vid, room) {
 }
 
 agent.templatedocument = function(doc, room) {
-    return `<div id="t-${$vid.id}" class="col-xs-12 col-sm-6 col-md-4 col-lg-4" style="margin-top: 10px;">
+    return `<div id="t-${doc._id}" class="col-xs-12 col-sm-6 col-md-4 col-lg-4" style="margin-top: 10px;">
                 <div class="panel panel-default">
                     <div class="panel-body">
                         <div class="text-center">
@@ -312,7 +355,7 @@ agent.btnbottomthumb = function(data, room, tipo) {
                 <button class="btn btn-success" role="button" onclick="agent.galerySelected('${data._id}', '${room}', '${tipo}')">
                     <i class="fa fa-check-circle" aria-hidden="true"></i> Seleccionar
                 </button>
-                <button class="btn btn-danger" type="button" role="button" onclick="agent.modalDelete('${data._id}')">
+                <button class="btn btn-danger" type="button" role="button" onclick="agent.modalDelete('${data._id}', '${tipo}')">
                     <i class="fa fa-trash" aria-hidden="true"></i> Eliminar
                 </button>
             </p>`;

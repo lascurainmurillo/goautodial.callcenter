@@ -1090,6 +1090,7 @@ function response($order_id,$amount,$response_code,$response_desc){
 																		</div>
 																	</div>
 																	<div class="row" id="content-images">
+																		
 																	</div>
 																</div>
 																<div role="tabpanel" class="tab-pane" id="galery-videos">
@@ -1103,6 +1104,7 @@ function response($order_id,$amount,$response_code,$response_desc){
 																		</div>
 																	</div>
 																	<div class="row" id="content-videos">
+																		
 																	</div>
 																</div>
 																<div role="tabpanel" class="tab-pane" id="galery-documents">
@@ -1116,6 +1118,7 @@ function response($order_id,$amount,$response_code,$response_desc){
 																		</div>
 																	</div>
 																	<div class="row" id="content-documents">
+																		
 																	</div>
 																</div>
 															</div>
@@ -1150,14 +1153,14 @@ function response($order_id,$amount,$response_code,$response_desc){
 															<h4 class="modal-title" id="myModalLabel">Eliminar</h4>
 														</div>
 														<div class="modal-body">
-															<div>
+															<div class="text-center">
 																<h3>
 																¿Está seguro que desea eliminar este archivo?
 																</h3>
 															</div>
-															<div class="text-center">
-															<button class="btn btn-primary">No</button>
-															<button class="btn btn-danger" onClick="agent.deleteGalery()">Si</button>
+															<div class="text-center" style="margin-top: 10px">
+																<button class="btn btn-primary">No</button>
+																<button class="btn btn-danger" onClick="agent.deleteGalery()">Si</button>
 															</div>
 														</div>
 													</div>
