@@ -953,8 +953,13 @@ function response($order_id,$amount,$response_code,$response_desc){
 															<div id="backtransparent" class=""></div>
 															<div id="alert-socket" class="alert-socket">
 																<div class="alert-form">
-																	<div>
-																		Hay problemas de conexión en el chat.
+																	<div style="margin: 0px 10px 10px 15px">
+																		Hay problemas de conexión con el servidor chat. 
+																	</div>
+																	<div class="text-center">
+																	<button class="btn btn-warning" onclick="executeSocket()">
+																	Reestablecer
+																	</button>
 																	</div>
 																</div>
 															</div>
@@ -2064,8 +2069,8 @@ function response($order_id,$amount,$response_code,$response_desc){
 
 
 
-<button onclick="socketcus.initCallWhatsapp('+5215585353729', 'Moises lascu', '1004')" class="">iniciar simular llamada1</button>
-<button onclick="socketcus.initCallWhatsapp('+51955794343', 'Lili bon ifacio', '1004')" class="">iniciar simular llamada2</button>
+<button onclick="socketcus.initCallWhatsapp('+5215585353729', 'Moises lascu', '1004')" class="hidden">iniciar simular llamada1</button>
+<button onclick="socketcus.initCallWhatsapp('+51955794343', 'Lili bon ifacio', '1004')" class="hidden">iniciar simular llamada2</button>
 
 		<?php print $ui->standardizedThemeJS();?>
 		<script type="text/javascript">									
@@ -3055,9 +3060,22 @@ function response($order_id,$amount,$response_code,$response_desc){
 		<script src="js/custom/socket.js" type="text/javascript"></script>
 		<script>
 			// nodejs socket
-			socketcus.init('<?php echo DOMAIN_SOCKET ?>', '<?php echo $user->getUserA() ?>');
-			socketcus.chatwhatsapp(null, null, '<?php echo LIST_ID ?>');
 			
+			const executeSocket = function() {
+				console.log("ejecutandoo........");
+				// conectar con socket
+				socketcus.init('<?php echo DOMAIN_SOCKET ?>', '<?php echo $user->getUserA() ?>');
+
+				// iniciar rooms
+			socketcus.chatwhatsapp(null, null, '<?php echo LIST_ID ?>');
+			}
+
+			// ejecutar socket
+			executeSocket();
+
+			
+			
+			// sólo para pruebas
 			socketcus.initCallWhatsapp = function(phone, name, list) {
 				socketcus.chatwhatsapp(phone, name, list);
 			}

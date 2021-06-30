@@ -7,7 +7,12 @@
 socketcus = {}
 socketcus.socket = null;
 socketcus.init = function(DOMAIN, agent_username) {
-    socketcus.socket = io.connect(DOMAIN, { 'forceNew': true });
+    socketcus.socket = io.connect(DOMAIN, {
+        'forceNew': true,
+        query: {
+            "agent_username": agent_username
+        }
+    });
     $("#backtransparent").addClass('hidden');
     $("#alert-socket").addClass('hidden');
     socketcus.domain = DOMAIN;
@@ -28,16 +33,25 @@ socketcus.init = function(DOMAIN, agent_username) {
         // handle server error here
         // ocultar chat si sucede un error
         if ($("#backtransparent").hasClass('hidden')) {
-            $("#alert-socket").html(`<div>Hubo un problema en la conexión. Click aquí para continuar o recargue la página.</div><button class="btn btn-warning" onclick="socketcus.showchat();">Click aquí</button>`);
+            $("#alert-socket").html(`
+                    <div style="margin: 0px 10px 10px 10px">
+                        Hubo un problema en la conexión con el servidor. Espere a que se reestablezca la conexión.
+                    </div>
+                    <div>
+                        <i class="fa fa-circle-o-notch fa-spin fa-3x fa-fw txt-skin-blue"></i>
+                    </div>
+            `);
             $("#backtransparent").removeClass('hidden');
             $("#alert-socket").removeClass('hidden');
         }
-        console.log('Error connecting to server');
+    });
+
+    socketcus.socket.on("error", (error) => {
+        console.log("ESTOY EN error");
     });
 
     // Obtiene y renderisa la lista de clientes 
     socketcus.socket.on('roomUsers', ({ room, agent_fromsocket }) => {
-        console.log("cargando.........");
         console.log(socketcus.selectroom);
         if (socketcus.selectroom) {
             var exist_tag = $("#list" + socketcus.selectroom.replace(/\+/g, '\\+')).length <= 0 ? true : false;
@@ -95,7 +109,7 @@ socketcus.init = function(DOMAIN, agent_username) {
     });
 
     // Escuchar mensajes de whatsapp
-    socketcus.socket.on('message', message => {
+    socketcus.socket.on('message', (message) => {
         console.log("--------------- RESULT -----------------");
         console.log(message);
 
@@ -104,6 +118,13 @@ socketcus.init = function(DOMAIN, agent_username) {
 
         // colocar scrool al final
         socketcus.scrollend(null, message.send_tipo);
+    });
+
+    //recibe un mensaje cuando está conectado el socket servidor
+    socketcus.socket.on('conectadocustom', (data) => {
+
+        // oculta venta de alert de desconectado
+        socketcus.showchat();
     });
 }
 
@@ -164,7 +185,7 @@ socketcus.sendmessage = function(room, enter = false) {
 
         data_call.message.msg = socketcus.dataGalerySelected[onlyroom].file;
         data_call.message.send_tipo = socketcus.dataGalerySelected[onlyroom].tipo;
-        data_call.message.name = socketcus.dataGalerySelected[onlyroom].name;
+        data_call.message.filename = socketcus.dataGalerySelected[onlyroom].name;
 
         // Emitir un mensaje hacia el server
         socketcus.socket.emit('chatMessage', data_call);
@@ -179,7 +200,7 @@ socketcus.sendmessage = function(room, enter = false) {
         $(reply + " #loader-send").removeClass("hidden");
 
         fd.append('file', socketcus.filesTemp[onlyroom].file[0]);
-        // console.log(socketcus.filesTemp.file[0]);
+
         $.ajax({
             url: socketcus.domain + '/whatsapp/send-file',
             type: 'POST',
@@ -187,7 +208,7 @@ socketcus.sendmessage = function(room, enter = false) {
             contentType: false,
             processData: false,
             success: function(response) {
-                // console.log(response);
+
                 if (response.status == 200 || response.status == 201) {
                     data_call.message.msg = response.url_file;
                     data_call.message.send_tipo = socketcus.filesTemp[onlyroom].type;
@@ -203,7 +224,6 @@ socketcus.sendmessage = function(room, enter = false) {
             error: function(jqXHR, textStatus, errorThrown) {
                 console.log(errorThrown);
                 // limpiar files y mostrar loader
-                // $(reply + " #comment-send").prop('disabled', false);
                 $(reply + " #comment-send")[0].emojioneArea.enable();
                 socketcus.clearfiles(room);
             }
@@ -233,6 +253,7 @@ socketcus.sendmessage = function(room, enter = false) {
             data_call.message.send_tipo = 'chat';
 
             // Emitir un mensaje hacia el server
+            console.log("Emitiendo a chatMessage", data_call);
             socketcus.socket.emit('chatMessage', data_call);
 
             // borrar espacios en el text area
@@ -241,8 +262,6 @@ socketcus.sendmessage = function(room, enter = false) {
             // limpiar files y mostrar loader
             socketcus.clearfiles(room);
 
-            // $(reply + " #comment-send").val("");
-            // $(reply + " #comment-send").focus();
             $(comment_emoji)[0].emojioneArea.setText("");
         }
 
@@ -262,7 +281,7 @@ socketcus.fileselect = function(tag, room) {
     var previous = "#whatspreviousfile" + room.replace(/\+/g, '\\+');
     var onlyroom = room.replace(/\+/g, '\\+');
     $(reply + " #comment-send")[0].emojioneArea.disable();
-    // console.log($(reply + ' #whats_attach_files')[0].files, tag);
+
     // si es multimedia imagen o video
     if ($(reply + ' #whats_attach_multimedia')[0].files != null && tag == "#whats_attach_multimedia") { // si es imagen o video
         socketcus.filesTemp[onlyroom].file = $(reply + ' #whats_attach_multimedia')[0].files;
@@ -478,9 +497,6 @@ socketcus.makeReply = function(room) {
 
             $(reply + " #whats_attach_multimedia").change(function() {
                 socketcus.declareFilesRoom(room); // limpiar files
-                // $(reply + " #comment-send")[0].emojioneArea.disable();
-                // $(reply + " #comment-send").prop('disabled', true);
-                // $(reply + " #comment-send").val("");
                 socketcus.fileselect("#whats_attach_multimedia", room); // enviar variable para indicar que es un archivo multimedia
             });
         }
@@ -493,9 +509,6 @@ socketcus.makeReply = function(room) {
 
             $(reply + " #whats_attach_files").change(function() {
                 socketcus.declareFilesRoom(room); // limpiar files
-                // $(reply + " #comment-send")[0].emojioneArea.disable();
-                // $(reply + " #comment-send").prop('disabled', true);
-                // $(reply + " #comment-send").val("");
                 socketcus.fileselect("#whats_attach_files", room); // enviar variable para indicar que es cualquier tipo de archivo
             });
         }
@@ -509,6 +522,11 @@ socketcus.makeReply = function(room) {
 
 }
 
+
+/**
+ * Box de previsualizacion de imagen, video
+ * @param {*} room 
+ */
 socketcus.makePrevious = function(room) {
     var previous = "#whatspreviousfile" + room.replace(/\+/g, '\\+');
     var onlyroom = room.replace(/\+/g, '\\+');
@@ -544,6 +562,7 @@ socketcus.htmlchatting = function(message, room, append = 1) {
         }
     }
 }
+
 
 /**
  * 
@@ -597,9 +616,9 @@ socketcus.select_room = function(e, room, client_name, image) {
 }
 
 
-
 /**
  * 
+ * Header del chat
  * @param {*} image 
  * @param {*} client_name 
  */
@@ -616,7 +635,7 @@ socketcus.headernameWhatsapp = function(image, client_name) {
 
 /**
  * 
- * 
+ * Limpiar variables
  * 
  */
 socketcus.clearfiles = function(room) {
@@ -632,8 +651,6 @@ socketcus.clearfiles = function(room) {
     // Limpiar inputs files
     $(reply + "#whats_attach_multimedia").val("");
     $(reply + "#whats_attach_files").val("");
-    // document.getElementById("whats_attach_multimedia").value = "";
-    // document.getElementById("whats_attach_files").value = "";
 
     // no usando galeria
     socketcus.usegalery[onlyroom] = false;
@@ -645,13 +662,13 @@ socketcus.clearfiles = function(room) {
     }
 
     // cambiar loader button send
-    // $(reply + " #comment-send").prop('disabled', false);
     $(reply + " #comment-send")[0].emojioneArea.enable();
     if (!$(reply + " #loader-send").hasClass('hidden')) {
         $(reply + " #loader-send").addClass("hidden");
         $(reply + " #message-send").removeClass("hidden");
     }
 }
+
 
 /**
  * 
@@ -663,7 +680,7 @@ socketcus.showchat = function() {
         $("#backtransparent").addClass('hidden');
         $("#alert-socket").addClass('hidden');
     }
-    socketcus.chatwhatsapp(null, null, 1004);
+    // socketcus.chatwhatsapp(null, null, 1004);
 }
 
 
@@ -709,6 +726,7 @@ socketcus.scrollend = function(time = null, send_tipo = null) {
     }
 
 }
+
 
 socketcus.scrollCurrent = 0;
 $("#conversation-whats").scroll(function() {
