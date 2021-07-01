@@ -954,12 +954,14 @@ function response($order_id,$amount,$response_code,$response_desc){
 															<div id="alert-socket" class="alert-socket">
 																<div class="alert-form">
 																	<div style="margin: 0px 10px 10px 15px">
-																		Hay problemas de conexión con el servidor chat. 
+																		Hay problemas de conexión con el servidor chat. Intente recargar la página.
 																	</div>
 																	<div class="text-center">
+																	<!-- 
 																	<button class="btn btn-warning" onclick="executeSocket()">
 																	Reestablecer
 																	</button>
+																	-->
 																	</div>
 																</div>
 															</div>
