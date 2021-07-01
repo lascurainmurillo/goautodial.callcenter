@@ -11,7 +11,8 @@ socketcus.init = function(DOMAIN, agent_username) {
         'forceNew': true,
         query: {
             "agent_username": agent_username
-        }
+        },
+        // transports: ['websocket']
     });
     $("#backtransparent").addClass('hidden');
     $("#alert-socket").addClass('hidden');

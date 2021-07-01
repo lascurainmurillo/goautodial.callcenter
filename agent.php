@@ -3067,7 +3067,7 @@ function response($order_id,$amount,$response_code,$response_desc){
 				socketcus.init('<?php echo DOMAIN_SOCKET ?>', '<?php echo $user->getUserA() ?>');
 
 				// iniciar rooms
-			socketcus.chatwhatsapp(null, null, '<?php echo LIST_ID ?>');
+				socketcus.chatwhatsapp(null, null, '<?php echo LIST_ID ?>');
 			}
 
 			// ejecutar socket
