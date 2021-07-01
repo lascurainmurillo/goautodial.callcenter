@@ -939,7 +939,7 @@ function response($order_id,$amount,$response_code,$response_desc){
 										<div id="chats" role="tabpanel" class="tab-pane">
 											
 											<div class="row">
-												<div class="col-xs-12 col-md-6">
+												<div class="col-xs-12 col-md-offset-3 col-md-6">
 													<div class="row">
 														<div class="col-xs-12">
 															<div class="header-whatsapp">
