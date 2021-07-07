@@ -3109,6 +3109,7 @@ function response($order_id,$amount,$response_code,$response_desc){
 			*/
 		</script>
 		<script src="/js/custom/agent.js" type="text/javascript"></script>
+		<script src="/js/custom/agent-infocontact-footer.js" type="text/javascript"></script>
 		<script>
 			agent.loadVar('<?php echo DOMAIN_SOCKET ?>', '<?php echo $user->getUserA() ?>');
 		</script>

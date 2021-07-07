@@ -8445,6 +8445,7 @@ function GetCustomFields(listid, show, getData, viewFields) {
                         if (show) {
                             $("#custom_fields_content, #custom_br").slideDown();
                         }
+                        agentinfo.execinput_formcustom(); // ejecutar algunos plugin sobre los inputs
                     } else {
                         $("#custom-field-content").html(customHTML);
                         if (show) {
