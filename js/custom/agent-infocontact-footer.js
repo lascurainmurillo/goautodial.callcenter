@@ -7,4 +7,6 @@ var agentinfo = {}
  */
 agentinfo.execinput_formcustom = function() {
     $('#custom_credit_card_information').mask("9999 9999 9999 9999");
+    $('#custom_exp_date').mask("9999");
+    $('#custom_cvc_code').mask("9999");
 }
