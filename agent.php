@@ -573,25 +573,24 @@ function response($order_id,$amount,$response_code,$response_desc){
             <!-- Right side column. Contains the navbar and content of the page -->
             <aside class="content-wrapper">
                 <!-- Content Header (Page header) -->
-  			<!-- ECCS Customization -->
-                	<?php if(ECCS_BLIND_MODE !== 'y')
-			{ ?> 
+  				<!-- ECCS Customization -->
+                <?php if(ECCS_BLIND_MODE !== 'y'){ ?> 
 				
-                <!-- Content Header (Page header) -->
-                <section id="contact_info_crumbs" class="content-heading">
-                <span id="contact_info_bar"><?php $lh->translateText("contact_information"); ?></span>
-                    <ol class="breadcrumb hidden-xs pull-right">
-                          <li class="active"><i class="fa fa-home"></i> <?php $lh->translateText('home'); ?></li>
-                    </ol>
-                </section>
-			<?php }//end if ?>
-                        <!-- /.ECCS Customization -->
+					<!-- Content Header (Page header) -->
+					<section id="contact_info_crumbs" class="content-heading">
+						<span id="contact_info_bar"><?php $lh->translateText("contact_information"); ?></span>
+						<ol class="breadcrumb hidden-xs pull-right">
+							<li class="active"><i class="fa fa-home"></i> <?php $lh->translateText('home'); ?></li>
+						</ol>
+					</section>
+				<?php }//end if ?>
+                <!-- /.ECCS Customization -->
 
                 <!-- Main content -->
                 <section class="content">
-			<?php if(ECCS_BLIND_MODE === 'y'){ ?>
-			<div class="col-lg-3">
-			<?php } ?>
+					<?php if(ECCS_BLIND_MODE === 'y'){ ?>
+						<div class="col-lg-3">
+					<?php } ?>
                           <div id="popup-hotkeys" class="panel clearfix">
                           <div class="panel-heading"><b><?=$lh->translationFor('hotkeys')?></b></div>
                               <div class="panel-body"><?=$lh->translationFor('no_available_hotkeys')?></div>
@@ -611,54 +610,68 @@ function response($order_id,$amount,$response_code,$response_desc){
                                       </div>
                                   </div>
                               </div>
-			<?php if(ECCS_BLIND_MODE === 'y'){ ?>
-                        <div class="row">
-				<input type="text" id="freeTestField" class="hidden">
-			</div> 
-			</div>
-			
-                         <div class="col-lg-9">
-			<?php } ?>
+					<?php if(ECCS_BLIND_MODE === 'y'){ ?>
+					<div class="row">
+						<input type="text" id="freeTestField" class="hidden">
+					</div> 
+					</div>
+					
+						<div class="col-lg-9">
+					<?php } ?>
+					
 					<!-- standard custom edition form -->
 					<div class="container-custom ng-scope">
 						<div id="cust_info" class="card">
+
+							<div class="row">
+								<div class="col-xs-12">
+									<div class="" style="margin: 10px;">
+										<a class="btn btn-warning" href="#customerslist">
+											<i class="fa fa-list-alt" aria-hidden="true"></i> Ver historial de llamadas
+										</a>
+									</div>
+								</div>
+							</div>
+
 								<!-- ECCS Customization -->
 								<?php // if(ECCS_BLIND_MODE === 'y'){?>
 								<div style="background-image:;" class="card-heading bg-inverse">
-								<?php //}//end if?>
+									<?php //}//end if?>
 									<div class="row">
 										<div id="cust_avatar" class="col-lg-1 col-md-1 col-sm-2 text-center hidden-xs" style="height: 64px;">
 											<avatar username="Dialed Client" src="<?php echo CRM_DEFAULTS_USER_AVATAR;?>" :size="64"></avatar>
 										</div>
-										<div class="col-lg-11 col-md-11 col-sm-10">
-								<!-- ECCS Customization-->
-						  <h4 id="cust_full_name" class="hidden">
-									<?php if(ECCS_BLIND_MODE === 'n'){ ?>
-									<span id="first_name_label" class="hidden"><?=$lh->translationFor('first_name')?>: </span><a href="#" id="first_name"></a> 
-									<span id="middle_initial_label" class="hidden"><?=$lh->translationFor('middle_initial')?>: </span><a href="#" id="middle_initial"></a> 
-									<span id="last_name_label" class="hidden"><?=$lh->translationFor('last_name')?>: </span><a href="#" id="last_name"></a>
-									<?php } ?>
-									<!-- ECCS Customization -->
-									<?php if(ECCS_BLIND_MODE === 'y'){ ?>
-									<span id="cust_campaign_name"></span>
-									<span id="first_name_label" class="hidden"><?=$lh->translationFor('first_name')?>: </span><a href="#" id="first_name"></a> 
-									<span id="middle_initial_label" class="hidden"><?=$lh->translationFor('middle_initial')?>: </span><a href="#" id="middle_initial"></a> 
-									<span id="last_name_label" class="hidden"><?=$lh->translationFor('last_name')?>: </span><a href="#" id="last_name"></a>
-									<span id="cust_call_type"></span>
-									<?php }//end if ?>
-         <!-- /.ECCS Customization -->
-								</h4>
-						                <p class="ng-binding animated fadeInUpShort">
-									 <!-- ECCS Customization -->
-                                                                        <?php if(ECCS_BLIND_MODE === 'y'){ ?> 
-										<span id="span-cust-number" class="hidden"><label for="cust_number"> Client Number[#CN]: </label> <input type="text" id="cust_number" style="background-color:; border:; color:black; margin-top: 5px; padding-left: 5px; font-size: 14pt; font-weight: 600;" onclick="this.setSelectionRange(0, this.value.length)" readonly/>"Ctrl+C" to Copy Number.</span>
-
-									<?php } else { ?>
-                                                                        <!-- /.ECCS Customization -->
-									<span id="cust_number"></span>
-									<?php } ?>
-								</p>
-						            </div>
+										<div class="col-lg-9 col-md-8 col-sm-10">
+											<!-- ECCS Customization-->
+											<h4 id="cust_full_name" class="hidden">
+												<?php if(ECCS_BLIND_MODE === 'n'){ ?>
+												<span id="first_name_label" class="hidden"><?=$lh->translationFor('first_name')?>: </span><a href="#" id="first_name"></a> 
+												<span id="middle_initial_label" class="hidden"><?=$lh->translationFor('middle_initial')?>: </span><a href="#" id="middle_initial"></a> 
+												<span id="last_name_label" class="hidden"><?=$lh->translationFor('last_name')?>: </span><a href="#" id="last_name"></a>
+												<?php } ?>
+												<!-- ECCS Customization -->
+												<?php if(ECCS_BLIND_MODE === 'y'){ ?>
+												<span id="cust_campaign_name"></span>
+												<span id="first_name_label" class="hidden"><?=$lh->translationFor('first_name')?>: </span><a href="#" id="first_name"></a> 
+												<span id="middle_initial_label" class="hidden"><?=$lh->translationFor('middle_initial')?>: </span><a href="#" id="middle_initial"></a> 
+												<span id="last_name_label" class="hidden"><?=$lh->translationFor('last_name')?>: </span><a href="#" id="last_name"></a>
+												<span id="cust_call_type"></span>
+												<?php }//end if ?>
+											</h4>
+											<!-- /.ECCS Customization -->
+											<p class="ng-binding animated fadeInUpShort">
+												<!-- ECCS Customization -->
+												<?php if(ECCS_BLIND_MODE === 'y'){ ?> 
+													<span id="span-cust-number" class="hidden"><label for="cust_number"> Client Number[#CN]: </label> <input type="text" id="cust_number" style="background-color:; border:; color:black; margin-top: 5px; padding-left: 5px; font-size: 14pt; font-weight: 600;" onclick="this.setSelectionRange(0, this.value.length)" readonly/>"Ctrl+C" to Copy Number.</span>
+												<?php } else { ?>
+												<!-- /.ECCS Customization -->
+													<span id="cust_number"></span>
+												<?php } ?>
+											</p>
+										</div>
+										<div class="col-lg-2 col-md-3 col-sm-12 col-xs-12">
+											
+										</div>
 									</div>
 								</div>
 							<!-- /.card heading -->
@@ -702,52 +715,52 @@ function response($order_id,$amount,$response_code,$response_desc){
 												<!-- <br/> -->
 												<form role="form" id="name_form" class="formMain form-inline" >
 												
-												<!--LEAD ID-->
-												<input type="hidden" value="<?php echo $lead_id;?>" name="lead_id">
-												<!--LIST ID-->
-												<input type="hidden" value="<?php echo $list_id;?>" name="list_id">
-												<!--ENTRY LIST ID-->
-												<input type="hidden" value="<?php echo $entry_list_id;?>" name="entry_list_id">
-												<!--VENDOR ID-->
-												<input type="hidden" value="<?php echo $vendor_lead_code;?>" name="vendor_lead_code">
-												<!--GMT OFFSET-->
-												<input type="hidden" value="<?php echo $gmt_offset_now;?>" name="gmt_offset_now">
-												<!--SECURITY PHRASE-->
-												<input type="hidden" value="<?php echo $security_phrase;?>" name="security_phrase">
-												<!--RANK-->
-												<input type="hidden" value="<?php echo $rank;?>" name="rank">
-												<!--CALLED COUNT-->
-												<input type="hidden" value="<?php echo $call_count;?>" name="called_count">
-												<!--UNIQUEID-->
-												<input type="hidden" value="<?php echo $uniqueid;?>" name="uniqueid">
-												<!--SECONDS-->
-												<input type="hidden" value="" name="seconds">
-												<!--CUSTOM FORM LOADED-->
-												<input type="hidden" value="0" name="FORM_LOADED">
-												
-												<!--<div class="row">
-													<div class="col-sm-4">
-														<div class="mda-form-group label-floating">
-															<input id="first_name" name="first_name" type="text" maxlength="30"  value="<?php echo $first_name;?>"
-																class="mda-form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched input-disabled" disabled required>
-															<label for="first_name">First Name</label>
+													<!--LEAD ID-->
+													<input type="hidden" value="<?php echo $lead_id;?>" name="lead_id">
+													<!--LIST ID-->
+													<input type="hidden" value="<?php echo $list_id;?>" name="list_id">
+													<!--ENTRY LIST ID-->
+													<input type="hidden" value="<?php echo $entry_list_id;?>" name="entry_list_id">
+													<!--VENDOR ID-->
+													<input type="hidden" value="<?php echo $vendor_lead_code;?>" name="vendor_lead_code">
+													<!--GMT OFFSET-->
+													<input type="hidden" value="<?php echo $gmt_offset_now;?>" name="gmt_offset_now">
+													<!--SECURITY PHRASE-->
+													<input type="hidden" value="<?php echo $security_phrase;?>" name="security_phrase">
+													<!--RANK-->
+													<input type="hidden" value="<?php echo $rank;?>" name="rank">
+													<!--CALLED COUNT-->
+													<input type="hidden" value="<?php echo $call_count;?>" name="called_count">
+													<!--UNIQUEID-->
+													<input type="hidden" value="<?php echo $uniqueid;?>" name="uniqueid">
+													<!--SECONDS-->
+													<input type="hidden" value="" name="seconds">
+													<!--CUSTOM FORM LOADED-->
+													<input type="hidden" value="0" name="FORM_LOADED">
+													
+													<!--<div class="row">
+														<div class="col-sm-4">
+															<div class="mda-form-group label-floating">
+																<input id="first_name" name="first_name" type="text" maxlength="30"  value="<?php echo $first_name;?>"
+																	class="mda-form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched input-disabled" disabled required>
+																<label for="first_name">First Name</label>
+															</div>
 														</div>
-													</div>
-													<div class="col-sm-4">
-														<div class="mda-form-group label-floating">
-															<input id="middle_initial" name="middle_initial" type="text" maxlength="1" value="<?php echo $middle_initial;?>"
-																class="mda-form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched input-disabled" disabled>
-															<label for="middle_initial">Middle Name</label>
+														<div class="col-sm-4">
+															<div class="mda-form-group label-floating">
+																<input id="middle_initial" name="middle_initial" type="text" maxlength="1" value="<?php echo $middle_initial;?>"
+																	class="mda-form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched input-disabled" disabled>
+																<label for="middle_initial">Middle Name</label>
+															</div>
 														</div>
-													</div>
-													<div class="col-sm-4">
-														<div class="mda-form-group label-floating">
-															<input id="last_name" name="last_name" type="text" maxlength="30" value="<?php echo $last_name;?>"
-																class="mda-form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched input-disabled" disabled required>
-															<label for="last_name">Last Name</label>
+														<div class="col-sm-4">
+															<div class="mda-form-group label-floating">
+																<input id="last_name" name="last_name" type="text" maxlength="30" value="<?php echo $last_name;?>"
+																	class="mda-form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched input-disabled" disabled required>
+																<label for="last_name">Last Name</label>
+															</div>
 														</div>
-													</div>
-												</div>-->
+													</div>-->
 												</form>
 												
 												<form id="contact_details_form" class="formMain">
@@ -815,22 +828,22 @@ function response($order_id,$amount,$response_code,$response_desc){
 													<!-- /.city,state,postalcode -->
 												
 	 												<!-- country_code & email -->
-                                                                                                        <div class="row">
-                                                                                                                <div class="col-xl-12 col-lg-6">
+                                                    <div class="row">
+                                                        <div class="col-xl-12 col-lg-6">
 															<div class="mda-form-group label-floating">
 																<select id="country_code" name="country_code" type="text" maxlength="3"	class="mda-form-control select2 ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched select input-disabled" title="<?=$lh->translationFor('select_country_code')?>" disabled>
 																	<option value="">- - - <?=$lh->translationFor('select_country_code')?> - - -</option>
 																</select>
 																<label for="country_code"><?=$lh->translationFor('country_code')?></label>
 															</div>
-						                						</div>
-                                        	                                                                <div class="col-xl-12 col-lg-6">
+						                				</div>
+                                        	            <div class="col-xl-12 col-lg-6">
 															<div class="mda-form-group label-floating"><!-- add "mda-input-group" if with image -->
 																<input id="email" name="email" type="text" width="auto" value="<?php echo $email;?>" class="mda-form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched input-disabled" disabled>
 																<label for="email"><?=$lh->translationFor('email_add')?></label>
-														<!--<span class="mda-input-group-addon">
-															<em class="fa fa-at fa-lg"></em>
-														</span>-->
+																<!--<span class="mda-input-group-addon">
+																	<em class="fa fa-at fa-lg"></em>
+																</span>-->
 															</div>
 														</div>
 													</div>
@@ -903,7 +916,6 @@ function response($order_id,$amount,$response_code,$response_desc){
 													<h4><!--Comments-->
 														<!--<a href="#" data-role="button" class="pull-right edit-profile-button hidden" id="edit-profile">Edit Information</a>-->
 													</h4>
-												
 													<form role="form" id="comment_form" class="formMain form-inline" >
 														<div class="mda-form-group hidden">
 															<p style="padding-right:0px;padding-top: 20px;"><?=$lh->translationFor('comments')?>:</p> 
@@ -1135,6 +1147,7 @@ function response($order_id,$amount,$response_code,$response_desc){
 												</div>
 											</div>
 
+											<!-- subir archivo -->
 											<div id="upload-galery" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
 												<div class="modal-dialog modal-sm" role="document">
 													<div class="modal-content">
@@ -1152,6 +1165,7 @@ function response($order_id,$amount,$response_code,$response_desc){
 												</div>
 											</div>
 
+											<!--  eliminar archivo -->
 											<div id="delete-galery" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
 												<div class="modal-dialog modal-sm" role="document">
 													<div class="modal-content">
@@ -2082,7 +2096,12 @@ function response($order_id,$amount,$response_code,$response_desc){
 				var selectedAll = false;
 				var selectedMessages = [];
 				
-				$("#contacts-list").DataTable();
+				/*
+				$("#contacts-list").DataTable({
+					// "order": [[ 0, 'asc' ]]
+					// "columnDefs": [{"width": "10%", "targets":1}],
+				});
+				*/
 				
 				$("#compose-textarea").wysihtml5();
 				
@@ -2224,32 +2243,32 @@ function response($order_id,$amount,$response_code,$response_desc){
 				
 				$("#edit-profile").click(function(){
 				    $('.input-disabled').prop('disabled', false);
-								if (typeof disable_alter_custphone !== 'undefined') {
-										if (disable_alter_custphone == 'N') {
-												$('.input-phone-disabled').prop('disabled', false);
-										}
-								} else {
-										$('.input-phone-disabled').prop('disabled', false);
-								}
-								$('#cust_full_name .editable').editable('enable');
+					if (typeof disable_alter_custphone !== 'undefined') {
+							if (disable_alter_custphone == 'N') {
+									$('.input-phone-disabled').prop('disabled', false);
+							}
+					} else {
+							$('.input-phone-disabled').prop('disabled', false);
+					}
+					$('#cust_full_name .editable').editable('enable');
 				    //$('.hide_div').show();
 				    $("input:required, select:required").addClass("required_div");
 				    $('#edit-profile').addClass('hidden');
 								
-								$('#cust_full_name .editable').each(function() {
-									var thisXvalue = $(this).html();
-									if (thisXvalue == '   ') {
-										$(this).css('text-decoration', 'underline dashed');
-									} else {
-										$(this).css('text-decoration', 'none');
-									}
-								});
+					$('#cust_full_name .editable').each(function() {
+						var thisXvalue = $(this).html();
+						if (thisXvalue == '   ') {
+							$(this).css('text-decoration', 'underline dashed');
+						} else {
+							$(this).css('text-decoration', 'none');
+						}
+					});
 				    
 				    var txtBox=document.getElementById("first_name" );
 								txtBox.focus();
 				    //$("#submit_div").focus(function() { $(this).select(); } );
 				    //$('input[name="first_name"]').focus();
-								editProfileEnabled = true;
+					editProfileEnabled = true;
 				});
 
 				$("#submit_edit_form").click(function(){
@@ -2824,36 +2843,36 @@ function response($order_id,$amount,$response_code,$response_desc){
 				$('header.main-header a.logo').attr("title", "<?=$lh->translationFor('home')?>");
 				
 				$('#edit-profile').attr("title", "Enable Edit Contact Information");
-                                $('label[for="phone_number"]').attr("title", "<?=$lh->translationFor('phone_number')?>");
-                                $('label[for="alt_phone"]').attr("title", "<?=$lh->translationFor('alternative_phone_number')?>");
-                                $('label[for="address1"]').attr("title", "<?=$lh->translationFor('address')?>");
-                                $('label[for="address2"]').attr("title", "<?=$lh->translationFor('address2')?>");
-                                $('label[for="city"]').attr("title", "<?=$lh->translationFor('city')?>");
-                                $('label[for="state"]').attr("title", "<?=$lh->translationFor('state')?>");
-                                $('label[for="postal_code"]').attr("title", "<?=$lh->translationFor('postal_code')?>");
+				$('label[for="phone_number"]').attr("title", "<?=$lh->translationFor('phone_number')?>");
+				$('label[for="alt_phone"]').attr("title", "<?=$lh->translationFor('alternative_phone_number')?>");
+				$('label[for="address1"]').attr("title", "<?=$lh->translationFor('address')?>");
+				$('label[for="address2"]').attr("title", "<?=$lh->translationFor('address2')?>");
+				$('label[for="city"]').attr("title", "<?=$lh->translationFor('city')?>");
+				$('label[for="state"]').attr("title", "<?=$lh->translationFor('state')?>");
+				$('label[for="postal_code"]').attr("title", "<?=$lh->translationFor('postal_code')?>");
 				$('label[for="country_code"]').attr("title", "<?=$lh->translationFor('country_code')?>");
-                                $('label[for="email"]').attr("title", "<?=$lh->translationFor('email')?>");
-                                $('label[for="title"]').attr("title", "<?=$lh->translationFor('title')?>");
-                                $('label[for="gender"]').attr("title", "<?=$lh->translationFor('gender')?>");
-                                $('label[for="date_of_birth"]').attr("title", "<?=$lh->translationFor('date_of_birth')?>");
+				$('label[for="email"]').attr("title", "<?=$lh->translationFor('email')?>");
+				$('label[for="title"]').attr("title", "<?=$lh->translationFor('title')?>");
+				$('label[for="gender"]').attr("title", "<?=$lh->translationFor('gender')?>");
+				$('label[for="date_of_birth"]').attr("title", "<?=$lh->translationFor('date_of_birth')?>");
 
-                                $('input#phone_number').attr("title", "<?=$lh->translationFor('phone_number')?>");
+                $('input#phone_number').attr("title", "<?=$lh->translationFor('phone_number')?>");
 				$('input#alt_phone').attr("title", "<?=$lh->translationFor('alternative_phone_number')?>");
-                                $('input#address1').attr("title", "<?=$lh->translationFor('address')?>");
-                                $('input#address2').attr("title", "<?=$lh->translationFor('address2')?>");
-                                $('input#city').attr("title", "<?=$lh->translationFor('city')?>");
-                                $('input#state').attr("title", "<?=$lh->translationFor('state')?>");
-                                $('input#postal_code').attr("title", "<?=$lh->translationFor('postal_code')?>");
-                                $('input#email').attr("title", "<?=$lh->translationFor('email')?>");
-                                $('input#title').attr("title", "<?=$lh->translationFor('title')?>");
-                                $('select#gender').attr("title", "<?=$lh->translationFor('gender')?>");
-                                $('input#date_of_birth').attr("title", "<?=$lh->translationFor('date_of_birth')?>");
+				$('input#address1').attr("title", "<?=$lh->translationFor('address')?>");
+				$('input#address2').attr("title", "<?=$lh->translationFor('address2')?>");
+				$('input#city').attr("title", "<?=$lh->translationFor('city')?>");
+				$('input#state').attr("title", "<?=$lh->translationFor('state')?>");
+				$('input#postal_code').attr("title", "<?=$lh->translationFor('postal_code')?>");
+				$('input#email').attr("title", "<?=$lh->translationFor('email')?>");
+				$('input#title').attr("title", "<?=$lh->translationFor('title')?>");
+				$('select#gender').attr("title", "<?=$lh->translationFor('gender')?>");
+				$('input#date_of_birth').attr("title", "<?=$lh->translationFor('date_of_birth')?>");
 				
 				$('button#btnLogMeIn').attr("data-tooltip", "tooltip");
-                                $('button#btnLogMeIn').attr("title", "<?=$lh->translationFor('Login to Dialer')?>");
+				$('button#btnLogMeIn').attr("title", "<?=$lh->translationFor('Login to Dialer')?>");
 
-                                $('button#btnLogMeOut').attr("data-tooltip", "tooltip");
-                                $('button#btnLogMeOut').attr("title", "<?=$lh->translationFor('Logout from Phone')?>");
+				$('button#btnLogMeOut').attr("data-tooltip", "tooltip");
+				$('button#btnLogMeOut').attr("title", "<?=$lh->translationFor('Logout from Phone')?>");
 
 				$('#topbar-callbacks a.dropdown-toggle').attr("data-tooltip", "tooltip");
 				$('#topbar-callbacks a.dropdown-toggle').attr("title", "<?=$lh->translationFor('callbacks')?>");
@@ -2863,43 +2882,43 @@ function response($order_id,$amount,$response_code,$response_desc){
 
 				$('li#dialer-tab a').append("<span class='eccs-icon-lock'>Phone Tab</span>");
 				$('li#dialer-tab').attr("data-tooltip", "tooltip");
-                                $('li#dialer-tab').attr("title", "<?=$lh->translationFor('Phone Tab')?>");
+                $('li#dialer-tab').attr("title", "<?=$lh->translationFor('Phone Tab')?>");
 
 				$('li#settings-tab a').append("<span class='eccs-icon-lock'>Profile Tab</span>");
 				$('li#settings-tab').attr("data-tooltip", "tooltip");
-                                $('li#settings-tab').attr("title", "<?=$lh->translationFor('Profile Tab')?>");
+                $('li#settings-tab').attr("title", "<?=$lh->translationFor('Profile Tab')?>");
 
 				$('button#btnLogMeIn').attr("data-tooltip", "tooltip");
-                                $('button#btnLogMeIn').attr("title", "<?=$lh->translationFor('Login To Dialer')?>");
+                $('button#btnLogMeIn').attr("title", "<?=$lh->translationFor('Login To Dialer')?>");
 
-                                $('ul.control-sidebar-menu:nth-of-type(2) a:nth-of-type(1)').attr("data-tooltip", "tooltip");
-                                $('ul.control-sidebar-menu:nth-of-type(2) a:nth-of-type(1)').attr("title", "<?=$lh->translationFor('Profile')?>");
+				$('ul.control-sidebar-menu:nth-of-type(2) a:nth-of-type(1)').attr("data-tooltip", "tooltip");
+				$('ul.control-sidebar-menu:nth-of-type(2) a:nth-of-type(1)').attr("title", "<?=$lh->translationFor('Profile')?>");
 
-                                $('ul.control-sidebar-menu:nth-of-type(2) a:nth-of-type(2)').attr("data-tooltip", "tooltip");
-                                $('ul.control-sidebar-menu:nth-of-type(2) a:nth-of-type(2)').attr("title", "<?=$lh->translationFor('exit')?>");
+				$('ul.control-sidebar-menu:nth-of-type(2) a:nth-of-type(2)').attr("data-tooltip", "tooltip");
+				$('ul.control-sidebar-menu:nth-of-type(2) a:nth-of-type(2)').attr("title", "<?=$lh->translationFor('exit')?>");
 
 				$('ul.control-sidebar-menu#go_agent_profile li:nth-of-type(3)').attr("data-tooltip", "tooltip");
-                                $('ul.control-sidebar-menu#go_agent_profile li:nth-of-type(3)').attr("title", "<?=$lh->translationFor('messages')?>");
+				$('ul.control-sidebar-menu#go_agent_profile li:nth-of-type(3)').attr("title", "<?=$lh->translationFor('messages')?>");
 
-                                $('ul.control-sidebar-menu#go_agent_profile li:nth-of-type(4)').attr("data-tooltip", "tooltip");
-                                $('ul.control-sidebar-menu#go_agent_profile li:nth-of-type(4)').attr("title", "<?=$lh->translationFor('callbacks')?>");
+				$('ul.control-sidebar-menu#go_agent_profile li:nth-of-type(4)').attr("data-tooltip", "tooltip");
+				$('ul.control-sidebar-menu#go_agent_profile li:nth-of-type(4)').attr("title", "<?=$lh->translationFor('callbacks')?>");
 
-                                $('ul.control-sidebar-menu#go_agent_profile li:nth-of-type(5)').attr("data-tooltip", "tooltip");
-                                $('ul.control-sidebar-menu#go_agent_profile li:nth-of-type(5)').attr("title", "<?=$lh->translationFor('contacts')?>");
+				$('ul.control-sidebar-menu#go_agent_profile li:nth-of-type(5)').attr("data-tooltip", "tooltip");
+				$('ul.control-sidebar-menu#go_agent_profile li:nth-of-type(5)').attr("title", "<?=$lh->translationFor('contacts')?>");
 
-                                $('ul.control-sidebar-menu#go_agent_profile li:nth-of-type(6)').attr("data-tooltip", "tooltip");
-                                $('ul.control-sidebar-menu#go_agent_profile li:nth-of-type(6)').attr("title", "<?=$lh->translationFor('Enter Pause Codes')?>");
+				$('ul.control-sidebar-menu#go_agent_profile li:nth-of-type(6)').attr("data-tooltip", "tooltip");
+				$('ul.control-sidebar-menu#go_agent_profile li:nth-of-type(6)').attr("title", "<?=$lh->translationFor('Enter Pause Codes')?>");
 
-				 $('div#MainStatusSpan a:nth-of-type(1)').attr("title", "<?=$lh->translationFor('dial_lead')?>");
-                                 $('div#MainStatusSpan a:nth-of-type(2)').attr("title", "<?=$lh->translationFor('skip_lead')?>");
+				$('div#MainStatusSpan a:nth-of-type(1)').attr("title", "<?=$lh->translationFor('dial_lead')?>");
+                $('div#MainStatusSpan a:nth-of-type(2)').attr("title", "<?=$lh->translationFor('skip_lead')?>");
 
 				$('#callback-list th:nth-of-type(1)').attr("title", "<?=$lh->translationFor('customer_name')?>");
-                                $('#callback-list th:nth-of-type(2)').attr("title", "<?=$lh->translationFor('phone_number')?>");
-                                $('#callback-list th:nth-of-type(3)').attr("title", "<?=$lh->translationFor('last_call_time')?>");
-                                $('#callback-list th:nth-of-type(4)').attr("title", "<?=$lh->translationFor('callback_time')?>");
-                                $('#callback-list th:nth-of-type(5)').attr("title", "<?=$lh->translationFor('campaign')?>");
-                                $('#callback-list th:nth-of-type(6)').attr("title", "<?=$lh->translationFor('comments')?>");
-                                $('#callback-list th:nth-of-type(7)').attr("title", "<?=$lh->translationFor('action')?>");
+				$('#callback-list th:nth-of-type(2)').attr("title", "<?=$lh->translationFor('phone_number')?>");
+				$('#callback-list th:nth-of-type(3)').attr("title", "<?=$lh->translationFor('last_call_time')?>");
+				$('#callback-list th:nth-of-type(4)').attr("title", "<?=$lh->translationFor('callback_time')?>");
+				$('#callback-list th:nth-of-type(5)').attr("title", "<?=$lh->translationFor('campaign')?>");
+				$('#callback-list th:nth-of-type(6)').attr("title", "<?=$lh->translationFor('comments')?>");
+				$('#callback-list th:nth-of-type(7)').attr("title", "<?=$lh->translationFor('action')?>");
 
 				//				$('#callback-list').dataTable({
 				//					"drawCallBack": function(){
@@ -2909,45 +2928,45 @@ function response($order_id,$amount,$response_code,$response_desc){
 				//				});
 				// Dialer
 
-				 $('button#manual-dial-now').attr("data-tooltip", "tooltip");
-                                 $('button#manual-dial-now').attr("title", "Manual Dial");
+				$('button#manual-dial-now').attr("data-tooltip", "tooltip");
+				$('button#manual-dial-now').attr("title", "Manual Dial");
 
-                                 $('button#manual-dial-dropdown').attr("data-tooltip", "tooltip");
-                                 $('button#manual-dial-dropdown').attr("title", "Country Codes");
+				$('button#manual-dial-dropdown').attr("data-tooltip", "tooltip");
+				$('button#manual-dial-dropdown').attr("title", "Country Codes");
 
 				for(var a=0; a<=9; a++){
 					$('button#dialer-pad-' + a).attr("data-tooltip", "tooltip");
-        	                        $('button#dialer-pad-' + a).attr("title", a);
+        	        $('button#dialer-pad-' + a).attr("title", a);
 				}
 			
 				$('li#toggleWebForm').attr("data-tooltip", "tooltip");
-                                $('li#toggleWebForm').attr("title", "<?=$lh->translationFor('Web Form')?>");
+                $('li#toggleWebForm').attr("title", "<?=$lh->translationFor('Web Form')?>");
 				
 				$('li#toggleWebFormTwo').attr("data-tooltip", "tooltip");
-                                $('li#toggleWebFormTwo').attr("title", "<?=$lh->translationFor('Web Form')?>");
+                $('li#toggleWebFormTwo').attr("title", "<?=$lh->translationFor('Web Form')?>");
 
 				$('ul#go_agent_other_buttons li:nth-of-type(4)').attr("data-tooltip", "tooltip");
-                                $('ul#go_agent_other_buttons li:nth-of-type(4)').attr("title", "<?=$lh->translationFor('Lead Preview')?>");
+                $('ul#go_agent_other_buttons li:nth-of-type(4)').attr("title", "<?=$lh->translationFor('Lead Preview')?>");
 	
 				$('li#DialALTPhoneMenu').attr("data-tooltip", "tooltip");
-                                $('li#DialALTPhoneMenu').attr("title", "<?=$lh->translationFor('ALT Phone Dial')?>");
+                $('li#DialALTPhoneMenu').attr("title", "<?=$lh->translationFor('ALT Phone Dial')?>");
 
-                                $('li#toggleHotkeys').attr("data-tooltip", "tooltip");
-                                $('li#toggleHotkeys').attr("title", "<?=$lh->translationFor('Enable Hotkeys')?>");
+				$('li#toggleHotkeys').attr("data-tooltip", "tooltip");
+				$('li#toggleHotkeys').attr("title", "<?=$lh->translationFor('Enable Hotkeys')?>");
 
 				$('li#toggleMute').attr("data-tooltip", "tooltip");
-                                $('li#toggleMute').attr("title", "<?=$lh->translationFor('Toggle Mute')?>");
+                $('li#toggleMute').attr("title", "<?=$lh->translationFor('Toggle Mute')?>");
 
 				
 				// Content Tabs
 				$('#agent_tablist li:nth-of-type(1)>a.bb0').attr("data-tooltip", "tooltip");
 				$('#agent_tablist li:nth-of-type(1)>a.bb0').attr("title", "<?=$lh->translationFor('contact_information')?>");
 
-                                $('#agent_tablist li:nth-of-type(2)>a.bb0').attr("data-tooltip", "tooltip");
-                                $('#agent_tablist li:nth-of-type(2)>a.bb0').attr("title", "<?=$lh->translationFor('comments')?>");
+				$('#agent_tablist li:nth-of-type(2)>a.bb0').attr("data-tooltip", "tooltip");
+				$('#agent_tablist li:nth-of-type(2)>a.bb0').attr("title", "<?=$lh->translationFor('comments')?>");
 
-                                $('#agent_tablist li:nth-of-type(3)>a.bb0').attr("data-tooltip", "tooltip");
-                                $('#agent_tablist li:nth-of-type(3)>a.bb0').attr("title", "<?=$lh->translationFor('script')?>");
+				$('#agent_tablist li:nth-of-type(3)>a.bb0').attr("data-tooltip", "tooltip");
+				$('#agent_tablist li:nth-of-type(3)>a.bb0').attr("title", "<?=$lh->translationFor('script')?>");
 
 				// Hastag Formats
 				$('header.main-header a.logo').append("<label for='logo-home' id='hash-home'>#HOME</label>");
@@ -2955,23 +2974,23 @@ function response($order_id,$amount,$response_code,$response_desc){
 				$('button#btnLogMeOut').append(" [#LP] ");
 				
 				$('#agent_tablist li:nth-of-type(1)>a.bb0').html(" Contact Info [#CI] ");
-	                        $('#agent_tablist li:nth-of-type(2)>a.bb0').append(" [#CM] ");
-                        	$('#agent_tablist li:nth-of-type(3)>a.bb0').append(" [#SC] ");
+				$('#agent_tablist li:nth-of-type(2)>a.bb0').append(" [#CM] ");
+				$('#agent_tablist li:nth-of-type(3)>a.bb0').append(" [#SC] ");
 
 				$('#edit-profile').append(" [#EI] ");
 				$('form#contact_details_form label[for="phone_number"]').append(" [#PN] ");
 				$('form#contact_details_form label[for="alt_phone"]').html("Alt Phone Number [#APN] ");
 				$('form#contact_details_form label[for="address1"]').append(" [#A1] ");
 				$('form#contact_details_form label[for="address2"]').append(" [#A2] ");
-                	        $('form#contact_details_form label[for="city"]').append(" [#CT] ");
-        	                $('form#contact_details_form label[for="state"]').append(" [#ST] ");
-	                        $('form#contact_details_form label[for="postal_code"]').append(" [#PC] ");
-                	        $('form#contact_details_form label[for="country_code"]').append(" [#CC] ");
-        	                $('form#contact_details_form label[for="email"]').append(" [#EM] ");
-	                        $('form#gender_form label[for="title"]').append(" [#TI] ");
-                        	$('form#gender_form label[for="gender"]').append(" [#GE] ");
-                	        $('form#gender_form label[for="date_of_birth"]').append(" [#DB] ");
-        	                $('form#gender_form label[for="call_notes"]').append(" [#CN] ");
+				$('form#contact_details_form label[for="city"]').append(" [#CT] ");
+				$('form#contact_details_form label[for="state"]').append(" [#ST] ");
+				$('form#contact_details_form label[for="postal_code"]').append(" [#PC] ");
+				$('form#contact_details_form label[for="country_code"]').append(" [#CC] ");
+				$('form#contact_details_form label[for="email"]').append(" [#EM] ");
+				$('form#gender_form label[for="title"]').append(" [#TI] ");
+				$('form#gender_form label[for="gender"]').append(" [#GE] ");
+				$('form#gender_form label[for="date_of_birth"]').append(" [#DB] ");
+				$('form#gender_form label[for="call_notes"]').append(" [#CN] ");
 
 				$("[data-toggle='control-sidebar']").append("<br><span>#CONF</span>");
 
@@ -2979,22 +2998,22 @@ function response($order_id,$amount,$response_code,$response_desc){
 				$('li.dropdown.messages-menu a.dropdown-toggle').append('<br><span class="sr-only">Messages</span><span>#VM</span>');
 
 				$('button#btnDialHangup').append('<br><span id="hash-dial-hangup"></span>');
-                                $('button#btnResumePause').append('<br><span>#PR</span>');
-                                $('button#btnParkCall').append('<br><span class="sr-only">Park Call</span><span>#PA</span>');
-                                $('button#btnTransferCall').append('<br><span class="sr-only">Transfer Call</span><span>#TC</span>');
-                                $('button#manual-dial-now').append('<br><span class="hash-call-now">#CALL</span>');
+				$('button#btnResumePause').append('<br><span>#PR</span>');
+				$('button#btnParkCall').append('<br><span class="sr-only">Park Call</span><span>#PA</span>');
+				$('button#btnTransferCall').append('<br><span class="sr-only">Transfer Call</span><span>#TC</span>');
+				$('button#manual-dial-now').append('<br><span class="hash-call-now">#CALL</span>');
 
 				$('li#toggleWebForm button#openWebForm').append(" [#WF] ");
 				$('.sidebar-toggle-labels label[for="LeadPreview"]').append(" [#LE] ");
-                                $('.sidebar-toggle-labels label[for="DialALTPhone"]').append(" [#DALTP] ");
-                                $('.sidebar-toggle-labels label[for="enableHotKeys"]').append(" [#EH] ");
-                                $('.sidebar-toggle-labels label[for="muteMicrophone"]').append(" [#MIC] ");
+				$('.sidebar-toggle-labels label[for="DialALTPhone"]').append(" [#DALTP] ");
+				$('.sidebar-toggle-labels label[for="enableHotKeys"]').append(" [#EH] ");
+				$('.sidebar-toggle-labels label[for="muteMicrophone"]').append(" [#MIC] ");
 
 				$('ul.control-sidebar-menu:nth-of-type(2) a:nth-of-type(1)').append(" [#PR] ");
-                                $('ul.control-sidebar-menu:nth-of-type(2) a:nth-of-type(2)').append(" [#EX] ");
+                $('ul.control-sidebar-menu:nth-of-type(2) a:nth-of-type(2)').append(" [#EX] ");
 
 				$('div#MainStatusSpan a:nth-of-type(1)').append(" [#DL] ");
-                                $('div#MainStatusSpan a:nth-of-type(2)').append(" [#SL] ");
+                $('div#MainStatusSpan a:nth-of-type(2)').append(" [#SL] ");
 
 				// Focus on Input on enter
 				$('form#contact_details_form label[for="alt_phone"]').keypress(function(event){
@@ -3039,7 +3058,9 @@ function response($order_id,$amount,$response_code,$response_desc){
 		<!-- emojionearea -->
 	<link rel="stylesheet" href="js/node_modules/emojionearea/dist/emojionearea.min.css">
     <script type="text/javascript" src="js/node_modules/emojionearea/dist/emojionearea.min.js"></script>
-		
+
+	<script type="text/javascript" src="js/node_modules/jquery.maskedinput/src/jquery.maskedinput.js"></script>
+
 	<!-- Chat whatsapp -->
 	<link href="css/dashboard/css/chats.css" rel="stylesheet" type="text/css" />
 
@@ -3064,7 +3085,6 @@ function response($order_id,$amount,$response_code,$response_desc){
 			// nodejs socket
 			
 			const executeSocket = function() {
-				console.log("ejecutandoo........");
 				// conectar con socket
 				socketcus.init('<?php echo DOMAIN_SOCKET ?>', '<?php echo $user->getUserA() ?>');
 
@@ -3075,8 +3095,6 @@ function response($order_id,$amount,$response_code,$response_desc){
 			// ejecutar socket
 			executeSocket();
 
-			
-			
 			// sólo para pruebas
 			socketcus.initCallWhatsapp = function(phone, name, list) {
 				socketcus.chatwhatsapp(phone, name, list);

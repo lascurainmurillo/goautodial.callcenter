@@ -9360,7 +9360,8 @@ function getContactList() {
                 }],
                 "fnInitComplete": function() {
                     $(".preloader").fadeOut('slow');
-                }
+                },
+                "order": [[ 3, 'desc' ]]
             });
             $("#contacts-list_filter").parent('div').attr('class', 'col-sm-6 hidden-xs');
             $("#contacts-list_length").parent('div').attr('class', 'col-xs-12 col-sm-6');
@@ -9381,7 +9382,9 @@ function getContactList() {
             });
         } else {
             $(".preloader").fadeOut('slow');
-            $("#contacts-list").DataTable();
+            $("#contacts-list").DataTable({
+                "order": [[ 3, 'desc' ]]
+            });
             
             swal({
                 title: '<?=$lh->translationFor('error')?>',
