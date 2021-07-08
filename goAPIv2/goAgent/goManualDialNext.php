@@ -1735,7 +1735,7 @@ if ($sipIsLoggedIn) {
 
             // obtener datos de tabla de Package 
             if(isset($lead_id)){
-                $package = getCustomFieldPackage($astDB);
+                $package = getCustomFieldPackage($astDB, $list_id);
             }
             
             $LeaD_InfO = array(
@@ -1818,7 +1818,7 @@ if ($sipIsLoggedIn) {
  * Obtener todos los datos del paquete para custom field
  * param mysqld $astDB  vicidial
  */
-function getCustomFieldPackage($astDB) {
+function getCustomFieldPackage($astDB, $list_id) {
 
     $astDB->where('list_id', $list_id);
     $astDB->where('status', 1);
