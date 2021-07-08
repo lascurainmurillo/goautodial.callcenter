@@ -20,7 +20,7 @@ agentinfo.addpackage = function() {
                             <td><input type="text" class="form-control" placeholder="Destination" name="destination[]"></td>
                             <td><input type="text" class="form-control" placeholder="Validity" name="validity[]"></td>
                             <td>
-                                <button id="btn-delpackage" type="button" class="btn btn-danger">
+                                <button id="btn-delpackage" type="button" class="btn btn-danger" onclick="agentinfo.delpackage(this)">
                                     <i class="fa fa-times-circle" aria-hidden="true"></i>
                                 </button>
                             </td>
@@ -31,7 +31,7 @@ agentinfo.addpackage = function() {
 }
 
 agentinfo.delpackage = function(e) {
-
+    console.log(e, "aqui estoy");
     // var bodyPackages = $("#body-packages"); // body de la tabla de packages de formulario personalizado Lead 1004 packages_booking
     $(e).parent('tr').remove();
 
