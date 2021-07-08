@@ -256,15 +256,12 @@ function filterField($fields) {
 // Se agrega packages Field Personalizado
 function addCustomFieldPackage($lead_id, $astDB){
 
-	var_dump("ESTOY DENTRO DE LA FUNCION");
 	$packages = $_POST['packages'];
 	$astDB->where('lead_id', $lead_id);
     $query = $astDB->delete('field_package');
 	foreach($packages as $key => $value){
-		var_dump($value); exit;
 		$newvalue = array_map("filterField", $value);
 		$newvalue['lead_id'] = $lead_id;
-		var_dump($despues);
 		$query = $astDB->insert('field_package', $newvalue);
 		$newvalue = [];
 	}
