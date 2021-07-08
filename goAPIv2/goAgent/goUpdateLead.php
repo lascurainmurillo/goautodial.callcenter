@@ -179,12 +179,14 @@ if ($is_logged_in) {
 				if (isset($_GET[$label])) { $fields[$label] = $astDB->escape($_GET[$label]); }
 					else if (isset($_POST[$label])) { $fields[$label] = $astDB->escape($_POST[$label]); }
 				
+				$fields[$label] = filterField($fields, $label);
+/*
 				$fields[$label] = preg_replace("/\r/i", '', $fields[$label]);
 				$fields[$label] = preg_replace("/\n/i", '!N', $fields[$label]);
 				$fields[$label] = preg_replace("/--AMP--/i", '&', $fields[$label]);
 				$fields[$label] = preg_replace("/--QUES--/i", '?', $fields[$label]);
 				$fields[$label] = preg_replace("/--POUND--/i", '#', $fields[$label]);
-				
+				*/
 				if (strlen($fields[$label]) > 0) {
 					$custom_fields_SQL .= "$label,";
 				}
@@ -238,4 +240,15 @@ if ($is_logged_in) {
 } else {
     $APIResult = array( "result" => "error", "message" => "Agent '$goUser' is currently NOT logged in" );
 }
+
+function filterField($fields, $label) {
+	$fields[$label] = preg_replace("/\r/i", '', $fields[$label]);
+	$fields[$label] = preg_replace("/\n/i", '!N', $fields[$label]);
+	$fields[$label] = preg_replace("/--AMP--/i", '&', $fields[$label]);
+	$fields[$label] = preg_replace("/--QUES--/i", '?', $fields[$label]);
+	$fields[$label] = preg_replace("/--POUND--/i", '#', $fields[$label]);
+
+	return $fields[$label];
+}
+
 ?>

@@ -6524,7 +6524,7 @@ function CustomerData_update() {
         });
         postData['goCustomFields'] = custom_fields.slice(0,-1);
     }
-    console.log(postData);
+    
     $.ajax({
         type: 'POST',
         url: '<?=$goAPI?>/goAgent/goAPI.php',

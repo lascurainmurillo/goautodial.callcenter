@@ -18,7 +18,7 @@ agentinfo.addpackage = function() {
                             <td><input type="text" class="form-control" nom="hotel" placeholder="Hotel" name="hotel[]"></td>
                             <td><input type="text" class="form-control" nom="days" placeholder="Days" name="days[]"></td>
                             <td><input type="text" class="form-control" nom="destination" placeholder="Destination" name="destination[]"></td>
-                            <td><input type="text" class="form-control" nom="validity"placeholder="Validity" name="validity[]"></td>
+                            <td><input type="text" class="form-control" nom="validity" placeholder="Validity" name="validity[]"></td>
                             <td>
                                 <button id="btn-delpackage" type="button" class="btn btn-danger" onclick="agentinfo.delpackage(this)">
                                     <i class="fa fa-times-circle" aria-hidden="true"></i>
