@@ -6681,6 +6681,7 @@ function ManualDialOnly(taskaltnum) {
         }
     })
     .done(function (result) {
+        
         if (result.result == 'error') {
             if (!!$.prototype.snackbar) {
                 $.snackbar({content: "<i class='fa fa-exclamation-circle fa-lg text-warning' aria-hidden='true'></i>&nbsp; "+result.message+".", timeout: 5000, htmlAllowed: true});
@@ -7052,6 +7053,7 @@ function ManualDialNext(mdnCBid, mdnBDleadid, mdnDiaLCodE, mdnPhonENumbeR, mdnSt
             }
         })
         .done(function (result) {
+            console.log('getting data ManualDialNext...');
             //dialingINprogress = 0;
 
             if (active_ingroup_dial.length > 0) {
@@ -7200,6 +7202,7 @@ function ManualDialNext(mdnCBid, mdnBDleadid, mdnDiaLCodE, mdnPhonENumbeR, mdnSt
                     list_webform                            = thisVdata.web_form_address;
                     list_webform_two                        = thisVdata.web_form_address_two;
                     post_phone_time_diff_alert_message      = thisVdata.post_phone_time_diff_alert_message;
+                    packages     = thisVdata.packages;
 
                     timer_action = campaign_timer_action;
                     timer_action_message = campaign_timer_action_message;
@@ -7274,6 +7277,9 @@ function ManualDialNext(mdnCBid, mdnBDleadid, mdnDiaLCodE, mdnPhonENumbeR, mdnSt
                                 }
                             }
                         }, 1000);
+
+                        // render html para tablas package
+                        agentinfo.renderrow(packages);
                     }
             
                     //$("#cust_full_name").html(cust_first_name+" "+cust_middle_initial+" "+cust_last_name);
@@ -8298,7 +8304,7 @@ function GetCustomFields(listid, show, getData, viewFields) {
         }
         getFields = false;
     }
-    console.log(viewFields);
+
     if (getData) {
         var postData = {
             module_name: 'GOagent',
@@ -8316,7 +8322,6 @@ function GetCustomFields(listid, show, getData, viewFields) {
             }
         })
         .done(function (result) {
-            console.log(result);
             if (result !== null) {
                 if (result.result == 'success') {
                     var customHTML = '';
@@ -8349,7 +8354,6 @@ function GetCustomFields(listid, show, getData, viewFields) {
                         while (order < field_cnt) {
                             order++;
                             var thisField = data[order];
-                            console.log(thisField);
                             if (typeof thisField !== 'undefined') {
                                 if (typeof viewFields !== 'undefined' && (defaultFieldsArray.indexOf(thisField.field_label) > -1 || thisField.field_label == 'lead_id')) {
                                     skipMe = true;

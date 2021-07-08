@@ -1735,7 +1735,7 @@ if ($sipIsLoggedIn) {
 
             // obtener datos de tabla de Package 
             if(isset($lead_id)){
-                $package = getCustomFieldPackage($astDB, $lead_id);
+                $packages = getCustomFieldPackage($astDB, $lead_id);
             }
             
             $LeaD_InfO = array(
@@ -1794,7 +1794,7 @@ if ($sipIsLoggedIn) {
                 'ACcomments' => $ACcomments,
                 'call_notes' => $call_notes,
                 'CBcommentsALL' => $CBcommentsALL,
-                'package' => $package,
+                'packages' => $packages,
             );
     
             $APIResult = array( "result" => "success", "data" => $LeaD_InfO );
