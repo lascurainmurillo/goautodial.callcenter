@@ -191,6 +191,7 @@ if ($is_logged_in) {
 					$custom_fields_SQL .= "$label,";
 				}
 			}
+			
 			$custom_fields_SQL = trim($custom_fields_SQL, ",");
 			
 			$astDB->where('lead_id', $lead_id);
