@@ -6465,12 +6465,20 @@ function CustomerData_update() {
     };
 
     //#body-packages id tbody de la una tabla html SCRIPT de custom field
-    console.log($(".formMain").find("#body-packages").length);
     if($(".formMain").find("#body-packages").length > 0) {
-        postData.hotel = $(".formMain input[name^='hotel']").val();
-        postData.days = $(".formMain input[name^='days']").val();
-        postData.destination = $(".formMain input[name^='destination']").val();
-        postData.validity = $(".formMain input[name^='validity']").val();
+        var myArray = [];
+        $('#body-packages tr').each(function() {
+            var arrpri = {};
+            $(this).find('input').each(function() {
+                if ($(this).val().trim() != "") {
+                    arrpri[$(this).attr('nom')] = $(this).val().trim();
+                }
+            });
+            if (Object.keys(arrpri).length > 0) {
+                myArray.push(arrpri);
+            }
+        });
+        postData.packages = myArray; // paquetes de vieje de local travel
     }
     
     if (custom_fields_enabled > 0) {
