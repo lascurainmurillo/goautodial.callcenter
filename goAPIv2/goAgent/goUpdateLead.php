@@ -214,6 +214,7 @@ if ($is_logged_in) {
 				}
 			}
 
+			var_dump($_POST['packages']);
 			if(isset($lead_id) && @$_POST['packages'] && count($_POST['packages']) > 0) {
 				addCustomFieldPackage($lead_id);
 			}
@@ -255,12 +256,15 @@ function filterField($fields) {
 // Se agrega packages Field Personalizado
 function addCustomFieldPackage($lead_id){
 
+	var_dump("ESTOY DENTRO DE LA FUNCION");
 	$packages = $_POST['packages'];
 	$astDB->where('lead_id', $lead_id);
     $query = $astDB->delete('field_package');
 	foreach($packages as $key => $value){
+		var_dump($value); exit;
 		$newvalue = array_map("filterField", $value);
 		$newvalue['lead_id'] = $lead_id;
+		var_dump($despues);
 		$query = $astDB->insert('field_package', $newvalue);
 		$newvalue = [];
 	}
