@@ -6467,10 +6467,10 @@ function CustomerData_update() {
     //#body-packages id tbody de la una tabla html SCRIPT de custom field
     console.log($(".formMain").find("#body-packages").length);
     if($(".formMain").find("#body-packages").length > 0) {
-        postData.hotel = $(".formMain input[name^='hotel']").val(),
-        postData.days = $(".formMain input[name^='days']").val(),
-        postData.destination = $(".formMain input[name^='destination']").val(),
-        postData.validity = $(".formMain input[name^='validity']").val(),
+        postData.hotel = $(".formMain input[name^='hotel']").val();
+        postData.days = $(".formMain input[name^='days']").val();
+        postData.destination = $(".formMain input[name^='destination']").val();
+        postData.validity = $(".formMain input[name^='validity']").val();
     }
     
     if (custom_fields_enabled > 0) {
