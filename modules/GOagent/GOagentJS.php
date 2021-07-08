@@ -79,7 +79,7 @@ if (!isset($_REQUEST['action']) && !isset($_REQUEST['module_name'])) {
         }
     }
     echo "// {$sess_vars}\n";
-?>
+    ?>
 
 // Settings
 var phone;
@@ -8298,7 +8298,7 @@ function GetCustomFields(listid, show, getData, viewFields) {
         }
         getFields = false;
     }
-    
+    console.log(viewFields);
     if (getData) {
         var postData = {
             module_name: 'GOagent',
@@ -8316,6 +8316,7 @@ function GetCustomFields(listid, show, getData, viewFields) {
             }
         })
         .done(function (result) {
+            console.log(result);
             if (result !== null) {
                 if (result.result == 'success') {
                     var customHTML = '';
@@ -8348,7 +8349,7 @@ function GetCustomFields(listid, show, getData, viewFields) {
                         while (order < field_cnt) {
                             order++;
                             var thisField = data[order];
-                            
+                            console.log(thisField);
                             if (typeof thisField !== 'undefined') {
                                 if (typeof viewFields !== 'undefined' && (defaultFieldsArray.indexOf(thisField.field_label) > -1 || thisField.field_label == 'lead_id')) {
                                     skipMe = true;
@@ -10331,6 +10332,17 @@ Number.prototype.between = function (a, b, inclusive) {
 
 <?php
 } else {
+
+    /**
+     * 
+     * 
+     * @request AJAX POST /modules/GOagent/GOagentJS.php 
+     * param module_name: GOagent
+     * param action: ejemplo 'CustoMFielD'
+     * param list_id: list_id
+     * return Json
+     * 
+     */
     if ($_REQUEST['module_name'] == 'GOagent') {
         switch ($_REQUEST['action']) {
             case "SessioN":
@@ -10346,7 +10358,7 @@ Number.prototype.between = function (a, b, inclusive) {
                 $_SESSION['is_logged_in'] = (strlen($is_logged_in) > 0) ? $is_logged_in : $sess_logged_in;
                 $result = $_SESSION['is_logged_in'];
                 break;
-            case "CustoMFielD":
+            case "CustoMFielD": // obtener campos y data desde vicidial_lists_fields
                 $list_id = $_REQUEST['list_id'];
                 $result = $ui->API_goGetAllCustomFields($list_id);
                 $result = json_encode($result);

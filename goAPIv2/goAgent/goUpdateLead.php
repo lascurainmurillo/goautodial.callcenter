@@ -214,7 +214,7 @@ if ($is_logged_in) {
 				}
 			}
 
-			var_dump($_POST['packages']);
+			
 			if(isset($lead_id) && @$_POST['packages'] && count($_POST['packages']) > 0) {
 				addCustomFieldPackage($lead_id, $astDB);
 			}
