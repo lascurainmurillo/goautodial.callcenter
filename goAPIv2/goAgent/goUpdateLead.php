@@ -179,19 +179,13 @@ if ($is_logged_in) {
 				if (isset($_GET[$label])) { $fields[$label] = $astDB->escape($_GET[$label]); }
 					else if (isset($_POST[$label])) { $fields[$label] = $astDB->escape($_POST[$label]); }
 				
-				$fields[$label] = filterField($fields, $label);
-/*
-				$fields[$label] = preg_replace("/\r/i", '', $fields[$label]);
-				$fields[$label] = preg_replace("/\n/i", '!N', $fields[$label]);
-				$fields[$label] = preg_replace("/--AMP--/i", '&', $fields[$label]);
-				$fields[$label] = preg_replace("/--QUES--/i", '?', $fields[$label]);
-				$fields[$label] = preg_replace("/--POUND--/i", '#', $fields[$label]);
-				*/
+				$fields[$label] = filterField($fields[$label]);
+
 				if (strlen($fields[$label]) > 0) {
 					$custom_fields_SQL .= "$label,";
 				}
 			}
-			
+
 			$custom_fields_SQL = trim($custom_fields_SQL, ",");
 			
 			$astDB->where('lead_id', $lead_id);
@@ -219,6 +213,11 @@ if ($is_logged_in) {
 					$insert_success = $astDB->getRowCount();
 				}
 			}
+
+			if(isset($lead_id) && @$_POST['packages'] && count($_POST['packages']) > 0) {
+				addCustomFieldPackage($lead_id);
+			}
+
 		}
 		
 		$random = (rand(1000000, 9999999) + 10000000);
@@ -242,14 +241,29 @@ if ($is_logged_in) {
     $APIResult = array( "result" => "error", "message" => "Agent '$goUser' is currently NOT logged in" );
 }
 
-function filterField($fields, $label) {
-	$fields[$label] = preg_replace("/\r/i", '', $fields[$label]);
-	$fields[$label] = preg_replace("/\n/i", '!N', $fields[$label]);
-	$fields[$label] = preg_replace("/--AMP--/i", '&', $fields[$label]);
-	$fields[$label] = preg_replace("/--QUES--/i", '?', $fields[$label]);
-	$fields[$label] = preg_replace("/--POUND--/i", '#', $fields[$label]);
+function filterField($fields) {
+	$fields = trim($fields);
+	$fields = preg_replace("/\r/i", '', $fields);
+	$fields = preg_replace("/\n/i", '!N', $fields);
+	$fields = preg_replace("/--AMP--/i", '&', $fields);
+	$fields = preg_replace("/--QUES--/i", '?', $fields);
+	$fields = preg_replace("/--POUND--/i", '#', $fields);
 
-	return $fields[$label];
+	return $fields;
+}
+
+// Se agrega packages Field Personalizado
+function addCustomFieldPackage($lead_id){
+
+	$packages = $_POST['packages'];
+	$astDB->where('lead_id', $lead_id);
+    $query = $astDB->delete('field_package');
+	foreach($packages as $key => $value){
+		$newvalue = array_map("filterField", $value);
+		$newvalue['lead_id'] = $lead_id;
+		$query = $astDB->insert('field_package', $newvalue);
+		$newvalue = [];
+	}
 }
 
 ?>
