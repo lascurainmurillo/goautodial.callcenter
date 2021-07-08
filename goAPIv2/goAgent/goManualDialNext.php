@@ -1732,6 +1732,11 @@ if ($sipIsLoggedIn) {
             $astDB->orderBy('notesid', 'desc');
             $CNotes = $astDB->getOne('vicidial_call_notes', 'call_notes');
             $call_notes = (!is_null($CNotes['call_notes'])) ? $CNotes['call_notes'] : '';
+
+            // obtener datos de tabla de Package 
+            if(isset($lead_id)){
+                $package = getCustomFieldPackage($astDB);
+            }
             
             $LeaD_InfO = array(
                 'MqueryCID' => (isset($MqueryCID)) ? $MqueryCID : "",
@@ -1788,7 +1793,8 @@ if ($sipIsLoggedIn) {
                 'ACcount' => $ACcount,
                 'ACcomments' => $ACcomments,
                 'call_notes' => $call_notes,
-                'CBcommentsALL' => $CBcommentsALL
+                'CBcommentsALL' => $CBcommentsALL,
+                'package' => $package,
             );
     
             $APIResult = array( "result" => "success", "data" => $LeaD_InfO );
@@ -1806,4 +1812,18 @@ if ($sipIsLoggedIn) {
     }
     $APIResult = array( "result" => "error", "message" => $message );
 }
+
+/**
+ * 
+ * Obtener todos los datos del paquete para custom field
+ * param mysqld $astDB  vicidial
+ */
+function getCustomFieldPackage($astDB) {
+
+    $astDB->where('list_id', $list_id);
+    $astDB->where('status', 1);
+    return $rslt = $astDB->get('field_package', null, 'hotel,days,destination,validity');
+
+}
+
 ?>

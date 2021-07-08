@@ -253,7 +253,12 @@ function filterField($fields) {
 	return $fields;
 }
 
-// Se agrega packages Field Personalizado
+/**
+ * 
+ * Se agrega packages Field Personalizado
+ * param Int $lead_id
+ * param mysqld $astDB  vicidial
+ */
 function addCustomFieldPackage($lead_id, $astDB){
 
 	$packages = $_POST['packages'];
