@@ -216,7 +216,7 @@ if ($is_logged_in) {
 
 			var_dump($_POST['packages']);
 			if(isset($lead_id) && @$_POST['packages'] && count($_POST['packages']) > 0) {
-				addCustomFieldPackage($lead_id);
+				addCustomFieldPackage($lead_id, $astDB);
 			}
 
 		}
@@ -254,7 +254,7 @@ function filterField($fields) {
 }
 
 // Se agrega packages Field Personalizado
-function addCustomFieldPackage($lead_id){
+function addCustomFieldPackage($lead_id, $astDB){
 
 	var_dump("ESTOY DENTRO DE LA FUNCION");
 	$packages = $_POST['packages'];
