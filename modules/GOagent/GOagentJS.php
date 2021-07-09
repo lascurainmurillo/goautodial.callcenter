@@ -6478,7 +6478,11 @@ function CustomerData_update() {
                 myArray.push(arrpri);
             }
         });
+        if(myArray.length > 0){
         postData.packages = myArray; // paquetes de vieje de local travel
+        } else {
+            postData.packages = "";
+        }
     }
     
     if (custom_fields_enabled > 0) {
@@ -7275,13 +7279,12 @@ function ManualDialNext(mdnCBid, mdnBDleadid, mdnDiaLCodE, mdnPhonENumbeR, mdnSt
                                 if (custom_fields_launch == 'ONCALL') {
                                     GetCustomFields(null, true);
                                 }
+
+                                // render html para tablas package
+                                agentinfo.renderrow(packages);
                             }
                         }, 1000);
-
-                        // render html para tablas package
-                        agentinfo.renderrow(packages);
                     }
-            
                     //$("#cust_full_name").html(cust_first_name+" "+cust_middle_initial+" "+cust_last_name);
                     $("#cust_full_name").removeClass('hidden');
                     $("#cust_number").html(phone_number_format(dispnum));
