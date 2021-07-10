@@ -8900,7 +8900,7 @@ function ViewCustInfo(leadid) {
                 }
                 $("#customer-info-content").html(infoHtml).slideDown();
                 
-                agentinfo.execinput_formcustom(); // ejecutar algunos plugin sobre los inputs
+                agentinfo.execinput_formcustom('update_history'); // ejecutar algunos plugin sobre los inputs
 
                 $("#cust-info-submit").prop('disabled', false);
                 if (result.is_customer > 0) {

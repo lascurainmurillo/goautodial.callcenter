@@ -4,11 +4,25 @@ var agentinfo = {}
  * 
  * Ejecutar algunos plugin sobre los inputs del fourmario personalizado de goautodial
  */
-agentinfo.execinput_formcustom = function() {
-    $('#custom_credit_card_information').mask("9999 9999 9999 9999");
-    $('#custom_exp_date').mask("9999");
-    $('#custom_cvc_code').mask("9999");
+agentinfo.execinput_formcustom = function(view = "main") {
+
+    switch (view) {
+        case 'main':
+            $('#custom_credit_card_information').mask("9999 9999 9999 9999");
+            $('#custom_exp_date').mask("9999");
+            $('#custom_cvc_code').mask("9999");
+            break;
+        case 'update_history':
+            $('#viewCustom_credit_card_information').mask("9999 9999 9999 9999");
+            $('#viewCustom_exp_date').mask("9999");
+            $('#viewCustom_cvc_code').mask("9999");
+            break;
+        default:
+            break;
+    }
+
 }
+
 
 agentinfo.addpackage = function() {
 
@@ -29,7 +43,7 @@ agentinfo.renderrow = function(packages) {
     var bodyPackages = $("#body-packages"); // body de la tabla de packages de formulario personalizado Lead 1004 packages_booking
 
     var html = "";
-    packages.forEach(el => {  
+    packages.forEach(el => {
 
         html += agent.templatetbody(el.hotel, el.days, el.destination, el.validity);
 
@@ -42,7 +56,7 @@ agentinfo.renderrow = function(packages) {
 
 // #body-packages id tbody de la una tabla html SCRIPT de custom field
 agentinfo.getDataPackagesInputs = function() {
-    
+
     var myArray = [];
     var packages = "";
     $('#body-packages tr').each(function() { // recorrer files de la tabla html
@@ -56,7 +70,7 @@ agentinfo.getDataPackagesInputs = function() {
             myArray.push(arrpri);
         }
     });
-    if(myArray.length > 0){
+    if (myArray.length > 0) {
         packages = myArray; // paquetes de vieje de local travel
     }
 
