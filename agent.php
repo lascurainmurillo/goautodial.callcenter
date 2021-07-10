@@ -1858,7 +1858,20 @@ function response($order_id,$amount,$response_code,$response_desc){
 						
 						<!-- Contacts -->
 						<div id="contents-contacts" class="row" style="display: none;">
+						
 							<div class="card col-md-12" style="padding: 15px;">
+							<div class="row">
+							<div class="col-xs-12">
+							<div class="" style="margin: 10px;">
+								<a class="btn btn-warning" href="agent.php">
+								<i class="fa fa-chevron-circle-left" aria-hidden="true"></i> Regresar
+								</a>
+							</div>
+						</div>
+
+
+							</div>
+							
 								<table id="contacts-list" class="display" style="border: 1px solid #f4f4f4; width: 100%;">
 									<thead>
 										<tr>
@@ -2838,7 +2851,7 @@ function response($order_id,$amount,$response_code,$response_desc){
 			$(document).ready(function(){
 				
 				$('[data-tooltip="tooltip"]').tooltip();
-			//	$('#muteMicrophone').bootstrapToggle();
+				//	$('#muteMicrophone').bootstrapToggle();
 
 				$('header.main-header a.logo').attr("title", "<?=$lh->translationFor('home')?>");
 				

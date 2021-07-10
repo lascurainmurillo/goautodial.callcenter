@@ -57,7 +57,7 @@ if (isset($lead_id) && $lead_id !== '') {
         $rslt = $goDB->getOne('go_customers');
         $is_customer = $goDB->getRowCount();
         
-        $APIResult = array( "result" => "success", "lead_info" => $lead_info, "custom_info" => $custom_info, "is_customer" => $is_customer );
+        $APIResult = array( "result" => "success", "lead_info" => $lead_info, "custom_info" => @$custom_info, "is_customer" => $is_customer );
     } else {
         $APIResult = array( "result" => "error", "message" => "Lead ID '$lead_id' does NOT exist on the database" );
     }

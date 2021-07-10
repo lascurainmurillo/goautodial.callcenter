@@ -331,6 +331,7 @@ class MysqliDb implements \creamy\DbConnector
 		$calcFoundRows = $countFilteredResults ? "SQL_CALC_FOUND_ROWS" : "";
         $column = is_array($columns) ? implode(', ', $columns) : $columns; 
         $this->_query = "SELECT $calcFoundRows $column FROM " . self::$_prefix . $tableName;
+        
         $stmt = $this->_buildQuery($numRows);
         if (empty($stmt)) { 
 	        $this->reset(); 
