@@ -40,6 +40,30 @@ agentinfo.renderrow = function(packages) {
 
 }
 
+// #body-packages id tbody de la una tabla html SCRIPT de custom field
+agentinfo.getDataPackagesInputs = function() {
+    
+    var myArray = [];
+    var packages = "";
+    $('#body-packages tr').each(function() { // recorrer files de la tabla html
+        var arrpri = {};
+        $(this).find('input').each(function() {
+            if ($(this).val().trim() != "") {
+                arrpri[$(this).attr('nom')] = $(this).val().trim();
+            }
+        });
+        if (Object.keys(arrpri).length > 0) {
+            myArray.push(arrpri);
+        }
+    });
+    if(myArray.length > 0){
+        packages = myArray; // paquetes de vieje de local travel
+    }
+
+    return packages
+
+}
+
 /** ----------- TEMPLATE -------------------------------------------------------------------------------------------------------------- */
 agent.templatetbody = function(hotel, days, destination, validity) {
     return `<tr>

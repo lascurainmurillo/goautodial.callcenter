@@ -214,7 +214,7 @@ if ($is_logged_in) {
 				}
 			}
 
-			
+			// agregar package en tabla field_package
 			if( (isset($lead_id) && count(@$_POST['packages']) > 0) || @$_POST['packages'] == "") {
 				addCustomFieldPackage($lead_id, $astDB);
 			}

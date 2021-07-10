@@ -1940,7 +1940,7 @@ $('#callback-datepicker').on('shown.bs.modal', function(){
         if ($("#custom-field-content").is(':visible')) {
             submitCFData = $("[id^='viewCustom_']").serializeArray();
         }
-        
+
         swal({
             title: "<?=$lh->translationFor('saving_customer_info')?>",
             type: "warning",
@@ -1957,6 +1957,11 @@ $('#callback-datepicker').on('shown.bs.modal', function(){
                 goSaveAsCustomer: saveAsCustomer,
                 responsetype: 'json'
             };
+
+            //#body-packages id tbody de la una tabla html SCRIPT de custom field
+            if($("#custom-field-content").find("#body-packages").length > 0) {
+                postData.packages = agentinfo.getDataPackagesInputs();
+            }
         
             $.ajax({
                 type: 'POST',
@@ -1970,6 +1975,7 @@ $('#callback-datepicker').on('shown.bs.modal', function(){
             })
             .done(function (data) {
                 if (data.result == 'success') {
+                    console.log('update info history');
                     swal({
                         title: '<?=$lh->translationFor('success')?>',
                         text: data.message,
@@ -6468,23 +6474,7 @@ function CustomerData_update() {
 
     //#body-packages id tbody de la una tabla html SCRIPT de custom field
     if($(".formMain").find("#body-packages").length > 0) {
-        var myArray = [];
-        $('#body-packages tr').each(function() {
-            var arrpri = {};
-            $(this).find('input').each(function() {
-                if ($(this).val().trim() != "") {
-                    arrpri[$(this).attr('nom')] = $(this).val().trim();
-                }
-            });
-            if (Object.keys(arrpri).length > 0) {
-                myArray.push(arrpri);
-            }
-        });
-        if(myArray.length > 0){
-        postData.packages = myArray; // paquetes de vieje de local travel
-        } else {
-            postData.packages = "";
-        }
+        postData.packages = agentinfo.getDataPackagesInputs();
     }
     
     if (custom_fields_enabled > 0) {

@@ -70,7 +70,12 @@ if (strlen($errorMsg) < 1) {
             $CF_array['lead_id'] = $lead_id;
             $rslt = $astDB->insert("custom_{$list_id}", $CF_array);
         }
-        
+
+        // update package en tabla field_package
+        if( (isset($lead_id) && count(@$_POST['packages']) > 0) || @$_POST['packages'] == "") {
+            addCustomFieldPackage($lead_id, $astDB);
+        }
+
         $errorMsg = $astDB->getLastError();
     }
     
@@ -101,4 +106,42 @@ if (strlen($errorMsg) < 1) {
 }
 
 $APIResult = array( "result" => $result, "lead_id" => $lead_id, "message" => $message );
+
+
+/**
+ * Filtrar variables
+ * param String $fields
+ */
+function filterField($fields) {
+	$fields = trim($fields);
+	$fields = preg_replace("/\r/i", '', $fields);
+	$fields = preg_replace("/\n/i", '!N', $fields);
+	$fields = preg_replace("/--AMP--/i", '&', $fields);
+	$fields = preg_replace("/--QUES--/i", '?', $fields);
+	$fields = preg_replace("/--POUND--/i", '#', $fields);
+
+	return $fields;
+}
+
+
+/**
+ * Se agrega packages Field Personalizado
+ * param Int $lead_id
+ * param mysqld $astDB  vicidial
+ */
+function addCustomFieldPackage($lead_id, $astDB){
+
+	$packages = $_POST['packages'];
+	$astDB->where('lead_id', $lead_id);
+    $query = $astDB->delete('field_package');
+	if($packages != ""){
+		foreach($packages as $key => $value){
+			$newvalue = array_map("filterField", $value);
+			$newvalue['lead_id'] = $lead_id;
+			$query = $astDB->insert('field_package', $newvalue);
+			$newvalue = [];
+		}
+	}
+}
+
 ?>
