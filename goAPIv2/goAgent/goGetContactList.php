@@ -67,7 +67,7 @@ if (count($list_ids) > 0 ) {
     $astDB->orderBy("last_local_call_time","desc");
     $astDB->join('vicidial_lists vls', 'vls.list_id=vl.list_id', 'left');
     $astDB->join('vicidial_statuses suses', 'suses.status=vl.status', 'left');
-    $rslt = $astDB->get('vicidial_list vl', $limit, 'lead_id,first_name,middle_initial,last_name,phone_number,last_local_call_time,campaign_id,vl.status,comments,phone_code,suses.status_name,suses.color_background');
+    $rslt = $astDB->get('vicidial_list vl', $limit, 'lead_id,first_name,middle_initial,last_name,phone_number,last_local_call_time,campaign_id,vl.status,comments,phone_code,suses.status_name,suses.color_background,suses.color_text');
     // var_dump($rslt);
     $leads = [];
     if($rslt != null) {
