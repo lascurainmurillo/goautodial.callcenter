@@ -8725,8 +8725,10 @@ function ViewCustInfo(leadid) {
     })
     .done(function (result) {
         if (result.result == 'success') {
+            console.log('Getting goGetCustomerInfo');
             var lead_info = result.lead_info;
             var custom_info = result.custom_info;
+            var packages = result.packages;
             var infoHtml = '';
             var infoTitle = '';
             var colNum = 12;
@@ -8891,6 +8893,10 @@ function ViewCustInfo(leadid) {
                         replaceCustomFields(true);
                         $(".cust-preloader").hide();
                         GetCustomFields(null, true, false, true);
+
+                        // render html para tablas package para historial de llamadas
+                        agentinfo.renderrow(packages);
+
                     } else {
                         unloadPreloader = true;
                         $(".cust-preloader").hide();
