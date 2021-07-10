@@ -3461,7 +3461,7 @@ function CheckForIncoming () {
         }
 
         var this_VDIC_data = result.data;
-        // console.log(this_VDIC_data);
+        console.log(this_VDIC_data);
         has_inbound_call = this_VDIC_data.has_call;
         if (this_VDIC_data.has_call == '1') {
             AutoDialWaiting = 0;
@@ -3654,8 +3654,10 @@ function CheckForIncoming () {
             custom_field_values                         = this_VDIC_data.custom_field_values;
             custom_field_types                          = this_VDIC_data.custom_field_types;
 
-var socket_phone_number = (this_VDIC_data.country_code == "52") ? "+" + this_VDIC_data.phone_code + "1" + this_VDIC_data.phone_number : "+" + this_VDIC_data.phone_code + phone_number;
-            socketcus.chatwhatsapp(socket_phone_number, this_VDIC_data.first_name + " " + this_VDIC_data.last_name, list_id_main); // socket obtener cliente llamada
+var socket_phone_number = (this_VDIC_data.country_code == "52") ? "+" + this_VDIC_data.phone_code + "1" + this_VDIC_data.phone_number : "+" + this_VDIC_data.phone_code + this_VDIC_data.phone_number;
+// socket obtener cliente llamada, dispara chat Whatsapp
+console.log("Run number on Whatsapp");
+            socketcus.chatwhatsapp(socket_phone_number, this_VDIC_data.first_name + " " + this_VDIC_data.last_name, list_id_main); 
             //Added By Poundteam for Audited Comments (Manual Dial Section Only)
             //if (qc_enabled > 0)
             //{

@@ -245,3 +245,11 @@ notify.init = function(position, message, buttontext, stylename) {
 }
 
 /******************************************************************************************** */
+
+
+/** */
+countryfull = {}
+countryfull.data = function() {
+
+
+}
