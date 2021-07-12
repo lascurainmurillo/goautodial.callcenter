@@ -730,7 +730,26 @@
     margin-top: 10px !important;
     margin-bottom: 10px !important;
 }
-.roomprevios{
+
+.roomprevios {
     position: relative;
     height: 125px;
+}
+
+.loader-custom-chatting {
+    height: 100px;
+    text-align: center;
+    position: relative;
+    width: 150px;
+}
+
+.loader-custom-chatting i {
+    font-size: 50px;
+    color: #3c8dbc;
+    margin: 0;
+    position: absolute;
+    top: 18%;
+    left: 30%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
 }

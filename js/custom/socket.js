@@ -208,6 +208,20 @@ socketcus.sendmessage = function(room, enter = false) {
             data: fd,
             contentType: false,
             processData: false,
+            xhr: function() {
+                var xhr = new window.XMLHttpRequest();
+                xhr.upload.addEventListener("progress", function(evt) {
+                    if (evt.lengthComputable) {
+                        var percentComplete = (evt.loaded / evt.total) * 100;
+                        console.log(percentComplete);
+                    }
+                }, false);
+                return xhr;
+            },
+            beforeSend: function() {
+                console.log("estoy en bofre send");
+                socketcus.htmlchattingLoaders(room);
+            },
             success: function(response) {
 
                 if (response.status == 200 || response.status == 201) {
@@ -242,7 +256,7 @@ socketcus.sendmessage = function(room, enter = false) {
         } else {
             var msg_original = $(comment_emoji)[0].emojioneArea.getText().trim();
         }
-        // $(comment_emoji)[0].emojioneArea.setText("");
+
         if (msg_original != "" && socketcus.selectroom != null) {
 
             // cambiar boton a loader
@@ -556,12 +570,22 @@ socketcus.htmlchatting = function(message, room, append = 1) {
     var chatting = template.htmlchatting(message, msg, socketcus.color_agent_current, socketcus.color_client_current, date_chat_temp, timeampm); // usando template
 
     if ($("#client" + room.replace(/\+/g, '\\+')).length > 0) {
-        if (append) {
+        if (append) { // agregrar html message al final
             $("#client" + room.replace(/\+/g, '\\+')).append(chatting);
         } else {
             $(chatting).insertBefore("#message-previous" + room.replace(/\+/g, '\\+'));
         }
     }
+}
+
+/**
+ * Se genera/detiene html de loader para el chatting
+ * @param {*} room 
+ */
+socketcus.htmlchattingLoaders = function(room) {
+    var loader = "#client" + room.replace(/\+/g, '\\+');
+    // agrega html de loader
+    $(loader).append(template.chattingLoaderFile(socketcus.agent_username, socketcus.color_agent_current));
 }
 
 

@@ -119,6 +119,27 @@ template.htmlchatting = function(message, msg, color_agent_current, color_client
             </div>`;
 }
 
+template.chattingLoaderFile = function(username, color_agent_current) {
+    return `<div class="row message-body">
+                <div class="col-sm-12 message-main-sender">
+                    <div class="sender">
+                        <div class="message-cont" style="color: ${color_agent_current}">
+                            <strong>${username}</strong>
+                        </div>
+                        <div class="message-cont message-text">
+                            <div class="loader-custom-chatting">
+                                <i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw "></i>
+                            </div>
+                            <div class="text-center">
+                                Cargando...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+
+}
+
 
 template.previouschat = function(room, date) {
     return `<div id="message-previous${room}" class="row message-previous">
