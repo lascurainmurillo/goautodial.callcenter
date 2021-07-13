@@ -340,7 +340,7 @@ socketcus.fileselect = function(tag, room) {
         socketcus.filesTemp[onlyroom].file = $(reply + ' #whats_attach_files')[0].files;
         if (socketcus.filesTemp[onlyroom].file.length === 1) {
             // socketcus.filesTemp[onlyroom].file = $(reply + ' #whats_attach_files')[0].files
-            $(previous + " #file-previous").html(template.previousShowDocument(URL.createObjectURL(socketcus.filesTemp[onlyroom].file[0].name)));
+            $(previous + " #file-previous").html(template.previousShowDocument(socketcus.filesTemp[onlyroom].file[0].name));
             if ($(previous).hasClass('hidden')) {
                 $(previous).removeClass('hidden');
             }
