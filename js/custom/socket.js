@@ -180,6 +180,7 @@ socketcus.sendmessage = function(room, enter = false) {
     }
 
     var fd = new FormData();
+    var id_tag_chatting = Date.now() + "" + parseInt(Math.random() * 100000); // id para el tag de chatting html
 
     // si el mensaje proviene de galery
     if (socketcus.usegalery[onlyroom] && Object.keys(socketcus.dataGalerySelected[onlyroom]).length > 0) {
@@ -187,6 +188,7 @@ socketcus.sendmessage = function(room, enter = false) {
         data_call.message.msg = socketcus.dataGalerySelected[onlyroom].file;
         data_call.message.send_tipo = socketcus.dataGalerySelected[onlyroom].tipo;
         data_call.message.filename = socketcus.dataGalerySelected[onlyroom].name;
+        data_call.message.id_tag_chatting = id_tag_chatting;
 
         // Emitir un mensaje hacia el server
         socketcus.socket.emit('chatMessage', data_call);
@@ -196,11 +198,9 @@ socketcus.sendmessage = function(room, enter = false) {
 
     } else if (socketcus.filesTemp[onlyroom].file.length > 0) { // Si se está enviando archivo
 
-        // cambiar boton a loader
-        $(reply + " #message-send").addClass("hidden");
-        $(reply + " #loader-send").removeClass("hidden");
+        var socketcusTemporal = socketcus.filesTemp[onlyroom];
 
-        fd.append('file', socketcus.filesTemp[onlyroom].file[0]);
+        fd.append('file', socketcusTemporal.file[0]);
 
         $.ajax({
             url: socketcus.domain + '/whatsapp/send-file',
@@ -208,26 +208,27 @@ socketcus.sendmessage = function(room, enter = false) {
             data: fd,
             contentType: false,
             processData: false,
-            xhr: function() {
+            xhr: function() { // progress de loader
                 var xhr = new window.XMLHttpRequest();
                 xhr.upload.addEventListener("progress", function(evt) {
                     if (evt.lengthComputable) {
                         var percentComplete = (evt.loaded / evt.total) * 100;
                         console.log(percentComplete);
+                        $("#chatting-" + id_tag_chatting + " #loader-progress span").html(parseInt(percentComplete) + "%");
                     }
                 }, false);
                 return xhr;
             },
             beforeSend: function() {
-                console.log("estoy en bofre send");
-                socketcus.htmlchattingLoaders(room);
+                socketcus.htmlchattingLoaders(room, "chatting-" + id_tag_chatting); // crear html loader
             },
             success: function(response) {
 
                 if (response.status == 200 || response.status == 201) {
                     data_call.message.msg = response.url_file;
-                    data_call.message.send_tipo = socketcus.filesTemp[onlyroom].type;
-                    data_call.message.filename = socketcus.filesTemp[onlyroom].file[0].name;
+                    data_call.message.send_tipo = socketcusTemporal.type;
+                    data_call.message.filename = socketcusTemporal.file[0].name;
+                    data_call.message.id_tag_chatting = id_tag_chatting;
 
                     // Emitir un mensaje hacia el server
                     socketcus.socket.emit('chatMessage', data_call);
@@ -240,12 +241,13 @@ socketcus.sendmessage = function(room, enter = false) {
                 console.log(errorThrown);
                 // limpiar files y mostrar loader
                 $(reply + " #comment-send")[0].emojioneArea.enable();
-                socketcus.clearfiles(room);
+                // socketcus.clearfiles(room);
+                alert('file not uploaded ', errorThrown);
             }
-        }).always(function(response) {
-            // limpiar files y mostrar loader
-            socketcus.clearfiles(room);
-        });
+        }).always(function(response) {});
+
+        // limpiar files y mostrar loader
+        socketcus.clearfiles(room);
 
     } else { // enviar mensaje de texto
 
@@ -266,6 +268,7 @@ socketcus.sendmessage = function(room, enter = false) {
             // var msg_original = msg_original; // $(reply + ' #comment-send').val();
             data_call.message.msg = msg_original;
             data_call.message.send_tipo = 'chat';
+            data_call.message.id_tag_chatting = id_tag_chatting;
 
             // Emitir un mensaje hacia el server
             console.log("Emitiendo a chatMessage", data_call);
@@ -562,16 +565,31 @@ socketcus.dateChat = "";
  */
 socketcus.htmlchatting = function(message, room, append = 1) {
 
+    var cliente = "#client" + room.replace(/\+/g, '\\+');
+    var tagchatting = "chatting-" + (message.id_tag_chatting != null ? message.id_tag_chatting : parseInt(Math.random() * 10000000));
+    console.log(tagchatting);
     var timeampm = formatAMPM(new Date(message.time));
     var msg = fileValidation(message.msg, message.caption, message.send_tipo);
 
     var date_chat_temp = formatDate(message.time, '-');
 
-    var chatting = template.htmlchatting(message, msg, socketcus.color_agent_current, socketcus.color_client_current, date_chat_temp, timeampm); // usando template
+    var reemplazo = 0;
+    var templ = template.htmlchatting(message, msg, socketcus.color_agent_current, socketcus.color_client_current, date_chat_temp, timeampm, tagchatting);
+    if (message.tipo == "sender") {
+        if ($(cliente).find('#' + tagchatting).length > 0) {
+            $("#" + tagchatting).replaceWith(templ);
+            reemplazo = 1; // se aplica reemplazo
+        } else {
+            var chatting = templ; // usando template
+        }
+    } else {
+        var chatting = templ; // usando template
+    }
 
-    if ($("#client" + room.replace(/\+/g, '\\+')).length > 0) {
+
+    if ($(cliente).length > 0 && !reemplazo) {
         if (append) { // agregrar html message al final
-            $("#client" + room.replace(/\+/g, '\\+')).append(chatting);
+            $(cliente).append(chatting);
         } else {
             $(chatting).insertBefore("#message-previous" + room.replace(/\+/g, '\\+'));
         }
@@ -582,10 +600,10 @@ socketcus.htmlchatting = function(message, room, append = 1) {
  * Se genera/detiene html de loader para el chatting
  * @param {*} room 
  */
-socketcus.htmlchattingLoaders = function(room) {
+socketcus.htmlchattingLoaders = function(room, chatting_id) {
     var loader = "#client" + room.replace(/\+/g, '\\+');
     // agrega html de loader
-    $(loader).append(template.chattingLoaderFile(socketcus.agent_username, socketcus.color_agent_current));
+    $(loader).append(template.chattingLoaderFile(socketcus.agent_username, socketcus.color_agent_current, chatting_id));
 }
 
 

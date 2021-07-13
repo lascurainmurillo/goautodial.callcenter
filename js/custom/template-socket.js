@@ -103,8 +103,8 @@ template.previousShowDocument = function(objectURL) {
 }
 
 
-template.htmlchatting = function(message, msg, color_agent_current, color_client_current, date_chat_temp, timeampm) {
-    return `<div class="row message-body">
+template.htmlchatting = function(message, msg, color_agent_current, color_client_current, date_chat_temp, timeampm, chatting_id = "chatting-0") {
+    return `<div id="${chatting_id}" class="row message-body">
                 <div class="col-sm-12 message-main-${message.tipo}">
                     <div class="${message.tipo}">
                         <div class="message-cont" style="color: ${ (message.tipo == "sender" ? color_agent_current : color_client_current) }">
@@ -119,8 +119,8 @@ template.htmlchatting = function(message, msg, color_agent_current, color_client
             </div>`;
 }
 
-template.chattingLoaderFile = function(username, color_agent_current) {
-    return `<div class="row message-body">
+template.chattingLoaderFile = function(username, color_agent_current, chatting_id) {
+    return `<div id="${chatting_id}" class="row message-body">
                 <div class="col-sm-12 message-main-sender">
                     <div class="sender">
                         <div class="message-cont" style="color: ${color_agent_current}">
@@ -130,8 +130,8 @@ template.chattingLoaderFile = function(username, color_agent_current) {
                             <div class="loader-custom-chatting">
                                 <i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw "></i>
                             </div>
-                            <div class="text-center">
-                                Cargando...
+                            <div id="loader-progress" class="text-center">
+                                Enviando <span>0</span>
                             </div>
                         </div>
                     </div>
@@ -139,6 +139,7 @@ template.chattingLoaderFile = function(username, color_agent_current) {
             </div>`;
 
 }
+
 
 
 template.previouschat = function(room, date) {
