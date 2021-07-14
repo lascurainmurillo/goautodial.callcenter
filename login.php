@@ -27,6 +27,7 @@
 	require __DIR__ . '/vendor/autoload.php';
 	
 	use App\Lib\Phpjwt;
+	use App\Service\NodeService;
 
 	error_reporting(E_ERROR | E_PARSE);
 
@@ -43,6 +44,7 @@
 		exit();
 	}
 
+	//var_dump();
 	/*if (CRM_SESSION_DRIVER == 'database') {
 		require_once('./php/SessionHandler.php');
 		$session_class = new \creamy\SessionHandler();

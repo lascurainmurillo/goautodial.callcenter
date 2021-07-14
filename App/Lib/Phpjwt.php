@@ -20,7 +20,7 @@ class Phpjwt
     {
         
         $time = time();
-        self::$key = "rf3tGss2shjh4mdjlsjsmMMfDAFej350L3";
+        self::$key = KEY_JWT;
         self::$payload = [
             // "iss" => self::Aud(),
             "aud" => self::Aud(),

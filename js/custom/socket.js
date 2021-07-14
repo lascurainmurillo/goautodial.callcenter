@@ -111,7 +111,6 @@ socketcus.init = function(DOMAIN, agent_username) {
 
     // Escuchar mensajes de whatsapp
     socketcus.socket.on('message', (message) => {
-        console.log("--------------- RESULT -----------------");
         console.log(message);
 
         // escribir chat en pantalla
@@ -213,7 +212,6 @@ socketcus.sendmessage = function(room, enter = false) {
                 xhr.upload.addEventListener("progress", function(evt) {
                     if (evt.lengthComputable) {
                         var percentComplete = (evt.loaded / evt.total) * 100;
-                        console.log(percentComplete);
                         $("#chatting-" + id_tag_chatting + " #loader-progress span").html(parseInt(percentComplete) + "%");
                     }
                 }, false);
@@ -241,7 +239,6 @@ socketcus.sendmessage = function(room, enter = false) {
                 console.log(errorThrown);
                 // limpiar files y mostrar loader
                 $(reply + " #comment-send")[0].emojioneArea.enable();
-                // socketcus.clearfiles(room);
                 alert('file not uploaded ', errorThrown);
             }
         }).always(function(response) {});
@@ -271,7 +268,6 @@ socketcus.sendmessage = function(room, enter = false) {
             data_call.message.id_tag_chatting = id_tag_chatting;
 
             // Emitir un mensaje hacia el server
-            console.log("Emitiendo a chatMessage", data_call);
             socketcus.socket.emit('chatMessage', data_call);
 
             // borrar espacios en el text area
@@ -339,13 +335,13 @@ socketcus.fileselect = function(tag, room) {
     } else if ($(reply + ' #whats_attach_files')[0].files != null && tag == "#whats_attach_files") { // si es archivo
         socketcus.filesTemp[onlyroom].file = $(reply + ' #whats_attach_files')[0].files;
         if (socketcus.filesTemp[onlyroom].file.length === 1) {
-            // socketcus.filesTemp[onlyroom].file = $(reply + ' #whats_attach_files')[0].files
+
             $(previous + " #file-previous").html(template.previousShowDocument(socketcus.filesTemp[onlyroom].file[0].name));
             if ($(previous).hasClass('hidden')) {
                 $(previous).removeClass('hidden');
             }
             socketcus.filesTemp[onlyroom].type = 'document';
-            // console.log(socketcus.filesTemp);
+
         } else {
             socketcus.clearfiles(room);
         }
@@ -508,7 +504,7 @@ socketcus.makeReply = function(room) {
          */
         var faa = $._data($(reply + " #what-attach-multimedia").get(0), "events");
         if (typeof faa == 'undefined') {
-            console.log("estoy creando el click");
+
             $(reply + " #what-attach-multimedia").click(function() {
                 $(reply + " #whats_attach_multimedia").click();
             });
@@ -567,7 +563,6 @@ socketcus.htmlchatting = function(message, room, append = 1) {
 
     var cliente = "#client" + room.replace(/\+/g, '\\+');
     var tagchatting = "chatting-" + (message.id_tag_chatting != null ? message.id_tag_chatting : parseInt(Math.random() * 10000000));
-    console.log(tagchatting);
     var timeampm = formatAMPM(new Date(message.time));
     var msg = fileValidation(message.msg, message.caption, message.send_tipo);
 

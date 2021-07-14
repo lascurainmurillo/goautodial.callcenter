@@ -9,6 +9,7 @@ define('DB_NAME_ASTERISK', 'asterisk');
 define('VERIFY_SSL', false);
 define('DOMAIN_SOCKET', 'http://localhost:3001');
 define('LIST_ID', 1004);
+define('KEY_JWT', 'xxxx');
 // other configuration parameters
 define('CRM_ADMIN_EMAIL', 'admin@localhost.com');
 

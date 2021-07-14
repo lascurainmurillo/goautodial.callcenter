@@ -9360,19 +9360,22 @@ function getContactList() {
                 
                 var customer_name = (value.first_name || '') + ' ' + (value.middle_initial || '') + ' ' + (value.last_name || '');
                 var last_call_time = (value.last_local_call_time || '0000-00-00 00:00:00');
-                var appendThis = '<tr data-id="'+value.lead_id+'"><td>'+value.lead_id+'</td><td>'+customer_name+'</td><td>'+value.phone_number+'</td><td>'+last_call_time+'</td><td>'+value.campaign_id+'</td><td><div style="color: '+value.color_text+'; background-color:'+value.color_background+'; text-align: center; padding: 7px;">'+value.status_name+'</div></td><td'+commentTitle+'>'+thisComments+'</td><td class="text-center" style="white-space: nowrap;"><button id="lead-info-'+value.lead_id+'" data-leadid="'+value.lead_id+'" onclick="ViewCustInfo('+value.lead_id+');" class="btn btn-info btn-sm" style="margin: 2px;" title="<?=$lh->translationFor('view_contact_info')?>"><i class="fa fa-file-text-o"></i></button><button id="dial-lead-'+value.lead_id+'" data-leadid="'+value.lead_id+'" onclick="ManualDialNext(\'\','+value.lead_id+','+value.phone_code+','+value.phone_number+',\'\',\'0\');" class="btn btn-primary btn-sm disabled" style="margin: 2px;" title="<?=$lh->translationFor('call_contact_number')?>"><i class="fa fa-phone"></i></button></td></tr>';
+                var appendThis = '<tr data-id="'+value.lead_id+'"><td>'+value.lead_id+'</td><td>'+customer_name+'</td><td>'+value.phone_number+'</td><td>'+last_call_time+'</td><td>'+value.campaign_id+'</td><td style="color: '+value.color_text+'; background-color:'+value.color_background+'; text-align: center; padding: 7px;">'+value.status_name+'</td><td'+commentTitle+'>'+thisComments+'</td><td class="text-center" style="white-space: nowrap;"><button id="lead-info-'+value.lead_id+'" data-leadid="'+value.lead_id+'" onclick="ViewCustInfo('+value.lead_id+');" class="btn btn-info btn-sm" style="margin: 2px;" title="<?=$lh->translationFor('view_contact_info')?>"><i class="fa fa-file-text-o"></i></button><button id="dial-lead-'+value.lead_id+'" data-leadid="'+value.lead_id+'" onclick="ManualDialNext(\'\','+value.lead_id+','+value.phone_code+','+value.phone_number+',\'\',\'0\');" class="btn btn-primary btn-sm disabled" style="margin: 2px;" title="<?=$lh->translationFor('call_contact_number')?>"><i class="fa fa-phone"></i></button></td></tr>';
                 $("#contacts-list tbody").append(appendThis);
             });
             $("#contacts-list").css('width', '100%');
-            $("#contacts-list").DataTable({
+            var tableContacts = $("#contacts-list").DataTable({
                 "bDestroy": true,
+                initComplete: function () {
+                    $(".preloader").fadeOut('slow');
+				},
                 "aoColumnDefs": [{
                     "bSortable": false,
                     "aTargets": [ 7 ],
-                }, {
-                    "bSearchable": false,
+                }, /*{
+                    "bSearchable": true,
                     "aTargets": [ 3, 5, 7 ]
-                }, {
+                },*/ {
                     "sClass": "hidden-xs",
                     "aTargets": [ 0 ]
                 }, {
@@ -9385,9 +9388,12 @@ function getContactList() {
                     "sClass": "visible-lg",
                     "aTargets": [ 3, 6 ]
                 }],
+                "bLengthChange": false,
+                /*
                 "fnInitComplete": function() {
                     $(".preloader").fadeOut('slow');
                 },
+                */
                 "order": [[ 3, 'desc' ]],
                 "pageLength": 50
             });
@@ -9408,6 +9414,23 @@ function getContactList() {
                     $("button[id^='dial-lead-']").removeClass('disabled');
                 }
             });
+			
+			// crear selected para filtrar columnas
+            $(".filterhead").each( function ( i ) {
+                if(i === 5) { // sólo columna status
+					var select = $('<select><option value="">Seleccionar</option></select>')
+						.appendTo( $(this).empty() )
+						.on( 'change', function () {
+						   var term = $(this).val();
+							tableContacts.column( i ).search(term, false, false ).draw();
+						});
+					tableContacts.column( i ).data().unique().sort().each( function ( d, j ) {
+							select.append( '<option value="'+d+'">'+d+'</option>' )
+					});
+                } else {
+                    $('').appendTo($(this).empty());
+                }
+			});
         } else {
             $(".preloader").fadeOut('slow');
             $("#contacts-list").DataTable({

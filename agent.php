@@ -1875,6 +1875,32 @@ function response($order_id,$amount,$response_code,$response_desc){
 								<table id="contacts-list" class="display" style="border: 1px solid #f4f4f4; width: 100%;">
 									<thead>
 										<tr>
+											<th class="filterhead">
+												<?=$lh->translationFor('lead_id')?>
+											</th>
+											<th class="filterhead">
+												<?=$lh->translationFor('customer_name')?>
+											</th>
+											<th class="filterhead">
+												<?=$lh->translationFor('phone_number')?>
+											</th>
+											<th class="filterhead">
+												<?=$lh->translationFor('last_call_time')?>
+											</th>
+											<th class="filterhead">
+												<?=$lh->translationFor('campaign')?>
+											</th>
+											<th class="filterhead">
+												<?=$lh->translationFor('status')?>
+											</th>
+											<th class="filterhead">
+												<?=$lh->translationFor('comments')?>
+											</th>
+											<th class="filterhead">
+												<?=$lh->translationFor('action')?>
+											</th>
+										</tr>
+										<tr>
 											<th>
 												<?=$lh->translationFor('lead_id')?>
 											</th>
@@ -1904,6 +1930,20 @@ function response($order_id,$amount,$response_code,$response_desc){
 									<tbody>
 										
 									</tbody>
+									<!-- 
+									<tfoot>
+										<tr>
+											<th><?=$lh->translationFor('lead_id')?></th>
+											<th><?=$lh->translationFor('customer_name')?></th>
+											<th><?=$lh->translationFor('phone_number')?></th>
+											<th><?=$lh->translationFor('last_call_time')?></th>
+											<th><?=$lh->translationFor('campaign')?></th>
+											<th><?=$lh->translationFor('status')?></th>
+											<th><?=$lh->translationFor('comments')?></th>
+											<th><?=$lh->translationFor('action')?></th>
+										</tr>
+									</tfoot>
+								-->
 								</table>
 							</div>
 							<?php
@@ -2102,6 +2142,7 @@ function response($order_id,$amount,$response_code,$response_desc){
 <button onclick="socketcus.initCallWhatsapp('+51955794343', 'Lili bon ifacio', '1004')" class="">iniciar simular Lily</button>
 
 		<?php print $ui->standardizedThemeJS();?>
+
 		<script type="text/javascript">									
 			$(document).ready(function() {
 				
@@ -3084,13 +3125,13 @@ function response($order_id,$amount,$response_code,$response_desc){
 
 		<script src="js/custom/global.js" type="text/javascript"></script>
 		<script type="text/javascript">
-			// $(document).ready(function() {
-				/*
-				countup.datenow("<?php // echo date('r'); ?>");
-				countup.xcon_();
-				countup.xtimeCont();
-				*/
-			// });
+			/* Token para peticiones AJAX */
+			let token = getCookie('utjo');
+			if (token != null) {
+				$.ajaxSetup({ headers: { 'JWT-TOKEN': token } });
+			} else {
+				console.error('CSRF token not found');
+			}
 		</script>
 		<script src="<?php echo DOMAIN_SOCKET ?>/socket.io/socket.io.js" type="text/javascript"></script>
 		<script src="js/custom/socket.js" type="text/javascript"></script>
