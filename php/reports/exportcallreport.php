@@ -2,7 +2,7 @@
 /**
  * @file        exportcallreport.php
  * @brief       Handles report requests
- * @copyright   Copyright (c) 2018 GOautodial Inc.
+ * @copyright   Copyright (c) 2020 GOautodial Inc.
  * @author      Alexander Jim H. Abenoja
  *
  * @par <b>License</b>:
@@ -20,10 +20,9 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-	require_once('./php/APIHandler.php');
-	
+	require_once('APIHandler.php');
 	$api = \creamy\APIHandler::getInstance();
-	
+		
 	$session_user = $api->GetSessionUser();
 	$session_group = $api->GetSessionGroup();	
 
@@ -52,10 +51,14 @@
 									<div class="">
 										<select multiple="multiple" class="select2-3 form-control" id="selected_campaigns" name="campaigns[]" style="width:100%;">';
 											if(EXPORTCALLREPORT_ALLCAMPAIGNS === "y"){
-												$display .= '<option value="ALL">--- ALL CAMPAIGNS ---</option>';
+												$display .= '<option value="ALL" selected>--- ALL CAMPAIGNS ---</option>';
 											}
 											for($i=0; $i < count($campaigns->campaign_id);$i++) {
-												$display .= '<option value="'.$campaigns->campaign_id[$i].'">'.$campaigns->campaign_id[$i].' - '.$campaigns->campaign_name[$i].'</option>';
+												$isSelected = '';
+												if ($i < 1 && EXPORTCALLREPORT_ALLCAMPAIGNS !== "y") {
+													$isSelected = ' selected';
+												}
+												$display .= '<option value="'.$campaigns->campaign_id[$i].'"'.$isSelected.'>'.$campaigns->campaign_id[$i].' - '.$campaigns->campaign_name[$i].'</option>';
 											}
 			$display .= '				 </select>
 									</div>
@@ -68,7 +71,13 @@
 								<div class="mb">
 									<div class="">
 										<select multiple="multiple" class="select2-3 form-control" id="selected_inbounds" name="inbounds[]" style="width:100%;">';
+											if(EXPORTCALLREPORT_ALLCAMPAIGNS === "y"){
+                                                                                                $display .= '<option value="ALL">--- ALL ---</option>
+';
+                                                                                        }
+
 											for($i=0; $i < count($inbound->group_id);$i++) {
+												if ($session_group !== "ADMIN" && preg_match("/^AGENTDIRECT/", $inbound->group_id[$i])) continue;
 												$display .= '<option value="'.$inbound->group_id[$i].'">'.$inbound->group_id[$i].' - '.$inbound->group_name[$i].'</option>';
 											}
 			$display .= '				 </select>
@@ -103,7 +112,7 @@
 											for($i=0; $i < count($disposition->status);$i++) {
 												if($disposition->campaign_id[$i] != NULL){
 													if(in_array($disposition->status[$i], $campaigns->campaign_id)){
-														$display .= '<option value="'.$disposition->status[$i].'">'.$disposition->status[$i].' - '.$disposition->status_name[$i].'</option>';
+														$display .= '<option value="'.$disposition->status_name[$i].'">'.$disposition->status[$i].' - '.$disposition->status_name[$i].'</option>';
 													}
 												} else {
 													$display .= '<option value="'.$disposition->status[$i].'">'.$disposition->status[$i].' - '.$disposition->status_name[$i].'</option>';
@@ -175,12 +184,19 @@
 				$('#submit_export').html("Downloading.....");
 				$('#submit_export').attr("disabled", true);
 				
-				toDateVal = $('#start_filterdate').val();
-				$('#export_callreport_form').append("<input type='hidden' name='fromDate' value='"+
-									toDateVal+"' />");
-				fromDateVal = $('#end_filterdate').val();
-				$('#export_callreport_form').append("<input type='hidden' name='toDate' value='"+
-									fromDateVal+"' />");
+				fromDateVal = $('#start_filterdate').val();
+				if ($('#export_callreport_form').find('input[name="fromDate"]').length < 1) {
+					$('#export_callreport_form').append("<input type='hidden' name='fromDate' value='"+fromDateVal+"' />");
+				} else {
+					$('#export_callreport_form').find('input[name="fromDate"]').val(fromDateVal);
+				}
+				
+				toDateVal = $('#end_filterdate').val();
+				if ($('#export_callreport_form').find('input[name="toDate"]').length < 1) {
+					$('#export_callreport_form').append("<input type='hidden' name='toDate' value='"+toDateVal+"' />");
+				} else {
+					$('#export_callreport_form').find('input[name="toDate"]').val(toDateVal);
+				}
 				
 				//alert($("#toDate").val());
 				
@@ -214,8 +230,8 @@
 				?>
 				console.log(campaigns.campaign_id);
 				console.log(customDispo);
-				if(selectedCampaigns != null){
-					if( selectedCampaigns.includes("ALL") ) {
+				//if(selectedCampaigns != null){
+					if( selectedCampaigns.includes("ALL") || selectedCampaigns == null) {
 						for(i=0; i < campaigns.campaign_id.length; i++){
 							if( customDispo[campaigns.campaign_id[i]] != null ) {
 								statuses = customDispo[campaigns.campaign_id[i]].split(", ");
@@ -256,7 +272,7 @@
 							}
 						}
 					}
-				}
+				//}
 				
 				$('#selected_statuses').html(statOptions);
 			});

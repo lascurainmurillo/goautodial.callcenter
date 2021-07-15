@@ -30,6 +30,13 @@
 	$api = \creamy\APIHandler::getInstance();
 	$lh = \creamy\LanguageHandler::getInstance();
 	$user = \creamy\CreamyUser::currentUser();
+	
+	//proper user redirects
+	if($user->getUserRole() != CRM_DEFAULTS_USER_ROLE_ADMIN){
+		if($user->getUserRole() == CRM_DEFAULTS_USER_ROLE_AGENT){
+			header("location: agent.php");
+		}
+	}	
 
 	$filter_id = NULL;
 	if (isset($_POST["filter_id"])) {
@@ -114,13 +121,13 @@
 				<div class="form-group mt">
 					<label for="filter_name" class="col-sm-2 control-label"><?php $lh->translateText("filter_name"); ?></label>
 					<div class="col-sm-10 mb">
-						<input type="text" class="form-control" name="filter_name" id="filter_name" placeholder="<?php $lh->translateText("filter_name"); ?> (<?php $lh->translateText("mandatory"); ?>)" value="<?php echo $output->filter_name;?>">
+						<input type="text" class="form-control" name="filter_name" id="filter_name" placeholder="<?php $lh->translateText("filter_name"); ?> (<?php $lh->translateText("mandatory"); ?>)" value="<?php echo $output->filter_name;?>" <?php if ($_SESSION['usergroup'] !== "ADMIN" && $filter_id === "FILTEMP") { echo "readonly"; } ?>>
 					</div>
 				</div>
 				<div class="form-group mt">
 					<label for="filter_comments" class="col-sm-2 control-label"><?php $lh->translateText("filter_comments"); ?></label>
 					<div class="col-sm-10 mb">
-						<input type="text" class="form-control" name="filter_comments" id="filter_comments" placeholder="<?php $lh->translateText("filter_comments"); ?>" value="<?php echo $output->filter_comments;?>">
+						<input type="text" class="form-control" name="filter_comments" id="filter_comments" placeholder="<?php $lh->translateText("filter_comments"); ?>" value="<?php echo $output->filter_comments;?>" <?php if ($_SESSION['usergroup'] !== "ADMIN" && $filter_id === "FILTEMP") { echo "readonly"; } ?>>
 					</div>
 				</div>
 				<div class="form-group<?=($_SESSION['usergroup'] !== 'ADMIN' ? ' hidden' : '')?>">
@@ -155,7 +162,7 @@
 					<div class="col-sm-10">
 						<div class="panel">
 							<div class="panel-body">
-								<textarea rows="14" class="form-control note-editor" id="filter_sql" name="filter_sql"><?php echo str_replace('Â', '', htmlspecialchars_decode($output->filter_sql, ENT_QUOTES));?></textarea>
+								<textarea rows="14" class="form-control note-editor" id="filter_sql" name="filter_sql" <?php if ($_SESSION['usergroup'] !== "ADMIN" && $filter_id === "FILTEMP") { echo "readonly"; } ?>><?php echo str_replace('Â', '', htmlspecialchars_decode($output->filter_sql, ENT_QUOTES));?></textarea>
 							</div>
 						</div>
 					</div>
@@ -168,7 +175,13 @@
 				<div class="box-footer">
 				   <div class="col-sm-3 pull-right">
 						<a href="telephonyfilters.php" id="cancel" type="button" class="btn btn-danger"><i class="fa fa-close"></i> Cancel </a>
-						<button type="submit" class="btn btn-primary" id="modifyOkButton" href=""> <span id="update_button"><i class="fa fa-check"></i> <?php $lh->translateText("update"); ?></span></button>						
+						<?php
+						if ($_SESSION['usergroup'] === "ADMIN" || ($_SESSION['usergroup'] !== "ADMIN" && $filter_id !== "FILTEMP")) {
+						?>
+						<button type="submit" class="btn btn-primary" id="modifyOkButton" href=""> <span id="update_button"><i class="fa fa-check"></i> <?php $lh->translateText("update"); ?></span></button>
+						<?php
+						}
+						?>
 				   </div>
 				</div>
 			</fieldset>

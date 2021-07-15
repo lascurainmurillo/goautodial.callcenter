@@ -28,6 +28,28 @@
 	
 	use App\Lib\Phpjwt;
 	use App\Service\NodeService;
+/**
+ * @file 		login.php
+ * @brief 		login application
+ * @copyright 	Copyright (c) 2020 GOautodial Inc. 
+ * @author     	Christopher Lomuntad 
+ * @author		Demian Lizandro A. Biscocho
+ * @author		Ignacio Nieto Carvajal
+ *
+ * @par <b>License</b>:
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+**/
 
 	error_reporting(E_ERROR | E_PARSE);
 
@@ -119,22 +141,20 @@
 			}
 		}
 	}
+	
+	$uname = (isset($_GET['username'])) ? $_GET['username'] : '';
+	$upass = (isset($_GET['password'])) ? $_GET['password'] : '';
+	//https://github.com/goautodial/v4.0/issues/48
+	//prevent xss
+	$uname = htmlentities($uname);
+	$upass = htmlentities($upass);
 ?>
 <html>
     <head>
         <meta charset="UTF-8">
         <title><?php $lh->translateText("system_access"); ?> </title>
         <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
-
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-136789623-1"></script>
-<script>
- window.dataLayer = window.dataLayer || [];
- function gtag(){dataLayer.push(arguments);}
- gtag('js', new Date());
- gtag('config', 'UA-136789623-1');
-</script>
-
+        
         <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <link href="css/font-awesome.min.css" rel="stylesheet" type="text/css" />
         <!-- Theme style -->
@@ -168,11 +188,11 @@
         <p id="p1" style="" class="login-box-msg"><?php $lh->translateText("sign_in"); ?></p>
         <form action="" method="post">
           <div class="form-group has-feedback">
-            <input id="input1" type="text" style="" class="form-control" name="username" placeholder="<?php $lh->translateText("username_or_email"); ?>"/>
+            <input id="input1" type="text" style="" class="form-control" name="username" placeholder="<?php $lh->translateText("username_or_email"); ?>" value="<?=$uname?>"/>
             <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
           </div>
           <div class="form-group has-feedback">
-            <input id="input2" type="password" style="" name="password" class="form-control" placeholder="<?php $lh->translateText("password"); ?>"/>
+            <input id="input2" type="password" style="" name="password" class="form-control" placeholder="<?php $lh->translateText("password"); ?>" value="<?=$upass?>"/>
             <span class="glyphicon glyphicon-lock form-control-feedback"></span>
           </div>
 	    	<div name="error-message" style="color: red;">
@@ -192,6 +212,9 @@
       </div><!-- /.login-box-body -->
     </div><!-- /.login-box -->
 	</center>
+	<footer>
+		<div style="text-align: center; font-weight: 600; margin-top: -40px;">Copyright &copy; <?=date("Y")?> <a href="https://goautodial.com" target="_blank">GOautodial Inc.</a> All rights reserved.</div>
+	</footer>
    <!--<div class="margin text-center">
         <span><?php $lh->translateText("never_heard_of_creamy"); ?></span>
         <br/>

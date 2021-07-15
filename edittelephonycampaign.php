@@ -32,6 +32,13 @@
 	$api = \creamy\APIHandler::getInstance();
 	$lh = \creamy\LanguageHandler::getInstance();
 	$user = \creamy\CreamyUser::currentUser();
+	
+	//proper user redirects
+	if($user->getUserRole() != CRM_DEFAULTS_USER_ROLE_ADMIN){
+		if($user->getUserRole() == CRM_DEFAULTS_USER_ROLE_AGENT){
+			header("location: agent.php");
+		}
+	}	
 
 	$campaign_id = NULL;
 	if (isset($_POST["campaign"])) {
@@ -61,7 +68,7 @@
 	$scripts = $api->API_getAllScripts();
 	$carriers = $api->API_getAllCarriers();
 	$leadfilter = $api->API_getAllLeadFilters();
-	$dialStatus = $api->API_getAllDialStatuses($campaign_id);
+	$dialStatus = $api->API_getAllDialStatuses($campaign_id, '');
 	$sdialStatus = $api->API_getAllDialStatusesSurvey($campaign_id);
 	$campdialStatus = $api->API_getAllCampaignDialStatuses($campaign_id);
 	$dids = $api->API_getAllDIDs();
@@ -97,6 +104,7 @@
   		<link rel="stylesheet" href="css/iCheck/all.css">
 		<!-- Bootstrap Color Picker -->
   		<link rel="stylesheet" href="adminlte/colorpicker/bootstrap-colorpicker.min.css">
+		<link rel="stylesheet" href="css/flags/flags.min.css">
 		<!-- bootstrap color picker -->
 		<script src="adminlte/colorpicker/bootstrap-colorpicker.min.js"></script>   		
 		<style type="text/css">
@@ -257,33 +265,33 @@
 														<div class="row">
 															<?php
 																$autodial_level = $campaign->data->auto_dial_level;
-																
+																$autodial_level_adv = $campaign->auto_dial_level;
 															?>
 															<div class="col-lg-8">
 																<select id="auto_dial_level" class="form-control" name="auto_dial_level" <?php if($campaign->data->dial_method !== "RATIO") echo "disabled";?>>
 																<option value="OFF" <?php if($campaign->data->dial_method == "MANUAL") echo "selected";?> disabled>OFF</option>
-																<option value="SLOW"<?php if($autodial_level == "1") echo "selected";?>>SLOW</option>
-																<option VALUE="NORMAL" <?php if($autodial_level == "2") echo "selected";?>>NORMAL</option>
-																<option VALUE="HIGH" <?php if($autodial_level == "4") echo "selected";?>>HIGH</option>
-																<option VALUE="MAX"<?php if($autodial_level == "6") echo "selected";?>>MAX</option>
-																<option VALUE="MAX_PREDICTIVE"<?php if($autodial_level == "10" || $campaign->data->dial_method == "ADAPT_TAPERED") echo "selected";?> disabled>MAX PREDICTIVE</option>
-																<option value="ADVANCE" <?php if($autodial_level != "0" && $autodial_level != "1" && $autodial_level != "2" && $autodial_level != "4" && $autodial_level != "6" && $autodial_level != "10") echo "selected";?> >ADVANCE</option>
+																<option value="SLOW"<?php if($autodial_level_adv !== 'ADVANCE' && $autodial_level == "1") echo "selected";?>>SLOW</option>
+																<option VALUE="NORMAL" <?php if($autodial_level_adv !== 'ADVANCE' && $autodial_level == "2") echo "selected";?>>NORMAL</option>
+																<option VALUE="HIGH" <?php if($autodial_level_adv !== 'ADVANCE' && $autodial_level == "4") echo "selected";?>>HIGH</option>
+																<option VALUE="MAX"<?php if($autodial_level_adv !== 'ADVANCE' && $autodial_level == "6") echo "selected";?>>MAX</option>
+																<option VALUE="MAX_PREDICTIVE"<?php if($autodial_level_adv !== 'ADVANCE' && $autodial_level == "10" || $campaign->data->dial_method == "ADAPT_TAPERED") echo "selected";?> disabled>MAX PREDICTIVE</option>
+																<option value="ADVANCE" <?php if($autodial_level_adv === 'ADVANCE') echo "selected";?> >ADVANCE</option>
 																</select>
 															</div>
 															<div class="col-lg-4">
-																<select id="auto_dial_level_adv" class="form-control <?php if($autodial_level == "0" || $autodial_level == "1" || $autodial_level == "2" || $autodial_level == "4" || $autodial_level == "6" || $autodial_level == "10") echo "hide";?> " name="auto_dial_level_adv">
+																<select id="auto_dial_level_adv" class="form-control <?php if($autodial_level_adv !== 'ADVANCE') echo "hide";?> " name="auto_dial_level_adv">
 <?php if($server->data->max_vicidial_trunks == NULL){ ?>
-																	<option value="1">1.0</option>
+																	<option value="1" <?php if($autodial_level == "1") echo "selected"; ?> >1.0</option>
 																	<option value="1.5" <?php if($autodial_level == "1.5") echo "selected"; ?> >1.5</option>
-																	<option value="2">2.0</option>
+																	<option value="2" <?php if($autodial_level == "2") echo "selected"; ?> >2.0</option>
 																	<option value="2.5" <?php if($autodial_level == "2.5") echo "selected"; ?> >2.5</option>
 																	<option value="3.0" <?php if($autodial_level == "3.0") echo "selected"; ?> >3.0</option>
 																	<option value="3.5" <?php if($autodial_level == "3.5") echo "selected"; ?> >3.5</option>
-																	<option value="4">4.0</option>
+																	<option value="4" <?php if($autodial_level == "4") echo "selected"; ?> >4.0</option>
 																	<option value="4.5" <?php if($autodial_level == "4.5") echo "selected"; ?> >4.5</option>
 																	<option value="5.0" <?php if($autodial_level == "5.0") echo "selected"; ?> >5.0</option>
 																	<option value="5.5" <?php if($autodial_level == "5.5") echo "selected"; ?> >5.5</option>
-																	<option value="6">6.0</option>
+																	<option value="6" <?php if($autodial_level == "6") echo "selected"; ?> >6.0</option>
 																	<option value="6.5" <?php if($autodial_level == "6.5") echo "selected"; ?> >6.5</option>
 																	<option value="7.0" <?php if($autodial_level == "7.0") echo "selected"; ?> >7.0</option>
 																	<option value="7.5" <?php if($autodial_level == "7.5") echo "selected"; ?> >7.5</option>
@@ -291,7 +299,7 @@
 																	<option value="8.5" <?php if($autodial_level == "8.5") echo "selected"; ?> >8.5</option>
 																	<option value="9.0" <?php if($autodial_level == "9.0") echo "selected"; ?> >9.0</option>
 																	<option value="9.5" <?php if($autodial_level == "9.5") echo "selected"; ?> >9.5</option>
-																	<option value="10">10.0</option>
+																	<option value="10" <?php if($autodial_level == "10") echo "selected"; ?> >10.0</option>
 																	<option value="10.5" <?php if($autodial_level == "10.5") echo "selected"; ?> >10.5</option>
 																	<option value="11.0" <?php if($autodial_level == "11.0") echo "selected"; ?> >11.0</option>
 																	<option value="11.5" <?php if($autodial_level == "11.5") echo "selected"; ?> >11.5</option>
@@ -392,6 +400,19 @@
 														<input type="text" class="form-control" id="campaign_cid" name="campaign_cid" value="<?php echo $campaign->data->campaign_cid; ?>">
 													</div>
 												</div>
+
+												<div class="form-group">
+                                                                                                   <label class="col-sm-3 control-label"><?php $lh->translateText("custom_caller_id"); ?>:</label>
+                                                                                                      <div class="col-sm-9 mb">
+                                                                                                          <select id="use_custom_cid" class="form-control" name="use_custom_cid">
+                                                                                                              <option value="N" <?php if($campaign->data->use_custom_cid == "N") echo "selected";?>>NO</option>
+                                                                                                              <option value="Y" <?php if($campaign->data->use_custom_cid == "Y") echo "selected";?>>YES</option>
+													      <option value="AREACODE" <?php if($campaign->data->use_custom_cid == "AREACODE") echo "selected";?>>AREACODE</option>
+
+                                                                                                          </select>
+                                                                                                      </div>
+                                                                                                </div>
+
 												<?php if($campaign->campaign_type == "SURVEY") { ?>
                                                                                                 <div class="form-group survey_method_agent_xfer_view">
                                                                                                         <label class="col-sm-3 control-label"><?php $lh->translateText("campaign_recordings"); ?>:</label>
@@ -560,6 +581,17 @@
 							
 												<div class="tab-pane fade in" id="tab_2">
 													<fieldset>
+														<div class="form-group">
+															<label class="col-sm-3 control-label"><?php $lh->translateText("default_country_code"); ?>:</label>
+															<div class="col-sm-9 mb">
+																<div id="flag" class="flag flag-<?php if(!empty($campaign->country_codes->{$campaign->default_country_code}->tld)) { echo $campaign->country_codes->{$campaign->default_country_code}->tld; } else { echo "us"; } ?>" style="position: absolute; top: 11px; left: 30px;"></div>
+																<select class="form-control" id="default_country_code" name="default_country_code" style="padding-left: 35px;">
+																	<?php foreach ($campaign->country_codes as $cKey => $cCode) { ?>
+																		<option data-tld="<?php echo $cCode->tld; ?>" value="<?php echo $cKey; ?>" <?php if((empty($campaign->default_country_code) && $cKey === 'USA_1') || (!empty($campaign->default_country_code) && $campaign->default_country_code == $cKey)) echo "selected";?>><?php echo $cCode->name . " (+" . $cCode->code . ")"; ?></option>
+																	<?php } ?>
+																</select>
+															</div>
+														</div>
 														<?php if($campaign->campaign_type != "SURVEY") { ?>
 														<div class="form-group">
 															<label class="col-sm-3 control-label"><?php $lh->translateText("allowed_inbound_and_blended"); ?>:</label>
@@ -806,6 +838,18 @@
 																			<?php } ?>
 																		<?php } ?>
 																	</select>
+																</div>
+															</div>
+															<div class="form-group">
+																<label class="col-sm-3 control-label"><?php $lh->translateText("call_count_limit"); ?>:</label>
+																<div class="col-sm-9 mb">
+																	<input type="number" class="form-control" id="call_count_limit" name="call_count_limit" min="0" value="<?php echo $campaign->data->call_count_limit; ?>">
+																</div>
+															</div>
+															<div class="form-group">
+																<label class="col-sm-3 control-label"><?php $lh->translateText("call_count_target"); ?>:</label>
+																<div class="col-sm-9 mb">
+																	<input type="number" class="form-control" id="call_count_target" name="call_count_target" min="0" value="<?php echo $campaign->data->call_count_target; ?>">
 																</div>
 															</div>
 															<div class="form-group">
@@ -1111,7 +1155,7 @@
 																	<div class="input-group">
 																		<input type="text" class="form-control" id="am_message_exten" name="am_message_exten" value="<?php echo $campaign->data->am_message_exten;?>">
 																		<span class="input-group-btn">
-																			<button class="btn btn-default" type="button">[Audio Chooser...]</button>
+																			<button class="btn btn-default show_am_message_chooser" type="button">[Audio Chooser...]</button>
 																		</span>
 																	</div><!-- /input-group -->
 																	<select class="form-control am_message_chooser" id="am_message_chooser" name="am_message_chooser">
@@ -1217,7 +1261,7 @@
 																		<option value="OLDEST_CALL_FINISH" <?php if(strtoupper($campaign->data->next_agent_call) == "OLDEST_CALL_FINISH") echo "selected";?>>OLDEST CALL FINISH</option>
 																		<option value="OVERALL_USER_LEVEL" <?php if(strtoupper($campaign->data->next_agent_call) == "OVERALL_USER_LEVEL") echo "selected";?>>OVERALL USER LEVEL</option>
 																		<option value="FEWEST_CALLS" <?php if(strtoupper($campaign->data->next_agent_call) == "FEWEST_CALLS") echo "selected";?>>FEWEST CALLS</option>
-																		<option value="LONGEST_WAITING_TIME" <?php if(strtoupper($campaign->data->next_agent_call) == "LONGEST_WAITING_TIME") echo "selected";?>>LONGEST WAITING TIME</option>
+																		<option value="LONGEST_WAIT_TIME" <?php if(strtoupper($campaign->data->next_agent_call) == "LONGEST_WAIT_TIME") echo "selected";?>>LONGEST WAIT TIME</option>
 																	</select>
 																</div>
 															</div>
@@ -1499,6 +1543,18 @@
 																</div>
 															</div>
 															<div class="form-group">
+																<label class="col-sm-3 control-label"><?php $lh->translateText("call_count_limit"); ?>:</label>
+																<div class="col-sm-9 mb">
+																	<input type="number" class="form-control" id="call_count_limit" name="call_count_limit" value="<?php echo $campaign->data->call_count_limit; ?>">
+																</div>
+															</div>
+															<div class="form-group">
+																<label class="col-sm-3 control-label"><?php $lh->translateText("call_count_target"); ?>:</label>
+																<div class="col-sm-9 mb">
+																	<input type="number" class="form-control" id="call_count_target" name="call_count_target" value="<?php echo $campaign->data->call_count_target; ?>">
+																</div>
+															</div>
+															<div class="form-group">
 																<label class="col-sm-3 control-label"><?php $lh->translateText("force_reset_of_hopper"); ?>:</label>
 																<div class="col-sm-9 mb">
 																	<select class="form-control" id="force_reset_hopper" name="force_reset_hopper">
@@ -1647,7 +1703,7 @@
 																		<option value="OLDEST_CALL_FINISH" <?php if(strtoupper($campaign->data->next_agent_call) == "OLDEST_CALL_FINISH") echo "selected";?>>OLDEST CALL FINISH</option>
 																		<option value="OVERALL_USER_LEVEL" <?php if(strtoupper($campaign->data->next_agent_call) == "OVERALL_USER_LEVEL") echo "selected";?>>OVERALL USER LEVEL</option>
 																		<option value="FEWEST_CALLS" <?php if(strtoupper($campaign->data->next_agent_call) == "FEWEST_CALLS") echo "selected";?>>FEWEST CALLS</option>
-																		<option value="LONGEST_WAITING_TIME" <?php if(strtoupper($campaign->data->next_agent_call) == "LONGEST_WAITING_TIME") echo "selected";?>>LONGEST WAITING TIME</option>
+																		<option value="LONGEST_WAIT_TIME" <?php if(strtoupper($campaign->data->next_agent_call) == "LONGEST_WAIT_TIME") echo "selected";?>>LONGEST WAIT TIME</option>
 																	</select>
 																</div>
 															</div>
@@ -1897,7 +1953,7 @@
 																		<option value="OLDEST_CALL_FINISH" <?php if(strtoupper($campaign->data->next_agent_call) == "OLDEST_CALL_FINISH") echo "selected";?>>OLDEST CALL FINISH</option>
 																		<option value="OVERALL_USER_LEVEL" <?php if(strtoupper($campaign->data->next_agent_call) == "OVERALL_USER_LEVEL") echo "selected";?>>OVERALL USER LEVEL</option>
 																		<option value="FEWEST_CALLS" <?php if(strtoupper($campaign->data->next_agent_call) == "FEWEST_CALLS") echo "selected";?>>FEWEST CALLS</option>
-																		<option value="LONGEST_WAITING_TIME" <?php if(strtoupper($campaign->data->next_agent_call) == "LONGEST_WAITING_TIME") echo "selected";?>>LONGEST WAITING TIME</option>
+																		<option value="LONGEST_WAIT_TIME" <?php if(strtoupper($campaign->data->next_agent_call) == "LONGEST_WAIT_TIME") echo "selected";?>>LONGEST WAIT TIME</option>
 																	</select>
 																</div>
 															</div>
@@ -2111,6 +2167,23 @@
 																		<input type="number" class="form-control" id="survey_ni_digit" name="survey_ni_digit" min="0" maxlength="10" value="<?php if(!empty($campaign->data->survey_ni_digit)){echo $campaign->data->survey_ni_digit;}else{echo "8";} ?>">
 																	</div>
 																</div>
+																<div class="form-group">
+																	<label class="col-sm-3 control-label"><?php $lh->translateText("survey_wait_seconds"); ?>:</label>
+																	<div class="col-sm-9 mb">
+																		<input type="number" class="form-control" id="survey_wait_sec" name="survey_wait_sec" min="0" maxlength="10" value="<?php if(!empty($campaign->data->survey_wait_sec)){echo $campaign->data->survey_wait_sec;}else{echo "10";} ?>">
+																	</div>
+																</div>
+																<div class="form-group">
+																	<label class="col-sm-3 control-label"><?php $lh->translateText("survey_no_response_action"); ?>:</label>
+																	<div class="col-sm-9 mb">
+																		<select id="survey_no_response_action" name="survey_no_response_action" class="form-control select2">
+																			<option value="OPTIN" <?php if($campaign->data->survey_no_response_action == "OPTIN") echo "selected";?>>OPTIN</option>
+																			<option value="OPTOUT" <?php if($campaign->data->survey_no_response_action == "OPTOUT") echo "selected";?>>OPTOUT</option>
+																			<option value="DROP" <?php if($campaign->data->survey_no_response_action == "DROP") echo "selected";?>>DROP</option>
+																		</select>
+																	</div>
+																</div>
+																
 																<!--<div class="form-group">
 																	<label class="col-sm-3 control-label">Survey Not interested audio file:</label>
 																	<div class="col-sm-7 mb">
@@ -2260,6 +2333,7 @@
 															<?php //} ?>
 														<?php } else { ?>
 															<!--Default-->
+
 														<?php }
 														
 														if ($campaign->campaign_type != "SURVEY") {
@@ -2906,6 +2980,10 @@
             }
 			
 			$(document).ready(function() {
+				$("#default_country_code").on('change', function(e) {
+					var thisOption = e.target.options[e.target.selectedIndex];
+					$("#flag").attr('class', 'flag flag-'+$(thisOption).data('tld'));
+				});
 			
 			$('.select').select2({ theme: 'bootstrap' });
 			$.fn.select2.defaults.set( "theme", "bootstrap" );

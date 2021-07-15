@@ -1,9 +1,9 @@
 <?php
 /**
- * @file        API_getTotalDroppedCalls.php
+ * @file        API_getDroppedPercentage.php
  * @brief       Displays total dropped calls percentage
- * @copyright   Copyright (c) 2018 GOautodial Inc.
- * @author	Thom Bernarth D. Patacsil 
+ * @copyright   Copyright (c) 2020 GOautodial Inc.
+ * @author		Thom Bernarth D. Patacsil 
  *
  * @par <b>License</b>:
  *  This program is free software: you can redistribute it and/or modify
@@ -22,10 +22,12 @@
 
 	require_once('APIHandler.php');
 	
+	
+	
 	$api 										= \creamy\APIHandler::getInstance();
 	//$output 									= $api->API_getDroppedPercentage();
 	$dropped 									= $api->API_getTotalDroppedCalls();
-    	$totalOut 									= $api->API_getTotalCalls("outbound");
+	$totalOut 									= $api->API_getTotalCalls("outbound");
 	$totalIn									= $api->API_getTotalCalls("inbound");
 
 	//$output 										= $output->data;
@@ -41,5 +43,5 @@
         	$output                                                                         = 0;
 	}
 
-    echo number_format($output);
+    echo json_encode($output);
 ?>

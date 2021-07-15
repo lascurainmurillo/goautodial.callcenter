@@ -1,79 +1,71 @@
 <?php
-
-/*
-require __DIR__ . '/vendor/autoload.php';
-
-use App\Lib\Logger;
-Logger::enableSystemLogs();
-*/
-
-/*
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL)
-*/
 /**
-	The MIT License (MIT)
-	
-	Copyright (c) 2015 Ignacio Nieto Carvajal
-	
-	Permission is hereby granted, free of charge, to any person obtaining a copy
-	of this software and associated documentation files (the "Software"), to deal
-	in the Software without restriction, including without limitation the rights
-	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-	copies of the Software, and to permit persons to whom the Software is
-	furnished to do so, subject to the following conditions:
-	
-	The above copyright notice and this permission notice shall be included in
-	all copies or substantial portions of the Software.
-	
-	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-	THE SOFTWARE.
-*/
+ * @file 		index.php
+ * @brief 		Dashboard application
+ * @copyright 	Copyright (c) 2020 GOautodial Inc. 
+ * @author     	Christopher Lomuntad 
+ * @author		Demian Lizandro A. Biscocho
+ * @author		Alexander Jim H. Abenoja
+ * @author		Ignacio Nieto Carvajal
+ *
+ * @par <b>License</b>:
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+**/
 
 	// check if Creamy has been installed.
-		require_once('./php/CRMDefaults.php');
-		require_once('./php/APIHandler.php');
-		require_once('./php/UIHandler.php');
-		require_once('./php/LanguageHandler.php');
-		require_once('./php/DbHandler.php');
-		$ui = \creamy\UIHandler::getInstance();
-		$lh = \creamy\LanguageHandler::getInstance();
-		$api = \creamy\APIHandler::getInstance();
+	require_once('./php/CRMDefaults.php');
+	require_once('./php/APIHandler.php');
+	require_once('./php/UIHandler.php');
+	require_once('./php/LanguageHandler.php');
+	require_once('./php/DbHandler.php');
+	$ui = \creamy\UIHandler::getInstance();
+	$lh = \creamy\LanguageHandler::getInstance();
+	$api = \creamy\APIHandler::getInstance();
 		
 	// Try to get the authenticated user.
-		require_once('./php/Session.php');
-		try {
-			$user = \creamy\CreamyUser::currentUser();	
-		} catch (\Exception $e) {
-			header("location: ./logout.php");
-			die();
-		}
+	require_once('./php/Session.php');
+	try {
+		$user = \creamy\CreamyUser::currentUser();	
+	} catch (\Exception $e) {
+		header("location: ./logout.php");
+		die();
+	}
 	
 	//proper user redirects
-		if($user->getUserRole() != CRM_DEFAULTS_USER_ROLE_ADMIN){
-			if($user->getUserRole() == CRM_DEFAULTS_USER_ROLE_AGENT){
-				header("location: agent.php");
-			}
+	if($user->getUserRole() != CRM_DEFAULTS_USER_ROLE_ADMIN){
+		if($user->getUserRole() == CRM_DEFAULTS_USER_ROLE_AGENT){
+			header("location: agent.php");
 		}
+	}
 
-	
-		$perms = $api->goGetPermissions('dashboard,servers', $_SESSION['usergroup']);
-		if ($perms->dashboard->dashboard_display === 'N') {
-			header("location: crm.php");
-		}
+
+	$perms = $api->goGetPermissions('dashboard,servers', $_SESSION['usergroup']);
+	if ($perms->dashboard->dashboard_display === 'N') {
+		header("location: crm.php");
+	}
 
 	// calculate number of statistics and customers
-		$db = new \creamy\DbHandler();
-		$statsOk = $db->weHaveSomeValidStatistics();
-		$custsOk = $db->weHaveAtLeastOneCustomerOrContact();
-		
-		$goAPI = (empty($_SERVER['HTTPS'])) ? str_replace('https:', 'http:', gourl) : str_replace('http:', 'https:', gourl);
+	$db = new \creamy\DbHandler();
+	$statsOk = $db->weHaveSomeValidStatistics();
+	$custsOk = $db->weHaveAtLeastOneCustomerOrContact();
+	$checkWebRTC = $api->CheckWebrtc($user->getUserId());
+	$use_webrtc = $_SESSION['use_webrtc'];
+	if (is_numeric($checkWebRTC)) {
+			$use_webrtc = $checkWebRTC;
+	}
+	
+	$goAPI = (empty($_SERVER['HTTPS'])) ? str_replace('https:', 'http:', gourl) : str_replace('http:', 'https:', gourl);
 	
 	// APIs FOR FILTER LIST
 		//$campaign = $api->API_getAllCampaigns($_SESSION['usergroup']);
@@ -81,12 +73,13 @@ error_reporting(E_ALL)
 	/*
 	 * API for call statistics - Demian
 	*/
-		$dropped_calls_today = $ui->API_goGetTotalDroppedCalls($_SESSION['user']);
-		$calls_incoming_queue = $ui->API_goGetIncomingQueue($_SESSION['user']);
-		$callsperhour = $ui->API_goGetCallsPerHour($_SESSION['user'], 'json');
-		$max = 0;
-		//$callsperhour = explode(";",trim($callsperhour, ';'));
-		$callsperhour = json_decode($callsperhour);
+	$dropped_calls_today = $ui->API_goGetTotalDroppedCalls($_SESSION['user']);
+	$calls_incoming_queue = $ui->API_goGetIncomingQueue($_SESSION['user']);
+	$callsperhour = $ui->API_goGetCallsPerHour($_SESSION['user'], 'json');
+	$ingroup_list = $api->API_getAllInGroups();
+	$max = 0;
+	//$callsperhour = explode(";",trim($callsperhour, ';'));
+	$callsperhour = json_decode($callsperhour);
 	
 	foreach ($callsperhour AS $idx => $temp){
 		//$temp = explode("=",$temp);
@@ -118,22 +111,20 @@ error_reporting(E_ALL)
 		$dropped_calls = 0;
 	if($dropped_calls_today == NULL || $dropped_calls_today == 0)
 		$dropped_calls_today = 0;
+
+	//Whatsapp
+	$whatsapp_status = $ui->API_getWhatsappActivation();
+	$callWhatsAppWebHookURL = $api->API_WhatsAppWebHookURL();
 	
+	//echo "\n\n<!--";
+	//var_dump($ingroup_list);
+	//echo "-->\n";
 ?>
 <html>
     <head>
         <meta charset="UTF-8">
         <title><?=$lh->translateText("portal_title")?> <?=$lh->translateText("Dashboard")?></title>
         <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
-
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-136789623-1"></script>
-<script>
- window.dataLayer = window.dataLayer || [];
- function gtag(){dataLayer.push(arguments);}
- gtag('js', new Date());
- gtag('config', 'UA-136789623-1');
-</script>
      
 		<!--<link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" />-->
 		
@@ -160,7 +151,107 @@ error_reporting(E_ALL)
 				<!-- =============== PAGE VENDOR STYLES ===============-->
 					<!-- WEATHER ICONS-->
 			<link rel="stylesheet" href="js/dashboard/weather-icons/css/weather-icons.min.css">
+
+	<style>
+		/*Conversation*/
+
+.conversation {
+  padding: 0 !important;
+  margin: 0 !important;
+  height: 100%;
+  /*width: 100%;*/
+  border-left: 1px solid rgba(0, 0, 0, .08);
+  /*overflow-y: auto;*/
+}
+
+.message {
+  padding: 0 !important;
+  margin: 0 !important;
+  background: url("w.jpg") no-repeat fixed center;
+  background-size: cover;
+  overflow-y: auto;
+  border: 1px solid #f7f7f7;
+  height: calc(100% - 165px);
+}
+.message-previous {
+  margin : 0 !important;
+  padding: 0 !important;
+  height: auto;
+  width: 100%;
+}
+.previous {
+  font-size: 15px;
+  text-align: center;
+  padding: 10px !important;
+  cursor: pointer;
+}
+
+.previous a {
+  text-decoration: none;
+  font-weight: 700;
+}
+.message-body {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: auto;
+  height: auto;
+}
+
+.message-main-receiver {
+  /*padding: 10px 20px;*/
+  max-width: 60%;
+}
+
+.message-main-sender {
+  padding: 3px 20px !important;
+  margin-left: 40% !important;
+  max-width: 60%;
+}
+
+.message-text {
+  margin: 0 !important;
+  padding: 5px !important;
+  word-wrap:break-word;
+  font-weight: 200;
+  font-size: 14px;
+  padding-bottom: 0 !important;
+}
+
+.message-time {
+  margin: 0 !important;
+  margin-left: 50px !important;
+  font-size: 12px;
+  text-align: right;
+  color: #9a9a9a;
+
+}
+
+.receiver {
+  width: auto !important;
+  padding: 4px 10px 7px !important;
+  border-radius: 10px 10px 10px 0;
+  background: #ffffff;
+  font-size: 12px;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, .2);
+  word-wrap: break-word;
+  display: inline-block;
+}
+
+.sender {
+  float: right;
+  width: auto !important;
+  background: #dcf8c6;
+  border-radius: 10px 10px 0 10px;
+  padding: 4px 10px 7px !important;
+  font-size: 12px;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, .2);
+  display: inline-block;
+  word-wrap: break-word;
+}
+
+	</style>
 			
+		<link rel="stylesheet" href="css/custom.css">
     </head>
     <?php print $ui->creamyBody(); ?>
         <div data-ui-view="" data-autoscroll="false" class="wrapper ng-scope">
@@ -183,7 +274,7 @@ error_reporting(E_ALL)
 					<?php //var_dump($outSalesHour); ?>
 					<!-- STATUS BOXES -->
 					<div class="row">
-						<div class="col-lg-3 col-sm-6">
+						<!-- <div class="col-lg-3 col-sm-6">
 							<a href="#" data-toggle="modal" data-target="#realtime_agents_monitoring" data-status="ACTIVE" data-id="" style="text-decoration : none">
 								<div class="panel widget bg-purple" style="height: 95px;">
 									<div class="row status-box">
@@ -227,6 +318,167 @@ error_reporting(E_ALL)
 									</div>
 								</div>
 							</a>
+						</div> -->
+						<div class="col-lg-9 col-sm-12">
+							<div class="row">
+								<div class="col-lg-4 col-sm-6">
+									<a href="#" data-toggle="modal" data-target="#realtime_agents_monitoring" data-status="ACTIVE" data-id="" style="text-decoration : none">
+										<div class="panel widget bg-purple" style="height: 95px;">
+											<div class="row status-box">
+												<div class="col-xs-4 text-center bg-purple-dark pv-md">
+													<em class="icon-earphones fa-3x"></em>
+												</div>
+												<div class="col-xs-8 pv-lg" style="padding-top:10px !important;">
+													<div class="h2 mt0"><span class="text-lg" id="refresh_totalagentscall">0</span></div>
+													<div class="text-sm"><?=$lh->translateText("agents_on_call")?></div>
+												</div>
+											</div>
+										</div>
+									</a>
+								</div>
+								<div class="col-lg-4 col-md-6">
+									<a href="#" data-toggle="modal" data-target="#realtime_agents_monitoring" data-id="" style="text-decoration : none">
+										<div class="panel widget bg-purple" style="height: 95px;">
+											<div class="row status-box">
+												<div class="col-xs-4 text-center bg-purple-dark pv-md">
+													<em class="icon-clock fa-3x"></em>
+												</div>
+												<div class="col-xs-8 pv-lg" style="padding-top:10px !important;">
+													<div class="h2 mt0"><span class="text-lg" id="refresh_totalagentswaitcalls">0</span></div>
+													<div class="text-sm"><?=$lh->translateText("agents_waiting")?></div>
+												</div>
+											</div>
+										</div>
+									</a>
+								</div>
+								<div class="col-lg-4 col-md-6 col-sm-12">
+									<a href="#" data-toggle="modal" data-target="#realtime_agents_monitoring" data-status="PAUSED" data-id="" style="text-decoration : none">
+										<div class="panel widget bg-green" style="height: 95px;">
+												<div class="row status-box">
+												<div class="col-xs-4 text-center bg-gray-dark pv-md">
+													<em class="icon-hourglass fa-3x"></em>
+												</div>
+												<div class="col-xs-8 pv-lg" style="padding-top:10px !important;">
+													<div class="h2 mt0"><span class="text-lg" id="refresh_totalagentspaused">0</span></div>
+													<div class="text-sm"><?=$lh->translateText("agents_on_pause")?></div>
+												</div>
+											</div>
+										</div>
+									</a>
+								</div>
+							</div>
+							<?php /*if($whatsapp_status) { ?>	
+							<!-- WHATSAPP AGENT CHAT BOXES -->
+							<div class="row">
+								<div class="col-lg-4 col-sm-6">
+									<a href="#" data-toggle="modal" data-target="#realtime_agents_chat_monitoring" data-status="ACTIVE" data-id="" style="text-decoration : none">
+										<div class="panel widget bg-info" style="height: 95px;">
+											<div class="row status-box">
+												<div class="col-xs-4 text-center bg-info-dark pv-md">
+													<em class="fa fa-comments-o fa-3x"></em>
+												</div>
+												<div class="col-xs-8 pv-lg" style="padding-top:10px !important;">
+													<div class="h2 mt0"><span class="text-lg" id="refresh_totalagentschat">0</span></div>
+													<div class="text-sm"><?=$lh->translateText("agents_on_chat")?></div>
+												</div>
+											</div>
+										</div>
+									</a>
+								</div>
+								<div class="col-lg-4 col-md-6">
+									<a href="#" data-toggle="modal" data-target="#realtime_agents_chat_monitoring" data-id="" style="text-decoration : none">
+										<div class="panel widget bg-info" style="height: 95px;">
+											<div class="row status-box">
+												<div class="col-xs-4 text-center bg-info-dark pv-md">
+													<em class="icon-clock fa-3x"></em>
+												</div>
+												<div class="col-xs-8 pv-lg" style="padding-top:10px !important;">
+													<div class="h2 mt0"><span class="text-lg" id="refresh_totalagentswaitchats">0</span></div>
+													<div class="text-sm"><?=$lh->translateText("agents_waiting_chat")?></div>
+												</div>
+											</div>
+										</div>
+									</a>
+								</div>
+								<div class="col-lg-4 col-md-6 col-sm-12">
+									<a href="#" data-toggle="modal" data-target="#realtime_agents_chat_monitoring" data-status="PAUSED" data-id="" style="text-decoration : none">
+										<div class="panel widget bg-green" style="height: 95px;">
+												<div class="row status-box">
+												<div class="col-xs-4 text-center bg-gray-dark pv-md">
+													<em class="icon-hourglass fa-3x"></em>
+												</div>
+												<div class="col-xs-8 pv-lg" style="padding-top:10px !important;">
+													<div class="h2 mt0"><span class="text-lg" id="refresh_totalagentspausedchat">0</span></div>
+													<div class="text-sm"><?=$lh->translateText("agents_on_pause_chat")?></div>
+												</div>
+											</div>
+										</div>
+									</a>
+								</div>
+							</div>
+							<!-- END OF WHATSAPP AGENT CHAT BOXES -->
+
+							<!-- CHAT STATUS BOXES -->
+							<div class="row">
+								<div class="col-lg-12">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<div class="panel-title"><?=$lh->translateText("chat_status")?></div>
+										</div>
+										<div class="panel-body">
+											<div class="row">
+												<div class="col-lg-4 col-sm-6">
+													<a href="#" data-toggle="modal" data-target="#realtime_chats_monitoring" data-status="ACTIVE" data-id="" style="text-decoration : none">
+														<div class="panel widget bg-danger" style="height: 95px;">
+															<div class="row status-box">
+																<div class="col-xs-4 text-center bg-red pv-md">
+																	<em class="fa fa-eye-slash fa-3x"></em>
+																</div>
+																<div class="col-xs-8 pv-lg" style="padding-top:10px !important;">
+																	<div class="h2 mt0"><span class="text-lg" id="refresh_totalunreadchats">0</span></div>
+																	<div class="text-sm"><?=$lh->translateText("unread_chats")?></div>
+																</div>
+															</div>
+														</div>
+													</a>
+												</div>
+												<div class="col-lg-4 col-md-6">
+													<a href="#" data-toggle="modal" data-target="#realtime_chats_monitoring" data-id="" style="text-decoration : none">
+														<div class="panel widget bg-green" style="height: 95px;">
+															<div class="row status-box">
+																<div class="col-xs-4 text-center bg-gray-dark pv-md">
+																	<em class="fa fa-users fa-3x"></em>
+																</div>
+																<div class="col-xs-8 pv-lg" style="padding-top:10px !important;">
+																	<div class="h2 mt0"><span class="text-lg" id="refresh_totalqueuechats">0</span></div>
+																	<div class="text-sm"><?=$lh->translateText("chats_in_queue")?></div>
+																</div>
+															</div>
+														</div>
+													</a>
+												</div>
+												<div class="col-lg-4 col-md-12 col-sm-12">
+													<a href="#" data-toggle="modal" data-target="#realtime_chats_monitoring" data-status="PAUSED" data-id="" style="text-decoration : none">
+														<div class="panel widget bg-warning" style="height: 95px;">
+															<div class="row status-box">
+																<div class="col-xs-4 text-center bg-warning-dark pv-md">
+																	<em class="fa fa-comment-o fa-3x"></em>
+																</div>
+																<div class="col-xs-8 pv-lg" style="padding-top:10px !important;">
+																	<div class="h2 mt0"><span class="text-lg" id="refresh_totalactivechats">0</span></div>
+																	<div class="text-sm"><?=$lh->translateText("active_chats")?></div>
+																</div>
+															</div>
+														</div>
+													</a>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>	
+							</div>	
+							<!-- END OF CHAT STATUS BOXES -->
+							<?php }*/ ?>
 						</div>
 						<!-- date widget    -->
 						<div class="col-lg-3 col-md-6 col-sm-12">
@@ -245,31 +497,94 @@ error_reporting(E_ALL)
 							</div>
 						</div>
 						<!-- END date widget    -->
+				
+						<?php //if($whatsapp_status) { ?>
+						<div class="col-lg-9" id="row_for_rest">
+                                                        <!-- CALLS PER HOUR CHART -->
+                                                        <div class="row">
+                                                          <div id="panelChart9" ng-controller="FlotChartController" class="panel panel-default">
+                                                                 <div class="panel-heading">
+                                                                        <div class="panel-title"><?=$lh->translateText("calls_per_hour")?></div>
+                                                                 </div>
+                                                                 <div collapse="panelChart9" class="panel-wrapper">
+                                                                        <div class="panel-body">
+                                                                           <div class="chart-splinev3 flot-chart"></div> <!-- data is in JS -> demo-flot.js -> search (Overall/Home/Pagkain)-->
+                                                                        </div>
+                                                                 </div>
+                                                          </div>
+                                                        </div>
+                                                        <!-- END widget-->
+						</div>
+						<div class="col-lg-3 col-md-6 col-sm-12">	
+							<!-- DROPPED PERCENTAGE -->
+							<div class="panel panel-default">
+								<?php
+									// Fix on bug #8671
+									$droppedpercentage = $ui->API_goGetDroppedPercentage($_SESSION['user']);
+									$dropped_percentage = $droppedpercentage->data->getDroppedPercentage;
+									
+									if ($dropped_percentage == NULL)
+										$dropped_percentage = "0";
+									if ($dropped_percentage < "10")
+										$color = "#5d9cec";
+									if ($dropped_percentage >= "10")
+										$color = "#f05050";
+									if ($dropped_percentage > "100"){
+										$color = "#f05050";
+										$dropped_percentage = "100";
+									}
+								?>
+							   <div class="panel-body">
+									<div class="panel-title"><?=$lh->translateText("dropped_calls_percentage")?></div>
+									<center>
+										<div width="200" height="200" style="margin-top: 40px;margin-bottom: 40px;">
+											<input type="text"
+											class="knob" value="<?php echo $dropped_percentage; ?>" id="refresh_DroppedCallsPercentage" data-width="150" data-height="150" data-padding="21px"
+											data-fgcolor="<?php echo $color; ?>" data-readonly="true" readonly="readonly"
+											style="	width: 49px;
+												height: 100px;
+												position: absolute;
+												margin-top: 45px;
+												margin-left: -98px;
+												vertical-align: middle;
+												border: 0px;
+												font-style: normal;
+												font-variant: normal;
+												font-weight: bold;
+												/* font-stretch: normal; */
+												font-size: 30px;
+												line-height: normal;
+												font-family: Arial;
+												text-align: center;
+												color: <?php echo $color; ?>;
+												padding: 0px;
+												-webkit-appearance: none;
+												background: none;">
+										</div>
+									</center>
+								   <div class="panel-footer">
+										<p class="text-muted">
+											<em class="fa fa-upload fa-fw"></em>
+											<span><?=$lh->translateText("dropped_calls")?>: </span>
+											<span class="text-dark" id="refresh_DroppedCalls"></span>
+										</p>
+								   </div>
+								</div>
+							</div>
+						</div>
+							<!-- END loader widget-->
+						<?php //} ?>
 					</div>
-						
+					<!-- END OF CHAT WIDGETS --> 
+	
 					<!-- ROW FOR THE REST -->
 					<div class="row"> 
 						<div class="col-lg-9" id="row_for_rest">
-							<!-- CALLS PER HOUR CHART --> 
-							<div class="row">
-							  <div id="panelChart9" ng-controller="FlotChartController" class="panel panel-default">
-								 <div class="panel-heading">
-									<div class="panel-title"><?=$lh->translateText("calls_per_hour")?></div>
-								 </div>
-								 <div collapse="panelChart9" class="panel-wrapper">
-									<div class="panel-body">
-									   <div class="chart-splinev3 flot-chart"></div> <!-- data is in JS -> demo-flot.js -> search (Overall/Home/Pagkain)--> 
-									</div>
-								 </div>
-							  </div>
-							</div>
-							<!-- END widget-->
-		
 							<!-- Today's Phone Calls --> 
 							<div class="row">
 								<div class="col-lg-12" style="padding: 0px;">
 									<!-- demian -->
-									<a href="#" data-toggle="modal" data-target="#realtime_calls_monitoring">
+									<a href="#" data-toggle="modal" data-target="#<?php if(REALTIME_CALLS_MONITORING === 'y') echo 'realtime_calls_monitoring'?>">
 										<div class="panel widget col-md-2 col-sm-3 col-xs-6 br text-center bg-info info_sun_boxes">
 											<em class="fa fa-sun-o fa-3x"></em><div class="h2 m0"><span class="text-lg"></span></div>
 											<div class="text-white"><?=$lh->translateText("realtime_calls_monitor")?></div>                                 
@@ -279,10 +594,12 @@ error_reporting(E_ALL)
 										<div class="h2 m0"><span class="text-lg text-muted" id="refresh_RingingCalls">0</span></div>
 										<div class="text"><?=$lh->translateText("ringing_calls")?></div>
 									</div>
-									<div class="panel widget col-md-2 col-sm-3 col-xs-6 br text-center info_sun_boxes" style="padding: 10px;">
-										<div class="h2 m0"><span class="text-lg text-muted" id="refresh_IncomingQueue">0</span></div>
-										<div class="text"><?=$lh->translateText("incoming_calls")?></div>
-									</div>	                	
+									<a href="#" data-toggle="modal" data-target="#<?php if(REALTIME_INBOUND_MONITORING === 'y') echo 'realtime_inbound_monitoring'?>" style="text-decoration : none; color: rgba(0, 0, 0, 0.8);">
+										<div class="panel widget col-md-2 col-sm-3 col-xs-6 br text-center info_sun_boxes" style="padding: 10px;">
+											<div class="h2 m0"><span class="text-lg text-muted" id="refresh_IncomingQueue">0</span></div>
+											<div class="text"><?=$lh->translateText("incoming_calls")?></div>
+										</div>
+									</a>
 									<div class="panel widget col-md-2 col-sm-3 col-xs-6 br text-center info_sun_boxes" style="padding: 10px;">
 										<div class="h2 m0"><span class="text-lg text-muted" id="refresh_AnsweredCalls">0</span></div>
 											<div class="text"><?=$lh->translateText("answered_calls")?></div>
@@ -336,7 +653,7 @@ error_reporting(E_ALL)
 									</div>
 								</div>
 							</div>
-							
+
 							<!--  CLUSTER STATUS -->
 							<div class="row <?=($perms->servers->servers_read === 'N' ? 'hidden' : '')?>">
 								<div class="panel panel-default" tabindex="-1">
@@ -370,65 +687,40 @@ error_reporting(E_ALL)
 									</div>
 								</div>
 							</div>
+							<?php if(STATEWIDE_SALES_REPORT === 'y') { ?>
+							<!--  AGENT SALES REPORT -->
+							<div class="row">
+								<div class="panel panel-default" tabindex="-1">
+									<div class="panel-heading">
+										<div class="panel-title"><h4><?=$lh->translateText("sales_agent")?></h4></div>
+									</div>
+									<div class="responsive">
+										<div class="col-sm-12">
+											<table id="agent-sales" class="table table-striped table-hover display compact" style="width: 100%">
+												<thead>
+													<tr>
+														<th style="font-size: small;">Agent Name</th>
+														<th style="font-size: small;">Agent ID</th>
+														<th style="font-size: small;">Sales Count</th>
+														<th style="font-size: small;">Amount</th>
+												</thead>
+												<tbody>
+													<!-- data is in API_GetAgentSales.php -->
+												</tbody>
+											</table>
+										</div>
+										<div class="panel-footer clearfix">
+											<a href="#" class="pull-left">
+											<small></small>
+											</a>
+										</div>
+									</div>
+								</div>
+							</div>
+							<?php } ?>
 						</div><!-- END OF COLUMN 9 -->
 	
 						<aside class="col-lg-3">
-							<!-- DROPPED PERCENTAGE -->
-							<div class="panel panel-default">
-								<?php
-									$droppedpercentage = $ui->API_goGetDroppedPercentage($_SESSION['user']);
-									$dropped_percentage = $droppedpercentage->data->getDroppedPercentage;
-									
-									if ($dropped_percentage == NULL)
-										$dropped_percentage = "0";
-									if ($dropped_percentage < "10")
-										$color = "#5d9cec";
-									if ($dropped_percentage >= "10")
-										$color = "#f05050";
-									if ($dropped_percentage > "100"){
-										$color = "#f05050";
-										$dropped_percentage = "100";
-									}
-								?>
-							   <div class="panel-body">
-									<div class="panel-title"><?=$lh->translateText("dropped_calls_percentage")?></div>
-									<center>
-										<div width="200" height="200" style="margin-top: 40px;margin-bottom: 40px;">
-											<input type="text"
-											class="knob" value="<?php echo $dropped_percentage; ?>" id="refresh_DroppedCallsPercentage" data-width="150" data-height="150" data-padding="21px"
-											data-fgcolor="<?php echo $color; ?>" data-readonly="true" readonly="readonly"
-											style="	width: 49px;
-												height: 100px;
-												position: absolute;
-												margin-top: 45px;
-												margin-left: -98px;
-												vertical-align: middle;
-												border: 0px;
-												font-style: normal;
-												font-variant: normal;
-												font-weight: bold;
-												/* font-stretch: normal; */
-												font-size: 30px;
-												line-height: normal;
-												font-family: Arial;
-												text-align: center;
-												color: <?php echo $color; ?>;
-												padding: 0px;
-												-webkit-appearance: none;
-												background: none;">
-										</div>
-									</center>
-								   <div class="panel-footer">
-										<p class="text-muted">
-											<em class="fa fa-upload fa-fw"></em>
-											<span><?=$lh->translateText("dropped_calls")?>: </span>
-											<span class="text-dark" id="refresh_DroppedCalls"></span>
-										</p>
-								   </div>
-								</div>
-							</div>
-							<!-- END loader widget-->
-							
 							<!-- TASK ACTIVITIES -->
 							<div class="panel panel-default">
 								<div class="panel-heading">
@@ -445,12 +737,29 @@ error_reporting(E_ALL)
 									</a>
 								</div>
 							</div>
-							
+							<?php if(STATEWIDE_SALES_REPORT === 'y') { ?>
+							<!-- Agent Monitoring Summary -->
+							<div class="panel panel-default">
+							   <div class="panel-heading">
+								  <div class="panel-title"><?=$lh->translateText("agent_monitoring_summary")?></div>
+							   </div>
+							   <div data-height="230" data-scrollable="yes" class="list-group">
+									<span id="refresh_agents_monitoring_summary"></span>
+							   </div>
+							   <div class="panel-footer clearfix">
+									<a href="#" data-toggle="modal" data-target="#realtime_agents_monitoring" class="pull-right">
+										<medium><?=$lh->translateText("view_more")?></medium> <em class="fa fa-arrow-right"></em>
+									</a>
+							   </div>
+							</div>
+							<!-- End Agent Monitoring Summary -->
+							<?php } ?>
 						</aside><!-- END OF COLUMN 3 -->
 	
 					</div><!-- END OF ROW -->
 					
 					<div class="row">
+						<?php if(STATEWIDE_SALES_REPORT !== 'y') { ?>
 						<!-- Agent Monitoring Summary -->
 						<div class="col-lg-3">
 							<div class="panel panel-default">
@@ -468,7 +777,7 @@ error_reporting(E_ALL)
 							</div>
 						</div>
 						<!-- End Agent Monitoring Summary -->
-						
+
 						<!-- VECTOR MAP LOADER -->
 						<div class="col-lg-9">
 							<div class="panel panel-transparent">
@@ -476,6 +785,7 @@ error_reporting(E_ALL)
 							   <div id="world-map" style="height: 390px"></div>
 							</div>
 						</div>
+						<?php } ?>
 							<br>
 					</div>
 						
@@ -557,6 +867,157 @@ error_reporting(E_ALL)
 			</div>
 		</div>
         <!-- End of Realtime Calls Monitoring -->
+	
+		<!-- Realtime Agents Chats Monitoring -->
+		<div class="modal fade" id="realtime_agents_chat_monitoring" tabindex="-1" role="dialog" aria-hidden="true">
+			<div class="modal-lg modal-dialog" style="min-width: 75%">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4><?=$lh->translateText("realtime_agents_chat_monitoring")?></h4>
+					</div>
+					<div class="modal-body">
+						<div class="responsive">
+						<!-- <div class="col-sm-12">-->
+							<table class="table table-striped table-hover display compact" id="realtime_agents_chat_monitoring_table" style="width: 100%">
+								<thead>
+										<th style="font-size: small;"><?=$lh->translateText("agent")?></th>                                                    
+										<th style="font-size: small;"><?=$lh->translateText("contacts")?></th>
+										<th style="font-size: small;"><?=$lh->translateText("unread")?></th>
+										<th style="font-size: small;"><?=$lh->translateText("status")?></th>
+										<th style="font-size: small;"><?=$lh->translateText("action")?></th>
+										<!-- <th>User Group</th> -->
+								</thead>
+								<tbody>
+								
+								</tbody>
+							</table>
+						<!--</div>-->
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+        	<!-- End of Realtime Agents chats Monitoring -->
+
+		<!-- Realtime Chats Monitoring -->
+		<div class="modal fade" id="realtime_chats_monitoring" tabindex="-1" role="dialog" aria-hidden="true">
+			<div class="modal-lg modal-dialog" style="min-width: 75%">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4><?=$lh->translateText("realtime_chats_monitoring")?></h4>
+					</div>
+					<div class="modal-body">
+						<div class="responsive">
+						<!-- <div class="col-sm-12">-->
+							<table class="table table-striped table-hover display compact" id="realtime_chats_monitoring_table" style="width: 100%">
+								<thead>
+										<th style="font-size: small;"><?=$lh->translateText("client")?></th>                                                    
+										<th style="font-size: small;"><?=$lh->translateText("telephone")?></th>
+										<th style="font-size: small;"><?=$lh->translateText("assigned_agent")?></th>
+										<th style="font-size: small;"><?=$lh->translateText("unseen")?></th>
+										<th style="font-size: small;"><?=$lh->translateText("entry")?></th>
+										<th style="font-size: small;"><?=$lh->translateText("action")?></th>
+								</thead>
+								<tbody>
+								
+								</tbody>
+							</table>
+						<!--</div>-->
+						</div>
+					</div>
+					<div class="modal-footer justify-content-between">
+                                                <button type="button" class="btn btn-warning" id="btn-assign-chat"><?=$lh->translateText("assign")?></button>
+                                        </div>
+				</div>
+			</div>
+		</div>
+	        <!-- End of Realtime chats Monitoring -->
+	
+		<!-- Agents Transaction Modal -->
+                <div class="modal fade" id="modal_view_assigned_chats" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-lg modal-dialog" style="min-width: 75%">
+                                <div class="modal-content">
+                                        <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                <h4><?=$lh->translateText("agents_transactions_monitoring")?></h4>
+                                        </div>
+                                        <div class="modal-body">
+                                                <div class="responsive">
+                                                <!-- <div class="col-sm-12">-->
+                                                        <table class="table table-striped table-hover display compact" id="assigned_chats_monitoring_table" style="width: 100%">
+                                                                <thead>
+                                                                                <th style="font-size: small;"><?=$lh->translateText("client")?></th>
+                                                                                <th style="font-size: small;"><?=$lh->translateText("social_network")?></th>
+                                                                                <th style="font-size: small;"><?=$lh->translateText("telephone")?></th>
+                                                                                <th style="font-size: small;"><?=$lh->translateText("action")?></th>
+                                                                                <!-- <th>User Group</th> -->
+                                                                </thead>
+                                                                <tbody>
+
+                                                                </tbody>
+                                                        </table>
+                                                <!--</div>-->
+                                                </div>
+                                        </div>
+                                </div>
+                        </div>
+                </div>
+	        <!-- End of Agents Transactions Modal -->
+
+		<!-- Transfer Chat Modal -->
+                <div class="modal fade" id="modal_transfer_chat" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-sm modal-dialog">
+                                <div class="modal-content">
+                                        <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                <h4><?=$lh->translateText("transfer_chat")?><span id="transfer_chatid"></span></h4>
+                                        </div>
+                                        <div class="modal-body">
+                                                <div class="responsive">
+							<form id="transfer-form" class="form-horizontal">
+								<div class="form-group">
+									<label for="transfer_agent_list">Agent:</label>
+									<div>
+										<select class="form-control" name="transfer_agent_list" id="transfer_agent_list">
+											<option value="" selected disabled>Select Agent</option>
+										</select>
+									</div>
+								</div>
+							</form>
+                                                </div>
+                                        </div>
+					<div class="modal-footer justify-content-between">
+						<input type="hidden" name="transfer_chatId" id="transfer_chatId">
+                                                <button type="button" class="btn btn-default" data-dismiss="modal"><?=$lh->translateText("cancel")?></button>
+						<button type="button" class="btn btn-primary" id="btn-transfer-chat" data-dismiss="modal"><?=$lh->translateText("transfer_chat")?></button>
+                                        </div>
+                                </div>
+                        </div>
+                </div>
+                <!-- End of Transfer Chat Modal -->
+
+		<!-- View Conversation Modal -->
+                <div class="modal fade" id="modal_view_conversation" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-sm modal-dialog" style="">
+                                <div class="modal-content">
+                                        <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                <h4><?=$lh->translateText("view_conversation")?> <span class="sender-name"></h4>
+                                        </div>
+                                        <div class="modal-body">
+                                                <div class="responsive" id="wa-conversation-div" style="height: 450px; overflow-y: auto; overflow-x: hidden; background-color: #eeeee; padding: 10px;">
+                                                </div>
+                                        </div>
+					<div class="modal-footer justify-content-between">
+						<input type="hidden" name="conversation_chatId" id="conversation_chatId">
+                            			<button type="button" class="btn btn-default" data-dismiss="modal"><?=$lh->translateText("cancel")?></button>
+                        		</div>
+                                </div>
+                        </div>
+                </div>
+                <!-- End of View Conversation Modal -->
 			
 		<!-- Campaigns Monitoring -->
 		<div class="modal fade" id="campaigns_monitoring" tabindex="-1" role="dialog" aria-hidden="true">
@@ -589,6 +1050,55 @@ error_reporting(E_ALL)
 			</div>	
 		</div>
 		<!-- End of Campaigns Monitoring -->
+		
+		<!-- Realtime Inbound Monitoring -->
+		<div class="modal fade" id="realtime_inbound_monitoring" tabindex="-1" role="dialog" aria-hidden="true">
+			<div class="modal-lg modal-dialog" style="min-width: 75%">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4><?=$lh->translateText("realtime_inbound_monitoring")?></h4>
+					</div>
+					<div class="modal-body">
+						<div class="content table-responsive table-full-width">
+						<!-- <div class="col-sm-12">-->
+							<div class="inbound_filter">
+								<select id="inbound_filter" class="form-control">
+									<option value="">--- SELECT ALL ---</option>
+									<?php
+									if (!empty($ingroup_list)) {
+										$group_id = $ingroup_list->group_id;
+										$group_name = $ingroup_list->group_name;
+										foreach ($group_id as $idx => $group) {
+											if (!preg_match("/^(AGENTDIRECT|AGENTDIRECT_CHAT)$/", $group)) {
+												echo "<option value='" . $group . "'>" . $group_name[$idx] . "</option>";
+											}
+										}
+									}
+									?>
+								</select>
+							</div>
+							<table class="table table-striped table-hover display compact" id="realtime_inbound_monitoring_table" style="width: 100%">
+								<thead>
+									<th style="color: white;">Pic</th>
+									<th style="font-size: small;"><?=$lh->translateText("agent_name")?></th>
+									<th style="font-size: small;"><?=$lh->translateText("inbound_group")?></th>
+									<th style="font-size: small;"><?=$lh->translateText("status")?></th>
+									<th style="font-size: small;"><?=$lh->translateText("calls_in_queue")?></th>
+									<th style="font-size: small;"><?=$lh->translateText("mm:ss")?></th>
+									<th style="font-size: small;"><?=$lh->translateText("campaign")?></th>
+									<th style="font-size: small;"><?=$lh->translateText("phone_number")?></th>
+								</thead>
+								<tbody>
+								</tbody>
+							</table>
+						<!--</div>-->
+						</div>
+					</div>
+				</div>
+			</div>	
+		</div>
+		<!-- End of Realtime Inbound Monitoring -->
 		
 		<!-- Realtime Service Level Monitoring -->
 		<div class="modal fade" id="realtime_sla_monitoring" tabindex="-1" role="dialog" aria-hidden="true">
@@ -671,6 +1181,9 @@ error_reporting(E_ALL)
 							<a href="#" onClick="goGetInSession('MONITOR');">
 								<button class="btn btn-primary btn-sm"><?=$lh->translateText("listen")?> &nbsp;<i class="fa fa-microphone-slash"></i></button>
 							</a>
+							<a href="#" onClick="goGetInSession('WHISPER');">
+								<button class="btn btn-warning btn-sm"><?=$lh->translateText("whisper")?> &nbsp;<i class="fa fa-user-secret"></i></button>
+							</a>
 						</div>
 					</div> 
 				</div>
@@ -734,7 +1247,7 @@ error_reporting(E_ALL)
         /*
         * Modal Dialogs
         */
-        include_once ("./php/ModalPasswordDialogs.php");
+        //include_once ("./php/ModalPasswordDialogs.php");
 ?>
 <script src="js/dashboard/sweetalert/dist/sweetalert.min.js"></script>
 <script>
@@ -1102,7 +1615,7 @@ function goGetInSession(type) {
 	var uPass = "<?php echo $_SESSION['phone_this'];?>";
 	//console.log(phone_login);
 	if (phone_login.length > 0 && phone_pass.length > 0) {
-		var use_webrtc = <?=($_SESSION['use_webrtc'] ? $_SESSION['use_webrtc'] : 0)?>;
+		var use_webrtc = <?=($use_webrtc ? $use_webrtc : 0)?>;
 		if (use_webrtc) {
 			registerPhone(phone_login, phone_pass);
 		}
@@ -1126,6 +1639,9 @@ function goGetInSession(type) {
 			if (type == 'BARGE') {
 				bTitle = "Barging...";
 				bText = "You're currently barging "+who+"...";
+			} else if (type == 'WHISPER') {
+				bTitle = "Whispering...";
+				bText = "You're currently whispering to "+who+"...";
 			} else {
 				bTitle = "Listening...";
 				bText = "You're currently listening to "+who+"...";
@@ -1226,9 +1742,21 @@ function goGetInSession(type) {
 	}
 }
 
-    //demian
+	var inbTable = $('#realtime_inbound_monitoring_table').DataTable({
+		destroy:true,
+		responsive:true,
+		searching: false,
+		order: [[ 5, "desc" ]],
+		data:{},
+		stateSave: true,
+		drawCallback: function() {
+			var pagination = $(this).closest('.dataTables_wrapper').find('.dataTables_paginate');
+			pagination.toggle(this.api().page.info().pages > 1);
+		}
+	});
+
 		$(document).ready(function(){
-			
+				
 			// Clear previous agent info
 			$('#modal_view_agent_information').on('hidden.bs.modal', function () {
 				clear_agent_form();
@@ -1253,22 +1781,26 @@ function goGetInSession(type) {
 					dataType: 'json',
 					success: function(JSONObject){ 
 						console.log(userid);
-						$('#modal-userid').html(JSONObject.data[0].vu_user_id);
-						//global_userid = JSONObject.data[0].vu_user_id;                                        
-						$('#modal-username').html(JSONObject.data[0].vla_user);
-						$('#modal-fullname').html(JSONObject.data[0].vu_full_name);
-						$('#modal-status-vu').html(JSONObject.data[0].vla_status);
-						$('#modal-campaign').html(JSONObject.data[0].vla_campaign_id);
-						$('#modal-usergroup-vu').html(JSONObject.data[0].vu_user_group);     
-						//$('#modal-userlevel-vu').html(JSONObject.data[0].vu_user_level);                                        
-						$('#modal-phonelogin-vu').html(JSONObject.data[0].vu_phone_login);
-						$('#modal-custphone').html(JSONObject.data[0].vl_phone_number);
-						$('#modal-conf-exten').html(JSONObject.data[0].vla_conf_exten);
-						$('#modal-server-ip').html(JSONObject.data[0].vla_server_ip);
-						//$('#modal-campaign_cid').html(JSONObject.data[0].campaign_cid);
-						var avatardata = '<avatar username="'+ JSONObject.data[0].vu_full_name +'" src="'+ b64image +'" :size="160"></avatar>';
-						$('#modal-avatar').html(avatardata);
-						goAvatar._init(goOptions);
+						if (typeof JSONObject.data[0] !== 'undefined') {
+								$('#modal-userid').html(JSONObject.data[0].vu_user_id);
+								//global_userid = JSONObject.data[0].vu_user_id;                                        
+								$('#modal-username').html(JSONObject.data[0].vla_user);
+								$('#modal-fullname').html(JSONObject.data[0].vu_full_name);
+								$('#modal-status-vu').html(JSONObject.data[0].vla_status);
+								$('#modal-campaign').html(JSONObject.data[0].vla_campaign_id);
+								$('#modal-usergroup-vu').html(JSONObject.data[0].vu_user_group);     
+								//$('#modal-userlevel-vu').html(JSONObject.data[0].vu_user_level);                                        
+								$('#modal-phonelogin-vu').html(JSONObject.data[0].vu_phone_login);
+								$('#modal-custphone').html(JSONObject.data[0].vl_phone_number);
+								$('#modal-conf-exten').html(JSONObject.data[0].vla_conf_exten);
+								$('#modal-server-ip').html(JSONObject.data[0].vla_server_ip);
+								//$('#modal-campaign_cid').html(JSONObject.data[0].campaign_cid);
+								var avatardata = '<avatar username="'+ JSONObject.data[0].vu_full_name +'" src="'+ b64image +'" :size="160"></avatar>';
+								$('#modal-avatar').html(avatardata);
+								goAvatar._init(goOptions);
+						} else {
+								$('#modal-username').html(user);
+						}
 					}
 				});                        
 			});
@@ -1278,7 +1810,7 @@ function goGetInSession(type) {
 				clear_campaign_form();
 			});
 			
-			// Get campaign information 
+			// Get campaign information
 			$(document).on('click','#onclick-campaigninfo',function(){
 				var campid = $(this).attr('data-id');
 				$.ajax({
@@ -1363,7 +1895,11 @@ function goGetInSession(type) {
 					load_TotalInboundCalls();
 					load_TotalOutboundCalls();
 					load_LiveOutbound();
-					
+				// ---- WhatsApp
+					/*load_whatsapp_realtime_monitoring();
+					load_whatsapp_agents_chat_monitoring();
+					load_whatsapp_chat_monitoring();*/
+
 			// ---- clusterstatus table
 					load_cluster_status();
 				// ---- agent and campaign resources
@@ -1372,10 +1908,20 @@ function goGetInSession(type) {
 					load_agents_monitoring_summary();
 				// ---- realtime monitoring
 					load_realtime_agents_monitoring();
+					<?php if(REALTIME_CALLS_MONITORING === 'y'){ ?>
 					load_realtime_calls_monitoring();
+					<?php } ?>
+					<?php if(REALTIME_INBOUND_MONITORING === 'y'){ ?>
+					load_realtime_inbound_monitoring(inbTable);
+					<?php } ?>
 					//load_realtime_sla_monitoring();
 				// ---- view agent information modal
 					load_view_agent_information();
+
+					<?php if(STATEWIDE_SALES_REPORT === 'y'){ ?>
+				// ---- Statewide Customization
+					load_agent_sales();
+					<?php } ?>
 		});
 		
 		//Refresh functions() after 5000 milliseconds
@@ -1408,7 +1954,13 @@ function goGetInSession(type) {
 			
 			// ... realtime monitoring ...
 				var int_15 = setInterval(load_realtime_agents_monitoring,3000);
+				<?php if(REALTIME_CALLS_MONITORING === 'y'){ ?>
 				var int_16 = setInterval(load_realtime_calls_monitoring,3000);
+				<?php } ?>
+				<?php if(REALTIME_INBOUND_MONITORING === 'y'){ ?>
+				var int_17;
+				//var int_17 = setInterval(load_realtime_inbound_monitoring, 3000, inbTable);
+				<?php } ?>
 				//var int_17 = setInterval(load_realtime_sla_monitoring,10000);
 			
 			// ... view agent information modal  ...
@@ -1419,7 +1971,21 @@ function goGetInSession(type) {
 				var int_20 = setInterval(load_totalOutSales,30000);
 				var int_21 = setInterval(load_totalInSales,30000);
 				var int_22 = setInterval(load_INSalesHour,60000);
-				var int_23 = setInterval(load_OUTSalesPerHour,60000);			
+				var int_23 = setInterval(load_OUTSalesPerHour,60000);
+
+			 <?php if(STATEWIDE_SALES_REPORT === 'y'){ ?>
+                         // ---- Statewide Customization
+                         	var int_25 = setInterval(load_agent_sales,15000);
+                         <?php } ?>
+
+			<?php /*if($whatsapp_status) { ?>
+			// ----	WhatsApp
+				var int_26 = setInterval(load_whatsapp_realtime_monitoring, 5000);
+				var int_27 = setInterval(load_whatsapp_agents_chat_monitoring, 3000);
+				var int_28 = setInterval(load_whatsapp_chat_monitoring, 3000);
+				var int_29 = setInterval(load_whatsapp_queue, 3000);
+				//var int_30 = setInterval(load_whatsapp_assigned_chats(), 3000);
+			<?php }*/ ?>
 		
 		$('#modal_view_agent_information').on('show.bs.modal', function () {
 			clearInterval(int_1);
@@ -1437,9 +2003,30 @@ function goGetInSession(type) {
 			clearInterval(int_13);
 			clearInterval(int_14);
 			clearInterval(int_15);
+			<?php if(REALTIME_CALLS_MONITORING === 'y'){ ?>
 			clearInterval(int_16);
-			//clearInterval(int_17);
+			<?php } ?>
+			<?php if(REALTIME_INBOUND_MONITORING === 'y'){ ?>
+			if (typeof int_17 !== 'undefined') {
+				clearInterval(int_17);
+            }
+			<?php } ?>
 			clearInterval(int_18);
+			clearInterval(int_19);
+			clearInterval(int_20);
+			clearInterval(int_21);
+			clearInterval(int_22);
+			clearInterval(int_23);
+			clearInterval(int_24);
+			<?php if(STATEWIDE_SALES_REPORT === 'y'){ ?>
+                        // ---- Statewide Customization
+			clearInterval(int_25);	
+                        <?php } ?>
+			<?php if($whatsapp_status) { ?>
+			clearInterval(int_26);
+			clearInterval(int_27);
+			clearInterval(int_28);
+			<?php } ?>
 		});
 		
 		$('#modal_view_agent_information').on('hidden.bs.modal', function () {
@@ -1459,10 +2046,398 @@ function goGetInSession(type) {
 			int_13 = setInterval(load_campaigns_monitoring,20000);
 			int_14 = setInterval(load_agents_monitoring_summary,15000);
 			int_15 = setInterval(load_realtime_agents_monitoring,3000);
+			<?php if(REALTIME_CALLS_MONITORING === 'y'){ ?>
 			int_16 = setInterval(load_realtime_calls_monitoring,3000);
+			<?php } ?>
+			<?php if(REALTIME_INBOUND_MONITORING === 'y'){ ?>
+			//int_17 = setInterval(load_realtime_inbound_monitoring,3000,inbTable);
+			<?php } ?>
 			//int_17 = setInterval(load_realtime_sla_monitoring,10000);
 			int_18 = setInterval(load_view_agent_information,3000);
+			int_19 = setInterval(load_totalSales,30000);
+			int_20 = setInterval(load_totalOutSales,30000);
+			int_21 = setInterval(load_totalInSales,30000);
+			int_22 = setInterval(load_INSalesHour,60000);
+			int_23 = setInterval(load_OUTSalesPerHour,60000);
+			int_24 = setInterval(load_DroppedCallsPercentage,15000);
+			<?php if(STATEWIDE_SALES_REPORT === 'y'){ ?>
+                        // ---- Statewide Customization
+                        int_25 = setInterval(load_agent_sales,15000);
+                        <?php } ?>
+			<?php /*if($whatsapp_status) { ?>
+			int_26 = setInterval(load_whatsapp_realtime_monitoring, 5000);
+			int_27 = setInterval(load_whatsapp_agents_chat_monitoring, 3000);
+			int_28 = setInterval(load_whatsapp_chat_monitoring, 3000);
+			<?php }*/ ?>
 		});
+
+		<?php /*if($whatsapp_status) { ?>
+		// Whatsapp
+		var userid = "";
+		var int_30 = setInterval(load_whatsapp_assigned_chats(userid),3000);
+
+		$(document).on('click', '#onclick-whatsappinfo', function(){
+			userid = $(this).attr('data-id');
+			load_whatsapp_assigned_chats(userid);
+		});
+
+		$(document).on('click', '#onclick-whatsapplogout', function(){
+			clearInterval(int_1);
+                        clearInterval(int_2);
+                        clearInterval(int_3);
+                        clearInterval(int_4);
+                        clearInterval(int_5);
+                        clearInterval(int_6);
+                        clearInterval(int_7);
+                        clearInterval(int_8);
+                        clearInterval(int_9);
+                        clearInterval(int_10);
+                        clearInterval(int_11);
+                        clearInterval(int_12);
+                        clearInterval(int_13);
+                        clearInterval(int_14);
+                        clearInterval(int_15);
+                        <?php if(REALTIME_CALLS_MONITORING === 'y'){ ?>
+                        clearInterval(int_16);
+                        <?php } ?>
+                        //clearInterval(int_17);
+                        clearInterval(int_18);
+                        clearInterval(int_19);
+                        clearInterval(int_20);
+                        clearInterval(int_21);
+                        clearInterval(int_22);
+                        clearInterval(int_23);
+                        <?php if(STATEWIDE_SALES_REPORT === 'y'){ ?>
+                        // ---- Statewide Customization
+                        clearInterval(int_25);
+                        <?php } ?>
+                        <?php /*if($whatsapp_status) { ?>
+                        clearInterval(int_26);
+                        clearInterval(int_27);
+                        clearInterval(int_28);
+                        <?php } ?>
+
+                        userid = $(this).attr('data-id');
+			swal({
+                            title: "Are you sure?",
+                            text: "Agent "+userid+" will be logged out of the WhatsApp.",
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#DD6B55",
+                            confirmButtonText: "Yes, I'm sure!",
+                            closeOnConfirm: false
+                        }, function(){
+                                $.ajax({
+                                type: 'POST',
+                                url: "./php/EmergencyWhatsAppLogout.php",
+                                data: {userid: userid},
+                                cache: false,
+                                success: function(data){
+                                        sweetAlert("Emergency Whatsapp Logout",data, "warning");
+                                }
+                            });
+				int_1 = setInterval(load_totalagentscall,5000);
+	                        int_2 = setInterval(load_totalagentspaused,5000);
+        	                int_3 = setInterval(load_totalagentswaitingcall,5000);
+                	        int_4 = setInterval(load_RingingCalls,15000);
+	                       	int_5 = setInterval(load_IncomingQueue,15000);
+        	                int_6 = setInterval(load_AnsweredCalls,15000);
+                	        int_7 = setInterval(load_DroppedCalls,15000);
+                        	int_24 = setInterval(load_DroppedCallsPercentage,15000);
+	                        int_8 = setInterval(load_TotalInboundCalls,30000);
+        	                int_9 = setInterval(load_TotalOutboundCalls,30000);
+                	        int_10 = setInterval(load_LiveOutbound,30000);
+                        	int_11 = setInterval(load_cluster_status,60000);
+	                        int_12 = setInterval(load_campaigns_resources,30000);
+        	                int_13 = setInterval(load_campaigns_monitoring,20000);
+                	        int_14 = setInterval(load_agents_monitoring_summary,15000);
+                        	int_15 = setInterval(load_realtime_agents_monitoring,3000);
+	                        <?php if(REALTIME_CALLS_MONITORING === 'y'){ ?>
+        	                int_16 = setInterval(load_realtime_calls_monitoring,3000);
+                	        <?php } ?>
+                        	//int_17 = setInterval(load_realtime_sla_monitoring,10000);
+	                        int_18 = setInterval(load_view_agent_information,3000);
+        	                int_19 = setInterval(load_totalSales,30000);
+                	        int_20 = setInterval(load_totalOutSales,30000);
+                        	int_21 = setInterval(load_totalInSales,30000);
+	                        int_22 = setInterval(load_INSalesHour,60000);
+        	                int_23 = setInterval(load_OUTSalesPerHour,60000);
+                	        <?php if(STATEWIDE_SALES_REPORT === 'y'){ ?>
+                        	// ---- Statewide Customization
+	                        int_25 = setInterval(load_agent_sales,15000);
+        	                <?php } ?>
+                	        <?php if($whatsapp_status) { ?>
+                        	int_26 = setInterval(load_whatsapp_realtime_monitoring, 5000);
+	                        int_27 = setInterval(load_whatsapp_agents_chat_monitoring, 3000);
+        	                int_28 = setInterval(load_whatsapp_chat_monitoring, 3000);
+                	        <?php } ?>
+                        });
+			
+                });
+
+		$('#modal_view_assigned_chats').on('show.bs.modal', function () {
+			int_30 = setInterval(load_whatsapp_assigned_chats(userid),3000);
+		});
+
+		$('#modal_view_assigned_chats').on('hidden.bs.modal', function () {
+			$('#assigned_chats_monitoring_table').empty();
+		});
+
+		 $(document).on('click', '#onclick-whatsapptransfer', function(){
+                        var chatId = $(this).attr('data-id');
+                        $("#transfer_chatId").val(chatId);
+                });
+
+		$('#modal_transfer_chat').on('show.bs.modal', function () {
+			clearInterval(int_1);
+                        clearInterval(int_2);
+                        clearInterval(int_3);
+                        clearInterval(int_4);
+                        clearInterval(int_5);
+                        clearInterval(int_6);
+                        clearInterval(int_7);
+                        clearInterval(int_8);
+                        clearInterval(int_9);
+                        clearInterval(int_10);
+                        clearInterval(int_11);
+                        clearInterval(int_12);
+                        clearInterval(int_13);
+                        clearInterval(int_14);
+                        clearInterval(int_15);
+                        <?php if(REALTIME_CALLS_MONITORING === 'y'){ ?>
+                        clearInterval(int_16);
+                        <?php } ?>
+                        //clearInterval(int_17);
+                        clearInterval(int_18);
+                        clearInterval(int_19);
+                        clearInterval(int_20);
+                        clearInterval(int_21);
+                        clearInterval(int_22);
+                        clearInterval(int_23);
+                        <?php if(STATEWIDE_SALES_REPORT === 'y'){ ?>
+                        // ---- Statewide Customization
+                        clearInterval(int_25);
+                        <?php } ?>
+                        <?php if($whatsapp_status) { ?>
+                        clearInterval(int_26);
+                        clearInterval(int_27);
+                        clearInterval(int_28);
+                        <?php } ?>
+
+			$.ajax({
+                	        type: 'POST',
+	                        url: "./php/GetWhatsappUsers.php",
+        	                cache: false,
+                	        success: function(data){
+					var obj = JSON.parse(data);
+	                                $('#transfer_agent_list').html(obj);
+					console.log(obj);
+        	                }
+                	});
+                });
+
+		$('#modal_transfer_chat').on('hidden.bs.modal', function () {
+			int_1 = setInterval(load_totalagentscall,5000);
+                        int_2 = setInterval(load_totalagentspaused,5000);
+                        int_3 = setInterval(load_totalagentswaitingcall,5000);
+                        int_4 = setInterval(load_RingingCalls,15000);
+                        int_5 = setInterval(load_IncomingQueue,15000);
+                        int_6 = setInterval(load_AnsweredCalls,15000);
+                        int_7 = setInterval(load_DroppedCalls,15000);
+                        int_24 = setInterval(load_DroppedCallsPercentage,15000);
+                        int_8 = setInterval(load_TotalInboundCalls,30000);
+                        int_9 = setInterval(load_TotalOutboundCalls,30000);
+                        int_10 = setInterval(load_LiveOutbound,30000);
+                        int_11 = setInterval(load_cluster_status,60000);
+                        int_12 = setInterval(load_campaigns_resources,30000);
+                        int_13 = setInterval(load_campaigns_monitoring,20000);
+                        int_14 = setInterval(load_agents_monitoring_summary,15000);
+                        int_15 = setInterval(load_realtime_agents_monitoring,3000);
+                        <?php if(REALTIME_CALLS_MONITORING === 'y'){ ?>
+                        int_16 = setInterval(load_realtime_calls_monitoring,3000);
+                        <?php } ?>
+                        //int_17 = setInterval(load_realtime_sla_monitoring,10000);
+                        int_18 = setInterval(load_view_agent_information,3000);
+                        int_19 = setInterval(load_totalSales,30000);
+                        int_20 = setInterval(load_totalOutSales,30000);
+                        int_21 = setInterval(load_totalInSales,30000);
+                        int_22 = setInterval(load_INSalesHour,60000);
+                        int_23 = setInterval(load_OUTSalesPerHour,60000);
+                        <?php if(STATEWIDE_SALES_REPORT === 'y'){ ?>
+                        // ---- Statewide Customization
+                        int_25 = setInterval(load_agent_sales,15000);
+                        <?php } ?>
+                        <?php if($whatsapp_status) { ?>
+                        int_26 = setInterval(load_whatsapp_realtime_monitoring, 5000);
+                        int_27 = setInterval(load_whatsapp_agents_chat_monitoring, 3000);
+                        int_28 = setInterval(load_whatsapp_chat_monitoring, 3000);
+                        <?php } ?>
+		});
+
+		$(document).on("click", "#btn-transfer-chat", function(){
+			var transferId = $("#transfer_agent_list").val();
+			var chatId = $("#transfer_chatId").val();
+			$.ajax({
+                                type: 'POST',
+                                url: "./php/WhatsappTransferChat.php",
+				data: {id:chatId, userid:transferId},
+                                cache: false,
+                                success: function(data){
+					console.log(data);
+                                        console.log(transferId + ' ' + chatId);
+                                }
+                        });
+		});
+
+		$(document).on("click", "#btn-assign-chat", function(){
+                        $.ajax({
+                                type: 'POST',
+                                url: "./php/WhatsappAssignChats.php",
+                                cache: false,
+                                success: function(data){
+                                        console.log(data);
+                                }
+                        });
+                });
+		
+		$('#modal_view_conversation').on('show.bs.modal', function () {
+			clearInterval(int_1);
+                        clearInterval(int_2);
+                        clearInterval(int_3);
+                        clearInterval(int_4);
+                        clearInterval(int_5);
+                        clearInterval(int_6);
+                        clearInterval(int_7);
+                        clearInterval(int_8);
+                        clearInterval(int_9);
+                        clearInterval(int_10);
+                        clearInterval(int_11);
+                        clearInterval(int_12);
+                        clearInterval(int_13);
+                        clearInterval(int_14);
+                        clearInterval(int_15);
+                        <?php if(REALTIME_CALLS_MONITORING === 'y'){ ?>
+                        clearInterval(int_16);
+                        <?php } ?>
+                        //clearInterval(int_17);
+                        clearInterval(int_18);
+                        clearInterval(int_19);
+                        clearInterval(int_20);
+                        clearInterval(int_21);
+                        clearInterval(int_22);
+                        clearInterval(int_23);
+                        <?php if(STATEWIDE_SALES_REPORT === 'y'){ ?>
+                        // ---- Statewide Customization
+                        clearInterval(int_25);
+                        <?php } ?>
+                        <?php if($whatsapp_status) { ?>
+                        clearInterval(int_26);
+                        clearInterval(int_27);
+                        clearInterval(int_28);
+                        <?php } ?>	
+		});
+
+		$('#modal_view_conversation').on('hidden.bs.modal', function () {
+			int_1 = setInterval(load_totalagentscall,5000);
+                        int_2 = setInterval(load_totalagentspaused,5000);
+                        int_3 = setInterval(load_totalagentswaitingcall,5000);
+                        int_4 = setInterval(load_RingingCalls,15000);
+                        int_5 = setInterval(load_IncomingQueue,15000);
+                        int_6 = setInterval(load_AnsweredCalls,15000);
+                        int_7 = setInterval(load_DroppedCalls,15000);
+                        int_24 = setInterval(load_DroppedCallsPercentage,15000);
+                        int_8 = setInterval(load_TotalInboundCalls,30000);
+                        int_9 = setInterval(load_TotalOutboundCalls,30000);
+                        int_10 = setInterval(load_LiveOutbound,30000);
+                        int_11 = setInterval(load_cluster_status,60000);
+                        int_12 = setInterval(load_campaigns_resources,30000);
+                        int_13 = setInterval(load_campaigns_monitoring,20000);
+                        int_14 = setInterval(load_agents_monitoring_summary,15000);
+                        int_15 = setInterval(load_realtime_agents_monitoring,3000);
+                        <?php if(REALTIME_CALLS_MONITORING === 'y'){ ?>
+                        int_16 = setInterval(load_realtime_calls_monitoring,3000);
+                        <?php } ?>
+                        //int_17 = setInterval(load_realtime_sla_monitoring,10000);
+                        int_18 = setInterval(load_view_agent_information,3000);
+                        int_19 = setInterval(load_totalSales,30000);
+                        int_20 = setInterval(load_totalOutSales,30000);
+                        int_21 = setInterval(load_totalInSales,30000);
+                        int_22 = setInterval(load_INSalesHour,60000);
+                        int_23 = setInterval(load_OUTSalesPerHour,60000);
+                        <?php if(STATEWIDE_SALES_REPORT === 'y'){ ?>
+                        // ---- Statewide Customization
+                        int_25 = setInterval(load_agent_sales,15000);
+                        <?php } ?>
+                        <?php if($whatsapp_status) { ?>
+                        int_26 = setInterval(load_whatsapp_realtime_monitoring, 5000);
+                        int_27 = setInterval(load_whatsapp_agents_chat_monitoring, 3000);
+                        int_28 = setInterval(load_whatsapp_chat_monitoring, 3000);
+                        <?php } ?>
+		});
+
+		$(document).on("click", "#onclick-whatsappconversation", function(){
+                        var chatId = $(this).attr('data-id');
+			
+			console.log(chatId);
+                        $.ajax({
+                                type: 'POST',
+                                url: "./php/WhatsappGetConversation.php",
+				dataType: 'json',
+                                data: {chatId:chatId},
+                                cache: false,
+                                success: function(data){
+                                        console.log(data);
+					var obj = data.conversation;
+					chatListArr = [];
+					var conversation = "";
+					var username = "";
+					obj.message.forEach(function(key){
+						chatListArr.push(key.id);
+						var author = key.author.split("@");
+						phonenumber = author[0];
+						time = new Date(key.time);
+						time = moment(time).format("MMM D YYYY h:mm:ss a");
+
+						if(phonenumber == chatId){
+								type = "receiver";
+								username = key.senderName;
+						} else {
+								type = "sender";
+						}
+
+						var body = "";
+						if(key.type == "image"){
+								body = "<img src='"+key.body+"' style='max-height: 450px; max-width: 100%' class='img-chat'>";
+						} else if(key.type == "video"){
+								body = "<video style='max-height: 450px; max-width: 100%' class='video-chat' controls><source src='"+key.body+"' type='video/mp4'></video>";
+						} else if(key.type == "chat") {
+								body = key.body;
+						}
+
+						conversation += "<div class='row message-body'>";
+						conversation += "<div class='col-sm-12 message-main-" + type + "'>";
+						conversation += "<div class='" + type + "'>";
+						conversation += "<div class='message-text'>";
+						conversation += body;
+						conversation += "</div>";
+						conversation += "<span class='message-time pull-right'>";
+						conversation += time;
+						conversation += "</span>";
+						conversation += "</div>";
+						conversation += "</div>";
+						conversation += "</div>";
+					});
+
+					$(".sender-name").html(chatId);
+					$("#wa-conversation-div").html(conversation);
+					
+					$('#wa-conversation-div').ready(function(){
+						$('#wa-conversation-div').scrollTop($('#wa-conversation-div')[0].scrollHeight);
+					});
+                                }
+                        });
+                });
+		<?php }*/ ?>
 	</script>
 	
    <!-- FLOT CHART-->
@@ -1487,8 +2462,11 @@ function goGetInSession(type) {
 	<script src="adminlte/js/app.min.js" type="text/javascript"></script>
     <script src="js/dashboard/js/jquery-knob/dist/jquery.knob.min.js"></script>
 
+	<!-- Rocket Chat -->
+        <!--<script src="js/rocketchat.js" type="text/javascript" ></script>
+	
 	<!-- Live Helper Chat -->
-	<script src="js/livehelperchat.js" type="text/javascript" ></script>
+	<!--<script src="js/livehelperchat.js" type="text/javascript" ></script>-->
         
 	<!-- Vue Avatar -->
 	<script src="js/vue-avatar/vue.min.js" type="text/javascript"></script>
@@ -1520,5 +2498,225 @@ function goGetInSession(type) {
 		var goAvatar = new Vue(goOptions);
 	</script>
 		<?php print $ui->creamyFooter(); ?>
+	<script>
+		$(function(){
+			if ($("#realtime_inbound_monitoring").length > 0) {
+				var open = false;
+				function isOpen(){
+					if(open) {
+						return "inbound filter is open";
+					} else {
+						load_realtime_inbound_monitoring(inbTable);
+						return "inbound filter is closed";
+					}
+				}
+				
+				$("#inbound_filter").on("click", function() {
+					open = !open;
+					console.log(isOpen());
+				});
+				
+				$("#inbound_filter").on("blur", function() {
+					if(open){
+						open = !open;
+						console.log(isOpen());
+					}
+				});
+				
+				$(document).keyup(function(e) {
+					if (e.keyCode == 27) { 
+						if(open){
+							open = !open;
+							console.log(isOpen());
+						}
+					}
+				});
+
+				$('#realtime_inbound_monitoring').on('show.bs.modal', function () {
+					clearInterval(int_1);
+					clearInterval(int_2);
+					clearInterval(int_3);
+					clearInterval(int_4);
+					clearInterval(int_5);
+					clearInterval(int_6);
+					clearInterval(int_7);
+					clearInterval(int_8);
+					clearInterval(int_9);
+					clearInterval(int_10);
+					clearInterval(int_11);
+					clearInterval(int_12);
+					clearInterval(int_13);
+					clearInterval(int_14);
+					clearInterval(int_15);
+					<?php if(REALTIME_CALLS_MONITORING === 'y'){ ?>
+					clearInterval(int_16);
+					<?php } ?>
+					<?php if(REALTIME_INBOUND_MONITORING === 'y'){ ?>
+					int_17 = setInterval(function() {
+						if (!open) {
+							load_realtime_inbound_monitoring(inbTable);
+                        }
+					},3000);
+					<?php } ?>
+					clearInterval(int_18);
+					clearInterval(int_19);
+					clearInterval(int_20);
+					clearInterval(int_21);
+					clearInterval(int_22);
+					clearInterval(int_23);
+					clearInterval(int_24);
+				});
+				
+				$('#realtime_inbound_monitoring').on('hidden.bs.modal', function () {
+					int_1 = setInterval(load_totalagentscall,5000);
+					int_2 = setInterval(load_totalagentspaused,5000);
+					int_3 = setInterval(load_totalagentswaitingcall,5000);
+					int_4 = setInterval(load_RingingCalls,15000);
+					int_5 = setInterval(load_IncomingQueue,15000);
+					int_6 = setInterval(load_AnsweredCalls,15000);
+					int_7 = setInterval(load_DroppedCalls,15000);
+					int_8 = setInterval(load_TotalInboundCalls,30000);
+					int_9 = setInterval(load_TotalOutboundCalls,30000);
+					int_10 = setInterval(load_LiveOutbound,30000);
+					int_11 = setInterval(load_cluster_status,60000);
+					int_12 = setInterval(load_campaigns_resources,30000);
+					int_13 = setInterval(load_campaigns_monitoring,20000);
+					int_14 = setInterval(load_agents_monitoring_summary,15000);
+					int_15 = setInterval(load_realtime_agents_monitoring,3000);
+					<?php if(REALTIME_CALLS_MONITORING === 'y'){ ?>
+					int_16 = setInterval(load_realtime_calls_monitoring,3000);
+					<?php } ?>
+					<?php if(REALTIME_INBOUND_MONITORING === 'y'){ ?>
+					clearInterval(int_17);
+					<?php } ?>
+					//int_17 = setInterval(load_realtime_sla_monitoring,10000);
+					int_18 = setInterval(load_view_agent_information,3000);
+					int_19 = setInterval(load_totalSales,30000);
+					int_20 = setInterval(load_totalOutSales,30000);
+					int_21 = setInterval(load_totalInSales,30000);
+					int_22 = setInterval(load_INSalesHour,60000);
+					int_23 = setInterval(load_OUTSalesPerHour,60000);
+					int_24 = setInterval(load_DroppedCallsPercentage,15000);
+				});
+            }
+				if ($("#change-password-dialog-modal").length > 0) {
+					 var old_password_placeholder = '<?=$lh->translationFor("insert_old_password")?>';
+					 var new_password_placeholder = '<?=$lh->translationFor("insert_new_password")?>';
+					 var new_password_again_placeholder = '<?=$lh->translationFor("insert_new_password_again")?>';
+						
+						$('#change-password-dialog-modal').on('show.bs.modal', function () {
+							clearInterval(int_1);
+							clearInterval(int_2);
+							clearInterval(int_3);
+							clearInterval(int_4);
+							clearInterval(int_5);
+							clearInterval(int_6);
+							clearInterval(int_7);
+							clearInterval(int_8);
+							clearInterval(int_9);
+							clearInterval(int_10);
+							clearInterval(int_11);
+							clearInterval(int_12);
+							clearInterval(int_13);
+							clearInterval(int_14);
+							clearInterval(int_15);
+							clearInterval(int_16);
+							<?php if(REALTIME_INBOUND_MONITORING === 'y'){ ?>
+							if (typeof int_17 !== 'undefined') {
+								clearInterval(int_17);
+							}
+							<?php } ?>
+							clearInterval(int_18);
+							clearInterval(int_19);
+							clearInterval(int_20);
+							clearInterval(int_21);
+							clearInterval(int_22);
+							clearInterval(int_23);
+							clearInterval(int_24);
+							
+							$(this).find('#old_password').attr('type', 'text').val(old_password_placeholder).css('color', '#ccc');
+							$(this).find('#new_password_1').attr('type', 'text').val(new_password_placeholder).css('color', '#ccc');
+							$(this).find('#new_password_2').attr('type', 'text').val(new_password_again_placeholder).css('color', '#ccc');
+							
+							$(this).find('#old_password').focusin(function() {
+									if($(this).val() == old_password_placeholder) {
+											$(this).attr('type', 'password').val('').css('color', 'inherit');
+									}
+							});
+							
+							$(this).find('#old_password').focusout(function() {
+									if($(this).val() == '') {
+											$(this).attr('type', 'text').val(old_password_placeholder).css('color', '#ccc');
+									}
+							});
+							
+							$(this).find('#new_password_1').focusin(function() {
+									if($(this).val() == new_password_placeholder) {
+											$(this).attr('type', 'password').val('').css('color', 'inherit');
+									}
+							});
+							
+							$(this).find('#new_password_1').focusout(function() {
+									if($(this).val() == '') {
+											$(this).attr('type', 'text').val(new_password_placeholder).css('color', '#ccc');
+									}
+							});
+							
+							$(this).find('#new_password_2').focusin(function() {
+									if($(this).val() == new_password_again_placeholder) {
+											$(this).attr('type', 'password').val('').css('color', 'inherit');
+									}
+							});
+							
+							$(this).find('#new_password_2').focusout(function() {
+									if($(this).val() == '') {
+											$(this).attr('type', 'text').val(new_password_again_placeholder).css('color', '#ccc');
+									}
+							});
+						});
+						
+						$('#change-password-dialog-modal').on('hidden.bs.modal', function () {
+							int_1 = setInterval(load_totalagentscall,5000);
+							int_2 = setInterval(load_totalagentspaused,5000);
+							int_3 = setInterval(load_totalagentswaitingcall,5000);
+							int_4 = setInterval(load_RingingCalls,15000);
+							int_5 = setInterval(load_IncomingQueue,15000);
+							int_6 = setInterval(load_AnsweredCalls,15000);
+							int_7 = setInterval(load_DroppedCalls,15000);
+							int_8 = setInterval(load_TotalInboundCalls,30000);
+							int_9 = setInterval(load_TotalOutboundCalls,30000);
+							int_10 = setInterval(load_LiveOutbound,30000);
+							int_11 = setInterval(load_cluster_status,60000);
+							int_12 = setInterval(load_campaigns_resources,30000);
+							int_13 = setInterval(load_campaigns_monitoring,20000);
+							int_14 = setInterval(load_agents_monitoring_summary,15000);
+							int_15 = setInterval(load_realtime_agents_monitoring,3000);
+							<?php if(REALTIME_CALLS_MONITORING === 'y'){ ?>
+							int_16 = setInterval(load_realtime_calls_monitoring,3000);
+							<?php } ?>
+							<?php if(REALTIME_INBOUND_MONITORING === 'y'){ ?>
+							//int_17 = setInterval(load_realtime_inbound_monitoring,3000,inbTable);
+							<?php } ?>
+							//int_17 = setInterval(load_realtime_sla_monitoring,10000);
+							int_18 = setInterval(load_view_agent_information,3000);
+							int_19 = setInterval(load_totalSales,30000);
+							int_20 = setInterval(load_totalOutSales,30000);
+							int_21 = setInterval(load_totalInSales,30000);
+							int_22 = setInterval(load_INSalesHour,60000);
+							int_23 = setInterval(load_OUTSalesPerHour,60000);
+							int_24 = setInterval(load_DroppedCallsPercentage,15000);
+						});
+				}
+		});
+	</script>
+<script type="text/javascript">
+/*
+    (function(w, d, s, u) {
+        w.RocketChat = function(c) { w.RocketChat._.push(c) }; w.RocketChat._ = []; w.RocketChat.url = u;
+        var h = d.getElementsByTagName(s)[0], j = d.createElement(s);
+        j.async = true; j.src = 'https://kuts.justgocloud.com/livechat/rocketchat-livechat.min.js?_=201903270000';
+        h.parentNode.insertBefore(j, h);
+    })(window, document, 'script', 'https://kuts.justgocloud.com/livechat');*/
+</script>
     </body>
 </html>

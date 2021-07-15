@@ -31,6 +31,13 @@
 	$lh = \creamy\LanguageHandler::getInstance();
 	$user = \creamy\CreamyUser::currentUser();
 	
+	//proper user redirects
+	if($user->getUserRole() != CRM_DEFAULTS_USER_ROLE_ADMIN){
+		if($user->getUserRole() == CRM_DEFAULTS_USER_ROLE_AGENT){
+			header("location: agent.php");
+		}
+	}	
+	
 	$perm = $api->goGetPermissions('inbound,ivr,did');
 	$gopackage = $api->API_getGOPackage();
 
@@ -186,12 +193,12 @@
 									   	?>	
 											<tr>
                                                 <td><avatar username='<?php echo $ingroup->group_name[$i];?>' :size='36'></avatar></td>
-												<td><strong><?php if ($perm->inbound->inbound_update !== 'N') { echo '<a class="edit-ingroup" data-id="'.$ingroup->group_id[$i].'">'; } ?><?php echo $ingroup->group_id[$i];?><?php if ($perm->inbound->inbound_update !== 'N') { echo '</a>'; } ?></strong></td>
+												<td><strong><?php if (($_SESSION['usergroup'] === "ADMIN" && $perm->inbound->inbound_update !== 'N') || ($_SESSION['usergroup'] !== "ADMIN" && $perm->inbound->inbound_update !== 'N' && !preg_match("/^AGENTDIRECT/", $ingroup->group_id[$i]))) { echo '<a class="edit-ingroup" data-id="'.$ingroup->group_id[$i].'">'; } ?><?php echo $ingroup->group_id[$i];?><?php if ($perm->inbound->inbound_update !== 'N') { echo '</a>'; } ?></strong></td>
 												<td><?php echo $ingroup->group_name[$i];?></td>
 												<td><?php echo $ingroup->queue_priority[$i];?></td>
 												<td><?php echo $ingroup->active[$i];?></td>
 												<td><?php echo $ingroup->call_time_id[$i];?></td>
-												<td><?php echo $action_INGROUP;?></td>
+												<td><?php if ($_SESSION['usergroup'] === "ADMIN" || ($_SESSION['usergroup'] !== "ADMIN" && !preg_match("/^AGENTDIRECT/", $ingroup->group_id[$i]))) echo $action_INGROUP;?></td>
 											</tr>
 										<?php
 											}
@@ -1035,6 +1042,7 @@
 									</select>
 								</div>
 							</div>
+							<!--
 							<div class="form-group">
 								<label class="col-sm-4 control-label" for="route" ><?php $lh->translateText('did_route'); ?></label>
 								<div class="col-sm-8 mb">
@@ -1048,6 +1056,7 @@
 									</select>
 								</div>
 							</div>
+							-->
 							<div class="form-group">
 								<label class="col-sm-4 control-label" for="user_groups"><?php $lh->translateText('user_groups'); ?></label>
 								<div class="col-sm-8 mb">
@@ -1066,11 +1075,12 @@
 								</div>
 							</div>
 						</fieldset>
+						<?php /*?>
 						<h4><?php $lh->translateText('route_settings'); ?>
-                           <br>
-                           <small><?php $lh->translateText('fill_up_route'); ?></small>
-                        </h4>
-                        <fieldset>
+                        			   <br>
+			                           <small><?php $lh->translateText('fill_up_route'); ?></small>
+			                        </h4>
+			                        <fieldset>
 						<!-- IF DID ROUTE = AGENT-->
 
 							<div id="form_route_agent">
@@ -1228,6 +1238,7 @@
 								</div>
 							</div><!-- end of custom extension div -->
 						</fieldset>
+						<?php */?>
 					</div><!-- End of Step -->
 				
 				
@@ -1281,6 +1292,7 @@
 						var pagination = $(this).closest('.dataTables_wrapper').find('.dataTables_paginate');
 						pagination.toggle(this.api().page.info().pages > 1);
 					},
+					order: [[ 1, "asc"]],
 					columnDefs:[
 						{ width: "16%", targets: 6 },
 						{ searchable: false, targets: [ 0, 6 ] },
@@ -1297,6 +1309,7 @@
 						var pagination = $(this).closest('.dataTables_wrapper').find('.dataTables_paginate');
 						pagination.toggle(this.api().page.info().pages > 1);
 					},
+					order: [[ 1, "asc"]],
 					columnDefs:[
 						{ width: "16%", targets: 5 },
 						{ searchable: false, targets: [ 0, 5 ] },
@@ -1312,6 +1325,7 @@
 						var pagination = $(this).closest('.dataTables_wrapper').find('.dataTables_paginate');
 						pagination.toggle(this.api().page.info().pages > 1);
 					},
+					order: [[ 1, "asc"]],
 					columnDefs:[
 						{ width: "16%", targets: 5 },
 						{ searchable: false, targets: [ 0, 5 ] },

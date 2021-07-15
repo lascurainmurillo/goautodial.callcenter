@@ -2,7 +2,7 @@
 /**
  * @file        API_getRealtimeAgentsMonitoring.php
  * @brief       Displays realtime monitoring data and HTML
- * @copyright   Copyright (c) 2018 GOautodial Inc.
+ * @copyright   Copyright (c) 2020 GOautodial Inc.
  * @author		Demian Lizandro A. Biscocho 
  *
  * @par <b>License</b>:
@@ -19,7 +19,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
+	
 	require_once('APIHandler.php');
 	
 	$api 											= \creamy\APIHandler::getInstance();
@@ -27,7 +27,7 @@
 
     $barracks 										= '[';   
     
-    if (!empty($output->data)) {
+    if (is_array($output->data)) {
 		foreach ($output->data as $key => $value) {
 	
 			$userid 								= $api->escapeJsonString($value->vu_user_id);
@@ -156,7 +156,7 @@
 					$nametextclass 					= "text-warning";
 					
 					if (strlen($pausecode) > 0) { 
-						$status 					.= " [$pausecode]"; 
+						$CM 						= " [$pausecode]"; 
 					}
 					
 					if ($call_time_S >= 10){ 

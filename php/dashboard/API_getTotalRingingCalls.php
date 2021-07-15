@@ -2,7 +2,7 @@
 /**
  * @file        API_getTotalRingingCalls.php
  * @brief       Displays active outbound ringing calls
- * @copyright   Copyright (c) 2018 GOautodial Inc.
+ * @copyright   Copyright (c) 2020 GOautodial Inc.
  * @author		Demian Lizandro A. Biscocho 
  *
  * @par <b>License</b>:
@@ -23,8 +23,7 @@
 	require_once('APIHandler.php');
 	
 	$api 										= \creamy\APIHandler::getInstance();
-	$output 									= $api->API_getTotalRingingCalls();
-    
+	$output 									= $api->API_getTotalRingingCalls();    
     $calls 										= $output->data;
     
     if($calls == NULL || $calls == 0){

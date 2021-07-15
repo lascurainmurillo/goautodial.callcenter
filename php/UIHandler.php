@@ -1029,10 +1029,10 @@ error_reporting(E_ERROR | E_PARSE);
 			  '.$this->checkboxInputWithLabel($ev_text, "eventEmail", "eventEmail", $cv).'
 			  '.$this->singleFormGroupWithInputGroup($this->singleFormInputElement("company_name", "company_name", "text", $cn_text, $cn, "building-o"), $cn_text).'
 			  '.$this->singleFormGroupWithFileUpload("company_logo", "company_logo", $cl, $cl_text, null).'
-			  '.$this->singleFormGroupWithSelect($es_text, "theme", "theme", $tOpts, $ct, false).'
-			  '.$this->singleFormGroupWithSelect($tz_text, "timezone", "timezone", \creamy\CRMUtils::getTimezonesAsArray(), $tz).'
-			  '.$this->singleFormGroupWithSelect($lo_text, "locale", "locale", \creamy\LanguageHandler::getAvailableLanguages(), $lo).'
-			  '.$this->singleFormGroupWithSelect($vg_text, "voicemail_greeting", "voicemail_greeting", $vgOpts, $vg).'
+			  '.$this->singleFormGroupWithSelect($es_text, "theme", "theme", $tOpts, $ct, false, '', '', '').'
+			  '.$this->singleFormGroupWithSelect($tz_text, "timezone", "timezone", \creamy\CRMUtils::getTimezonesAsArray(), $tz, '', '', '', '').'
+			  '.$this->singleFormGroupWithSelect($lo_text, "locale", "locale", \creamy\LanguageHandler::getAvailableLanguages(), $lo, '', '', '', '').'
+			  '.$this->singleFormGroupWithSelect($vg_text, "voicemail_greeting", "voicemail_greeting", $vgOpts, $vg, '', '', '', '').'
 			  '.$this->singleFormGroupWithInputGroup($this->singleFormInputElement("google_api_key", "google_api_key", "text", $go_text, $go, "google"), $go_text).'
 			  '.$this->singleFormGroupWithInputGroup($this->singleFormInputElement("slave_db_ip", "slave_db_ip", "text", $db_text, $slaveDB, "database"), $db_text).'
 			  <div class="box-footer">
@@ -1270,7 +1270,7 @@ error_reporting(E_ERROR | E_PARSE);
        	   $columns = array("id", "name", "email", "role", "status", "action");
 	       $hideOnMedium = array("email", "creation_date", "role");
 	       $hideOnLow = array("email", "creation_date", "role", "status");
-		   $result = $this->generateTableHeaderWithItems($columns, "users", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow);
+		   $result = $this->generateTableHeaderWithItems($columns, "users", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow, '');
 
 	       // iterate through all contacts
 	       foreach ($users as $userData) {
@@ -1357,7 +1357,7 @@ error_reporting(E_ERROR | E_PARSE);
 
 		// generate a table with all elements.
 		$items = array("name", "version", "enabled", "action");
-		$table = $this->generateTableHeaderWithItems($items, "moduleslist", "table-striped", true, false, array(), array("version", "action"));
+		$table = $this->generateTableHeaderWithItems($items, "moduleslist", "table-striped", true, false, array(), array("version", "action"), '');
 		// fill table
 		foreach ($allModules as $moduleClass => $moduleDefinition) {
 			// module data
@@ -1388,7 +1388,31 @@ error_reporting(E_ERROR | E_PARSE);
 		$moduleDescription = $this->lh->translationFor("smtp_settings_desc");
 		$action = $this->getActionButtonForSMTP($smtp_status);
 		$table .= "<tr><td><b>$moduleName</b><br/><div class='small hide-on-low'>$moduleDescription</div></td><td class='small hide-on-low'>$moduleVersion</td><td class='small hide-on-low'>$status</td><td>$action</td></tr>";
-		
+
+		//insert agent_chat_custom
+		$agent_chat_status = $this->API_getAgentChatActivation();
+		if ($agent_chat_status == 1) { // module is enabled.
+			$status = "<i class='fa fa-check-square-o'></i>";
+		} else { // module is disabled.
+			$status = "<i class='fa fa-times-circle-o'></i>";
+		}
+		$moduleName = $this->lh->translationFor("agent_chat_settings");
+		$moduleDescription = $this->lh->translationFor("agent_chat_desc");
+		$action = $this->getActionButtonForAgentChat($agent_chat_status);
+		$table .= "<tr><td><b>$moduleName</b><br/><div class='small hide-on-low'>$moduleDescription</div></td><td class='small hide-on-low'>$moduleVersion</td><td class='small hide-on-low'>$status</td><td>$action</td></tr>";
+
+		//insert whatsapp_custom
+		$whatsapp_status = $this->API_getWhatsappActivation();
+		if ($whatsapp_status == 1) { // module is enabled.
+			$status = "<i class='fa fa-check-square-o'></i>";
+		} else { // module is disabled.
+			$status = "<i class='fa fa-times-circle-o'></i>";
+		}
+		$moduleName = $this->lh->translationFor("whatsapp_settings");
+		$moduleDescription = $this->lh->translationFor("whatsapp_desc");
+		$action = $this->getActionButtonForWhatsapp($whatsapp_status);
+		$table .= "<tr><td><b>$moduleName</b><br/><div class='small hide-on-low'>$moduleDescription</div></td><td class='small hide-on-low'>$moduleVersion</td><td class='small hide-on-low'>$status</td><td>$action</td></tr>";
+
 		// close table
 		$table .= $this->generateTableFooterWithItems($items, true, false, array(), array("version", "action"));
 
@@ -1443,7 +1467,6 @@ error_reporting(E_ERROR | E_PARSE);
 	                    		'.$moduleTopbarElements.'
 	                    		'.$this->getTopbarMessagesMenu($user).'
 		                    	'.$this->getTopbarNotificationsMenu($user).'
-		                    	'.$this->getTopbarTasksMenu($user).'
 		                    	<li>
 			                    	<a href="#" class="visible-xs" data-toggle="control-sidebar" style="padding-top: 17px; padding-bottom: 18px;"><i class="fa fa-cogs"></i></a>
 										<a href="#" class="hidden-xs" data-toggle="control-sidebar" style="padding-top: 14px; padding-bottom: 14px;">
@@ -1470,6 +1493,10 @@ error_reporting(E_ERROR | E_PARSE);
 		    				The page is taking too long to load. It probably failed. <br/> Please check your Internet Connection and click the button below to try again...<br/>
 		    				<br/><button type="button" class="btn reload-button" style="display:none; color: #333333;"><i class="fa fa-refresh fa-3x"></i></button>
 		    			</div>
+					<div class="rc-loading-reports" style="display:none; color:white;">
+                                                COLLECTING AND EXPORTING DATA<br/> Please wait a moment... <br/>
+                                                <br/><button type="button" class="btn reload-button" style="display:none; color: #333333;"><i class="fa fa-refresh fa-3x"></i></button>
+                                        </div>
     			</center>
 
     		</div>
@@ -1542,7 +1569,7 @@ error_reporting(E_ERROR | E_PARSE);
 		return '<header class="main-header">
 				<a href="./index.php" class="logo"><img src="'.$logo.'" width="auto" height="45" style="padding-top:10px;"></a>
 	            <nav class="navbar navbar-static-top" role="navigation">
-	                <a href="#" class="sidebar-toggle hidden" data-toggle="offcanvas" role="button">
+	                <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button" style="display:none;">
 	                    <span class="sr-only">Toggle navigation</span>
 	                    <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
 	                </a>
@@ -1635,12 +1662,17 @@ error_reporting(E_ERROR | E_PARSE);
 		$company_name = $this->creamyHeaderName();
 		if (empty($version)) { $version = "unknown"; }
 		$version = "4.0";
+  
+  ob_start();
+  include_once ("ModalPasswordDialogs.php");
+  $modalPasswds = ob_get_contents();
 
 		$footer = '<footer class="main-footer">
 			<div class="pull-right hidden-xs">
 				<b>Version</b> '.$version.'</div><strong>'.$this->lh->translationFor("copyright").' &copy; '.date("Y").' <a href="'.$this->lh->translationFor("company_url").'">'.$company_name.'</a> '.$this->lh->translationFor("all_rights_reserved").'.
 			</div>
 			</footer>';
+  
 		$footer .= '			<!-- Modal -->
 			<!-- View Campaign -->
 			<div id="view-campaign-modal" class="modal fade" role="dialog">
@@ -2014,6 +2046,8 @@ error_reporting(E_ERROR | E_PARSE);
 		$mh = \creamy\ModuleHandler::getInstance();
 		$smtp_status = $this->API_getSMTPActivation(); // smtp_status
 		$gopackage = $this->api->API_getGOPackage(); // smtp_status
+		$agent_chat_status = $this->API_getAgentChatActivation(); //agent_chat_status
+		$whatsapp_status = $this->API_getWhatsappActivation(); //whatsapp_status
 		$usergroup = (!isset($usergroup) ? $_SESSION['usergroup'] : $usergroup);
 		$perms = $this->api->goGetPermissions('sidebar', $usergroup);
 		$perms = json_decode(stripslashes($perms->data->permissions));
@@ -2039,8 +2073,13 @@ error_reporting(E_ERROR | E_PARSE);
 			$adminArea .= $this->getSidebarItem("./adminmodules.php", "archive", $this->lh->translationFor("modules")); // admin settings
 			//$adminArea .= $this->getSidebarItem("./admincustomers.php", "users", $this->lh->translationFor("customers")); // admin settings
 			foreach ($modulesWithSettings as $k => $m) { $adminArea .= $this->getSidebarItem("./modulesettings.php?module_name=".urlencode($k), $m->mainPageViewIcon(), $m->mainPageViewTitle()); }
-			if ($smtp_status == 1)  // module is enabled.
-				$adminArea .= $this->getSidebarItem("./settingssmtp.php", "envelope-square", $this->lh->translationFor("smtp_settings")); // smtp settings
+			if ($smtp_status == 1) {  // module is enabled.
+				$adminArea .= $this->getSidebarItem("./settingssmtp.php", "envelope-square", $this->lh->translationFor("smtp_settings")); // smtp settings 
+			}
+			/*if ($whatsapp_status == 1) { // module is enabled.
+				$adminArea .= $this->getSidebarItem("./settingswhatsapp.php", "envelope-square", $this->lh->translationFor("whatsapp_settings")); // whatsapp settings
+			}*/
+
 			$adminArea .= '</ul></li>';
 			$telephonyArea = '<li class="treeview"><a href="#"><i class="fa fa-phone"></i> <span>'.$this->lh->translationFor("telephony").'</span><i class="fa fa-angle-left pull-right"></i></a><ul class="treeview-menu">';
 			if ($perms->user->user_read == 'R')
@@ -2061,6 +2100,15 @@ error_reporting(E_ERROR | E_PARSE);
 				//$telephonyArea .= $this-> getSidebarItem("./telephonyvoicefiles.php", "files-o", $this->lh->translationFor("voice_files"));
 			}
 			$telephonyArea .= '</ul></li>';
+			
+			$rocketchatAnalytics = "";
+			if(ROCKETCHAT_ENABLE === 'y'){
+				$rocketchatAnalytics .= '<li class="treeview"><a href="#"><i class="fa fa-headphones"></i> <span>'.$this->lh->translationFor("livechat").'</span><i class="fa fa-angle-left pull-right"></i></a><ul class="treeview-menu">';
+				$rocketchatAnalytics .= $this-> getSidebarItem("./livechat.php?current_chats", "users", $this->lh->translationFor("current_chats"));
+				$rocketchatAnalytics .= $this-> getSidebarItem("./livechat.php?analytics", "users", $this->lh->translationFor("analytics"));
+				$rocketchatAnalytics .= $this-> getSidebarItem("./livechat.php?realtime_monitoring", "users", $this->lh->translationFor("realtime_monitoring"));
+				$rocketchatAnalytics .= '</ul></li>';
+			}
 
 			if ($userrole == CRM_DEFAULTS_USER_ROLE_ADMIN) {
 				$settings = '<li class="treeview"><a href="#"><i class="fa fa-gear"></i> <span>'.$this->lh->translationFor("settings").'</span><i class="fa fa-angle-left pull-right"></i></a><ul class="treeview-menu">';				
@@ -2088,6 +2136,17 @@ error_reporting(E_ERROR | E_PARSE);
 			}
 			
 			$callreports .= '</ul></li>';
+			
+			// WhatsApp Settings
+   $whatsapp_status = 0; // permanently disabled -- chris
+			if ($whatsapp_status == 1) { // module is enabled.
+				$whatsapp = '<li class="treeview"><a href="#"><i class="fa fa-gear"></i> <span>'.$this->lh->translationFor("WhatsApp").'</span><i class=
+"fa fa-angle-left pull-right"></i></a><ul class="treeview-menu">';
+                                $whatsapp .= $this->getSidebarItem("./settingswhatsapp.php", "envelope-square", $this->lh->translationFor("whatsapp_settings"));
+				$whatsapp .= $this->getSidebarItem("./settingswhatsappdispo.php", "call-square", $this->lh->translationFor("whatsapp_dispo_settings"));
+				$whatsapp .= $this->getSidebarItem("./settingswhatsappreports.php", "call-square", $this->lh->translationFor("whatsapp_reports"));
+				$whatsapp .= '</ul></li>';
+                        }
 
 			$eventsArea .= $this->getSidebarItem("events.php", "calendar-o", $this->lh->translationFor("events"));
 
@@ -2098,8 +2157,9 @@ error_reporting(E_ERROR | E_PARSE);
 		if ($userrole == CRM_DEFAULTS_USER_ROLE_AGENT) {
 			//$agentmenu .= $this-> getSidebarItem("", "book", $this->lh->translationFor("scripts"));
 			//$agentmenu .= $this-> getSidebarItem("", "tasks", $this->lh->translationFor("Custom Form"));
-			$agentmenu .= $this->getSidebarItem("customerslist.php", "users", $this->lh->translationFor("contacts"));
-			$agentmenu .= $this->getSidebarItem("callbackslist.php", "calendar", $this->lh->translationFor("callbacks"), "0", "blue");
+			//$agentmenu .= $this->getSidebarItem("customerslist.php", "users", $this->lh->translationFor("contacts"));
+			//$agentmenu .= $this->getSidebarItem("callbackslist.php", "calendar", $this->lh->translationFor("callbacks"), "0", "blue");
+			//$agentmenu .= $this->getChat();
 		}
 
 		// get customer types
@@ -2135,12 +2195,16 @@ error_reporting(E_ERROR | E_PARSE);
 			$telephonyArea = '';
 		}
 		$result .= $telephonyArea;
+		$result .= $rocketchatAnalytics;
 		if ($userrole != CRM_DEFAULTS_USER_ROLE_AGENT) {
 			$result .= $settings;
 		}
 		$result .= $callreports;
 		if ($userrole == CRM_DEFAULTS_USER_ROLE_ADMIN) {
 			$result .= $adminArea;
+		}
+		if ($whatsapp_status == 1) { // module is enabled.
+			$result .= $whatsapp;
 		}
 		$result .= $crm;
 		$result .= $eventsArea;
@@ -2152,8 +2216,12 @@ error_reporting(E_ERROR | E_PARSE);
 		// menu for agents
 		$result .= $agentmenu;
 		if ($userrole != CRM_DEFAULTS_USER_ROLE_AGENT) {
-        $result .= $this->getSidebarItem("messages.php", "envelope", $this->lh->translationFor("messages"), $numMessages);
+	//$result .= $this->getSidebarItem("messages.php", "envelope", $this->lh->translationFor("messages"), $numMessages);
+	if(ROCKETCHAT_ENABLE === 'y'){
+        //Rocketchat
+		//$result .= $this->getSidebarItem("rocketchat.php", "rocket", $this->lh->translationFor("Rocket Chat"), NULL);
 		//$result .= $this->getSidebarItem("calls.php", "phone", "Calls");
+	}
         $result .= $this->getSidebarItem("notifications.php", "exclamation", $this->lh->translationFor("notifications"), $numNotifications, "orange");
         $result .= $this->getSidebarItem("tasks.php", "tasks", $this->lh->translationFor("tasks"), $numTasks, "red");
 		}
@@ -2175,13 +2243,24 @@ error_reporting(E_ERROR | E_PARSE);
 		return $result;
 	}
 
+	 /** Agent Sidebar */
+
+        public function getAgentSidebar($userid, $username, $userrole, $avatar, $usergroup = NULL) {
+		$result = '<aside class="main-sidebar" sidebar-offcanvas hide"><section class="sidebar">';
+		$result = '';
+		//$result .= $this->getChat();
+		$result .= '</section></aside>';
+		
+		return $result;
+	}
+
 	/**
 	 * Right Sidebar
 	 */
 	public function getRightSidebar($userid, $username, $avatar, $tabs = array()) {
 		$mh = \creamy\ModuleHandler::getInstance();
 		$user = \creamy\CreamyUser::currentUser();
-
+		$agent_chat_status = $this->API_getAgentChatActivation();
 		// prefix: structure and home link
 		// old img element : <img src="'.$avatar.'" class="img-circle" alt="User Image" />
 		$result = '<aside class="control-sidebar control-sidebar-dark">'."\n";
@@ -2189,7 +2268,11 @@ error_reporting(E_ERROR | E_PARSE);
 		// Create Tabs
 		if (count($tabs) < 1) {
 			//$tabs = array('commenting-o'=>'messaging', 'phone'=>'dialer', 'user'=>'settings');
-			$tabs = array('user'=>'settings');
+			if($agent_chat_status){
+			    $tabs = array('comments-o' => 'chat', 'user'=>'settings');
+			} else {
+			    $tabs = array('user'=>'settings');
+			}
 		}
 		$tabresult = '<ul class="nav nav-tabs nav-justified control-sidebar-tabs">'."\n";
 		$tabpanes = '<div class="tab-content" style="border-width:0; overflow-y: hidden; padding-bottom: 30px;">'."\n";
@@ -2211,16 +2294,34 @@ error_reporting(E_ERROR | E_PARSE);
 		$result .= "</aside>\n";
 		$result .= "<div class='control-sidebar-bg' style='position: fixed; height: auto;'></div>\n";
 
+		if($agent_chat_status)
+		    $result .= "<div class='chatappdiv'></div>";
+
 		return $result;
 	}
 
 	protected function getRightTabPane($user, $tab, $active = false) {
-		//var_dump(($this->db->getTokenUser())); exit;
+		
 		$avatarElement = $this->getVueAvatar($user->getUserName(), $user->getUserAvatar(), 96, false, true, false);
 
 		$isActive = ($active) ? ' active' : '';
 		$tabpanes = '<div class="tab-pane'.$isActive.'" id="control-sidebar-'.$tab.'-tab">'."\n";
-
+		$agent_chat_status = $this->API_getAgentChatActivation();
+		if($agent_chat_status){
+		    if ($tab == 'chat') {
+			$tabpanes .= '<ul class="contacts-list">
+				<li>
+					<div class="center-block" style="text-align: center; margin: 0 10px; padding-bottom: 1px; padding-top: 10px;">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+							<p>'.$avatarElement.'</p>
+							<p style="color:white;">'.$user->getUserName().'<br><small>'.$this->lh->translationFor("nice_to_see_you_again").'</small></p>
+						</a>
+					</div>
+				</li>';
+			$tabpanes .= '</ul>'."\n";
+		    }
+		}
+		
 		if ($tab == 'settings') {
 			$tabpanes .= '<ul class="control-sidebar-menu" id="go_tab_profile">
 				<li>
@@ -2231,6 +2332,7 @@ error_reporting(E_ERROR | E_PARSE);
 						</a>
 					</div>
 				</li>';
+
 			if ($user->userHasBasicPermission()) {
 				$tabpanes .= '<li>
 					<div class="text-center"><a href="" data-toggle="modal" id="change-password-toggle" data-target="#change-password-dialog-modal">'.$this->lh->translationFor("change_password").'</a></div>
@@ -2239,6 +2341,7 @@ error_reporting(E_ERROR | E_PARSE);
 					<div class="text-center"><a href="./tasks.php">'.$this->lh->translationFor("tasks").'</a></div>
 				</li>';
 			}
+
 			$tabpanes .= '</ul>
 			  <!-- <ul class="control-sidebar-menu" style="bottom: 0px; position: absolute; width: 100%; margin: 25px -15px 15px;"> -->
 			  <ul class="control-sidebar-menu" style="margin: 25px -15px 15px;">
@@ -2260,7 +2363,8 @@ error_reporting(E_ERROR | E_PARSE);
 					</li>
 				</ul>'."\n";
 		}
-		$tabpanes .= "</div>\n";
+
+		$tabpanes .= "</div>";
 
 		return $tabpanes;
 	}
@@ -2283,7 +2387,7 @@ error_reporting(E_ERROR | E_PARSE);
 	public function getCustomerTypesAdminTable() {
 		// generate table
 		$items = array("Id", $this->lh->translationFor("name"));
-		$table = $this->generateTableHeaderWithItems($items, "customerTypes", "table-bordered table-striped", true);
+		$table = $this->generateTableHeaderWithItems($items, "customerTypes", "table-bordered table-striped", true, '', '', '', '');
 		if ($customerTypes = $this->db->getCustomerTypes()) {
 			foreach ($customerTypes as $customerType) {
 				$table .= "<tr><td>".$customerType["id"]."</td><td><span class='text'>".$customerType["description"].'
@@ -2355,7 +2459,7 @@ error_reporting(E_ERROR | E_PARSE);
 	   $columns[] = $this->lh->translationFor("action");
 	   $hideOnMedium = array("email", "phone_number");
 	   $hideOnLow = array("email", "phone_number");
-	   $result = $this->generateTableHeaderWithItems($columns, "contacts", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow);
+	   $result = $this->generateTableHeaderWithItems($columns, "contacts", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow, '');
 
        // print suffix
        $result .= $this->generateTableFooterWithItems($columns, true, false, $hideOnMedium, $hideOnLow);
@@ -2371,7 +2475,7 @@ error_reporting(E_ERROR | E_PARSE);
 	   $columns[] = $this->lh->translationFor("action");
 	   $hideOnMedium = array("user_level", "user_group");
 	   $hideOnLow = array("user","user_level", "user_level");
-	   $result = $this->generateTableHeaderWithItems($columns, "T_users", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow);
+	   $result = $this->generateTableHeaderWithItems($columns, "T_users", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow, '');
 
        // print suffix
        $result .= $this->generateTableFooterWithItems($columns, true, false, $hideOnMedium, $hideOnLow);
@@ -2619,7 +2723,7 @@ error_reporting(E_ERROR | E_PARSE);
 	 */
 	private function getMessageListAsTable($messages, $folder) {
 		$columns = array("", "favorite", "name", "subject", "attachment", "date");
-		$table = $this->generateTableHeaderWithItems($columns, "messagestable", "table-hover table-striped mailbox table-mailbox", true, true);
+		$table = $this->generateTableHeaderWithItems($columns, "messagestable", "table-hover table-striped mailbox table-mailbox", true, true, '', '', '');
 		$user = \creamy\CreamyUser::currentUser();
 		foreach ($messages as $message) {
 			$from = $this->db->getDataForUser($message['user_from']);
@@ -2658,7 +2762,7 @@ error_reporting(E_ERROR | E_PARSE);
 	 */
 	private function getCallListAsTable($calls, $folder) {
 		$columns = array("", "name", "duration", "date", "playback");
-		$table = $this->generateTableHeaderWithItems($columns, "callstable", "table-hover table-striped calls table-calls", true, true);
+		$table = $this->generateTableHeaderWithItems($columns, "callstable", "table-hover table-striped calls table-calls", true, true, '', '', '');
 		foreach ($calls as $call) {
 			//if ($call["message_read"] == 0) $table .= '<tr class="unread">';
 			//else
@@ -3477,12 +3581,12 @@ error_reporting(E_ERROR | E_PARSE);
 			$checkbox_all = "";
 		}
 
-		 $columns = array("  ", $this->lh->translationFor("user_id"), $this->lh->translationFor("full_name"), $this->lh->translationFor("user_group"), $this->lh->translationFor("status"), $checkbox_all, $this->lh->translationFor("action"));
+		$columns = array("  ", $this->lh->translationFor("user_id"), $this->lh->translationFor("full_name"), $this->lh->translationFor("user_group"), $this->lh->translationFor("status"), $checkbox_all, $this->lh->translationFor("action"));
 
 		//$hideOnMedium = array($this->lh->translationFor("user_group"), $this->lh->translationFor("status"));
 		//$hideOnLow = array($this->lh->translationFor("agent_id"), $this->lh->translationFor("user_group"), $this->lh->translationFor("status"));
-		$result = $this->generateTableHeaderWithItems($columns, "T_userslist", "responsive display no-wrap table-bordered table-striped", true, false);
-	
+		$result = $this->generateTableHeaderWithItems($columns, "T_userslist", "responsive display no-wrap table-bordered table-striped", true, false, '', '', '');
+		
 		// iterate through all users
 		for($i=0;$i<count($output->user_id);$i++) {
 			$user_id = $output->user_id[$i];
@@ -3515,7 +3619,11 @@ error_reporting(E_ERROR | E_PARSE);
 				$sufFix = '';
 			}
 			
-			$checkbox = '<label for="'.$user_id.'"'.(($perm->user_delete === 'N' || $user === $_SESSION['user']) ? ' class="hidden"' : '').'><div class="checkbox c-checkbox"><label><input name="" class="check_user" id="'.$user_id.'" type="checkbox" value="Y"><span class="fa fa-check"></span> </label></div></label>';				
+			if($user === $_SESSION['user'] || $perm->user_delete === 'N'){
+				$checkbox = "";
+			}else{
+			$checkbox = '<label for="'.$user_id.'"><div class="checkbox c-checkbox"><label><input name="" class="check_user" id="'.$user_id.'" type="checkbox" value="Y"><span class="fa fa-check"></span> </label></div></label>';
+			}
 			$result .= "<tr>
 							<td style='width:5%;'>".$sessionAvatar."</a></td>";
 				$result .= "<td>".$preFix."<strong>".$user."</strong>".$sufFix."</td>
@@ -3597,7 +3705,7 @@ error_reporting(E_ERROR | E_PARSE);
 		$columns = array($this->lh->translationFor('user_group'), $this->lh->translationFor('group_name'), $this->lh->translationFor('type'), $this->lh->translationFor('force_timeclock'), $this->lh->translationFor('action'));
 	    $hideOnMedium = array($this->lh->translationFor('type'), $this->lh->translationFor('force_timeclock'));
 	    $hideOnLow = array($this->lh->translationFor('user_group'), $this->lh->translationFor('type'), $this->lh->translationFor('force_timeclock'));
-		$result = $this->generateTableHeaderWithItems($columns, "usergroups_table", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow);
+		$result = $this->generateTableHeaderWithItems($columns, "usergroups_table", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow, '');
 
 
 			for($i=0;$i < count($output->user_group);$i++) {
@@ -3759,7 +3867,7 @@ error_reporting(E_ERROR | E_PARSE);
 		# Result was OK!
 
 			$columns = array($this->lh->translationFor('user'), $this->lh->translationFor('ip_address'), $this->lh->translationFor('date_and_time'), $this->lh->translationFor('action'), $this->lh->translationFor('details'), $this->lh->translationFor('sql_query'));
-			$result = $this->generateTableHeaderWithItems($columns, "adminlogs_table", "table-bordered table-striped", true, false);
+			$result = $this->generateTableHeaderWithItems($columns, "adminlogs_table", "table-bordered table-striped", true, false, '', '', '');
 	
 			foreach ($output->data as $log) {
 				$details = stripslashes($log->details);
@@ -3812,7 +3920,7 @@ error_reporting(E_ERROR | E_PARSE);
 			# Result was OK!
 			$checkbox_all = $this->getCheckAll("phone");
 			$columns = array($this->lh->translationFor("extension"), $this->lh->translationFor("protocol"),$this->lh->translationFor("server_ip"), $this->lh->translationFor("status"), $this->lh->translationFor("voicemail"), $checkbox_all, $this->lh->translationFor("action"));
-			$result = $this->generateTableHeaderWithItems($columns, "T_phones", "responsive display no-wrap table-bordered table-striped", true, false);
+			$result = $this->generateTableHeaderWithItems($columns, "T_phones", "responsive display no-wrap table-bordered table-striped", true, false, '', '', '');
 
 			for ($i=0;$i < count($output->extension);$i++) {
 				if ($output->active[$i] == "Y") {
@@ -3885,7 +3993,7 @@ error_reporting(E_ERROR | E_PARSE);
 		$columns = array($this->lh->translationFor('voicemail_id'), $this->lh->translationFor('name'), $this->lh->translationFor('status'), $this->lh->translationFor('new_message'), $this->lh->translationFor('old_message'), $this->lh->translationFor('delete'), $this->lh->translationFor('user_group'), $this->lh->translationFor('action'));
 	    $hideOnMedium = array($this->lh->translationFor('status'), $this->lh->translationFor('new_message'), $this->lh->translationFor('old_message'), $this->lh->translationFor('delete'), $this->lh->translationFor('user_group'));
 	    $hideOnLow = array($this->lh->translationFor('voicemail_id'), $this->lh->translationFor('status'), $this->lh->translationFor('new_message'), $this->lh->translationFor('old_message'), $this->lh->translationFor('delete'), $this->lh->translationFor('user_group'));
-		$result = $this->generateTableHeaderWithItems($columns, "voicemails_table", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow);
+		$result = $this->generateTableHeaderWithItems($columns, "voicemails_table", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow, '');
 
 			for($i=0;$i < count($output->voicemail_id);$i++) {
 
@@ -4021,7 +4129,7 @@ error_reporting(E_ERROR | E_PARSE);
 	    	$columns = array("Date", "Customer", "Phone Number", "Agent", "Duration", "Action");
 	    	$hideOnMedium = array("Agent", "Duration");
 	    	$hideOnLow = array("Customer", "Phone Number", "Agent", "Duration");
-			$result = $this->generateTableHeaderWithItems($columns, "table_callrecordings", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow);
+			$result = $this->generateTableHeaderWithItems($columns, "table_callrecordings", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow, '');
 
 			//$result .= "<tr><td colspan='6'>".$output->query."</tr>";
 
@@ -4116,10 +4224,9 @@ error_reporting(E_ERROR | E_PARSE);
 	    $columns = array($this->lh->translationFor('moh_name'), $this->lh->translationFor('status'), $this->lh->translationFor('random_order'), $this->lh->translationFor('group'), $this->lh->translationFor('action'));
 	    $hideOnMedium = array("Random Order", "Group", "Status");
 		$hideOnLow = array( "Random Order", "Group", "Status");
-	    $result = $this->generateTableHeaderWithItems($columns, "music-on-hold_table", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow);
-
+	    $result = $this->generateTableHeaderWithItems($columns, "music-on-hold_table", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow, '');
 	    for($i=0;$i<count($output->moh_id);$i++) {
-			$action = $this->getUserActionMenuForMusicOnHold($output->moh_id[$i], $output->moh_name[$i], $perm);
+			$action = ($user_group === "ADMIN" || ($user_group !== "ADMIN" && $output->moh_id[$i] !== 'default')) ? $this->getUserActionMenuForMusicOnHold($output->moh_id[$i], $output->moh_name[$i], $perm) : "";
 
 			if ($output->active[$i] == "Y") {
 				$output->active[$i] = "Active";
@@ -4201,7 +4308,7 @@ error_reporting(E_ERROR | E_PARSE);
 	    $columns = array($this->lh->translationFor('file_name'), $this->lh->translationFor('date'), $this->lh->translationFor('size'), $this->lh->translationFor('action'));
 	    $hideOnMedium = array("Date");
 		$hideOnLow = array( "Date");
-		$result = $this->generateTableHeaderWithItems($columns, "voicefiles", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow);
+		$result = $this->generateTableHeaderWithItems($columns, "voicefiles", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow, '');
 	    $server_port = getenv("SERVER_PORT");
 		//$web_ip = getenv("SERVER_ADDR");
 		//$web_ip = $_SERVER['SERVER_NAME'];
@@ -4280,7 +4387,7 @@ error_reporting(E_ERROR | E_PARSE);
 	    //$hideOnMedium = array($this->lh->translationFor("type"), $this->lh->translationFor("status"), $this->lh->translationFor("user_group"));
 	    //$hideOnLow = array($this->lh->translationFor("script_id"), $this->lh->translationFor("type"), $this->lh->translationFor("status"), $this->lh->translationFor("user_group"));
 
-		$result = $this->generateTableHeaderWithItems($columns, "scripts_table", "display responsive no-wrap table-bordered table-striped", true, false);
+		$result = $this->generateTableHeaderWithItems($columns, "scripts_table", "display responsive no-wrap table-bordered table-striped", true, false, '', '', '');
 
 	    for($i=0;$i<count($output->script_id);$i++) {
 		$action = $this->getUserActionMenuForScripts($output->script_id[$i], $output->script_name[$i], $perm);
@@ -4341,17 +4448,17 @@ error_reporting(E_ERROR | E_PARSE);
 
 	// API Filters
 
-	public function getListAllFilters($userid, $perm) {
+	public function getListAllFilters($userid, $perm, $user_group) {
 	    $output = $this->api->API_getAllFilters($userid);
 
 	    if ($output->result=="success") {
 	    # Result was OK!
 	    $columns = array($this->lh->translationFor("filter_id"), $this->lh->translationFor("filter_name"), $this->lh->translationFor("filter_comments"), $this->lh->translationFor("user_group"), $this->lh->translationFor("action"));
 
-		$result = $this->generateTableHeaderWithItems($columns, "filters_table", "display responsive no-wrap table-bordered table-striped", true, false);
+		$result = $this->generateTableHeaderWithItems($columns, "filters_table", "display responsive no-wrap table-bordered table-striped", true, false, '', '', '');
 
 	    for($i=0;$i<count($output->filter_id);$i++) {
-		$action = $this->getUserActionMenuForFilters($output->filter_id[$i], $output->filter_name[$i], $perm);
+		$action = ($user_group === "ADMIN" || ($user_group !== "ADMIN" && $output->filter_id[$i] !== 'FILTEMP')) ? $this->getUserActionMenuForFilters($output->filter_id[$i], $output->filter_name[$i], $perm) : "";
 			
 			$preFix = "<a class='edit_filter' data-id='".$output->filter_id[$i]."'>";
 			$sufFix = "</a>";
@@ -4434,7 +4541,7 @@ error_reporting(E_ERROR | E_PARSE);
         $hideOnMedium = array($this->lh->translationFor('call_time_id'), $this->lh->translationFor('user_group'));
 		$hideOnLow = array( $this->lh->translationFor('call_time_id'), $this->lh->translationFor('Schedule'), $this->lh->translationFor('user_group'));
 		
-		$result = $this->generateTableHeaderWithItems($columns, "calltimes", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow);
+		$result = $this->generateTableHeaderWithItems($columns, "calltimes", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow, '');
 		
 	    for($i=0;$i<count($output->call_time_id);$i++) {
 		    $action = $this->getUserActionMenuForCalltimes($output->call_time_id[$i], $output->call_time_name[$i]);
@@ -4588,7 +4695,7 @@ error_reporting(E_ERROR | E_PARSE);
 			$hideOnMedium = array($this->lh->translationFor('asterisk'),$this->lh->translationFor('trunks'), $this->lh->translationFor('gmt'));
 			$hideOnLow = array($this->lh->translationFor('server_ip'), $this->lh->translationFor('server_name'), $this->lh->translationFor('status'), $this->lh->translationFor('asterisk'),$this->lh->translationFor('trunks'),$this->lh->translationFor('gmt'));
 
-			$result = $this->generateTableHeaderWithItems($columns, "servers_table", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow);
+			$result = $this->generateTableHeaderWithItems($columns, "servers_table", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow, '');
 
 				for($i=0;$i<count($output->server_id);$i++) {
 
@@ -4657,7 +4764,7 @@ error_reporting(E_ERROR | E_PARSE);
         $hideOnMedium = array($this->lh->translationFor('server_ip'), $this->lh->translationFor('protocol'));
 		$hideOnLow = array( $this->lh->translationFor('carrier_id'), $this->lh->translationFor('server_ip'), $this->lh->translationFor('protocol'), $this->lh->translationFor('status'));
 
-		$result = $this->generateTableHeaderWithItems($columns, "carriers", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow);
+		$result = $this->generateTableHeaderWithItems($columns, "carriers", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow, '');
 
 	      for($i=0;$i<count($output->carrier_id);$i++) {
 
@@ -4885,6 +4992,21 @@ error_reporting(E_ERROR | E_PARSE);
 			    </ul>
 			</div>';
 		}
+//--------- ACCID ---------
+
+        public function ActionMenuForAreacodes($areacode, $camp_id) {
+                 return '<div class="btn-group">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">'.$this->lh->translationFor("choose_action").'
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="height: 34px;">
+                                            <span class="caret"></span>
+                                            <span class="sr-only">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a class="view_areacode" href="#" data-toggle="modal" data-target="#modal_edit_areacode" data-type="update" data-ac="'.$areacode.'" data-camp="'.$camp_id.'">'.$this->lh->translationFor("modify").'</a></li>
+                        <li><a class="delete-areacode" href="#" data-type="delete" data-ac="'.$areacode.'" data-camp="'.$camp_id.'">'.$this->lh->translationFor("delete").'</a></li>
+                    </ul>
+                </div>';
+        }
 
 		/*
 		 * <<<<==================== END OF TELEPHONY APIs =====================>>>>
@@ -5699,7 +5821,7 @@ error_reporting(E_ERROR | E_PARSE);
        	   $columns = array($this->lh->translationFor('lead_id'), $this->lh->translationFor('full_name'), $this->lh->translationFor('phone_number'), $this->lh->translationFor('status'), $this->lh->translationFor('action'));
 	       $hideOnMedium = array($this->lh->translationFor('lead_id'), $this->lh->translationFor('status'));
 	       $hideOnLow = array( $this->lh->translationFor('lead_id'), $this->lh->translationFor('phone_number'), $this->lh->translationFor('status'));
-		   $result = $this->generateTableHeaderWithItems($columns, "table_contacts", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow);
+		   $result = $this->generateTableHeaderWithItems($columns, "table_contacts", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow, '');
 
 			for($i=0;$i<=count($output->list_id);$i++) {
 		   	//for($i=0;$i<=500;$i++) {
@@ -5858,12 +5980,23 @@ error_reporting(E_ERROR | E_PARSE);
    		$css .= '<link href="css/select2/select2.min.css" rel="stylesheet" type="text/css"/>'."\n";
    		$css .= '<link href="css/select2/select2-bootstrap.min.css" rel="stylesheet" type="text/css"/>'."\n";
    		$css .= '<link href="css/calendar.css" rel="stylesheet" type="text/css"/>'."\n";
-   		
+		
+		//for chat
+		$agent_chat_status = $this->API_getAgentChatActivation();
+		if($agent_chat_status){
+   $css .= '<link href="modules/GoChat/css/style.css" rel="stylesheet" type="text/css"/>'."\n";
+  }
+	
 		/* JS that needs to be declared first */
 		$css .= '<script src="js/jquery.min.js"></script>'."\n"; // required JS
 		$css .= '<script src="js/bootstrap.min.js" type="text/javascript"></script>'."\n"; // required JS
 		$css .= '<script src="js/jquery-ui.min.js" type="text/javascript"></script>'."\n"; // required JS
 		$css .= '<script src="js/calendar_db.js" type="text/javascript" ></script>'."\n";
+		
+		if($agent_chat_status){
+		    $css .= '<script src="modules/GoChat/js/chat.js"></script>'."\n";
+		    $css .= '<script>$(document).ready(function() { $(".chatappdiv").load("../includes/chatapp_admin.php"); });</script>'."\n";
+		}
 
 		return $css;
 	}
@@ -5951,6 +6084,26 @@ error_reporting(E_ERROR | E_PARSE);
 
 		return '<avatar username="'.$username.'" '.$showAvatar.' '.$initials.' '.$topBarStyle.' '.$sideBarStyle.' '.$roundedImg.' :size="'.$size.'"></avatar>';
 	}
+	
+	/**
+         * Returns an Avatar
+         */
+        public function getWhatsAppAvatar($username, $avatar, $size, $rounded = true) {
+                $showAvatar = '';
+                $initials = '';
+                if (isset($avatar)) {
+                        if (preg_match("/(agent|goautodial)/i", $username) && preg_match("/defaultAvatar/i", $avatar)) {
+                                $showAvatar = '';
+                                $initials = 'initials="GO"';
+                        } else {
+                                $showAvatar = 'src="'.$avatar.'"';
+                                $initials = '';
+                        }
+                }
+                $roundedImg = (!$rounded) ? ':rounded="false"' : '';
+
+                return '<avatar username="'.$username.'" '.$showAvatar.' '.$initials.' '.$roundedImg.' :size="'.$size.'"></avatar>';
+        }
 
 	public function API_goGetAllCustomFields($list_id) {
 		$url = gourl."/goCustomFields/goAPI.php"; #URL to GoAutoDial API. (required)
@@ -6144,7 +6297,7 @@ error_reporting(E_ERROR | E_PARSE);
 			$columns = array($this->lh->translationFor("phone_number"), $this->lh->translationFor("campaign"), $this->lh->translationFor("action"));
 			$hideOnMedium = array();
 			$hideOnLow = array( $this->lh->translationFor("campaign") );
-			$result = $this->generateTableHeaderWithItems($columns, "table_dnc", "display responsive no-wrap table-bordered table-striped", true, false);
+			$result = $this->generateTableHeaderWithItems($columns, "table_dnc", "display responsive no-wrap table-bordered table-striped", true, false, '', '', '');
 
 			for($i=0;$i < count($output->phone_number);$i++) {
 				$result .= '<tr>
@@ -6255,6 +6408,86 @@ error_reporting(E_ERROR | E_PARSE);
 		</div>';
 		return $return;
 	}
+
+	public function API_getAgentChatActivation() {
+		$url = gourl."/goAgentChat/goAPI.php"; #URL to GoAutoDial API. (required)
+		$postfields["goUser"] = goUser; #Username goes here. (required)
+		$postfields["goPass"] = goPass; #Password goes here. (required)
+		$postfields["goAction"] = "goGetAgentChatActivation"; #action performed by the [[API:Functions]]. (required)
+		$postfields["responsetype"] = responsetype; #json. (required)
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 100);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		$data = curl_exec($ch);
+		curl_close($ch);
+		$output = json_decode($data);
+		if ($output->result == "success")
+			return $output->data->value;
+		else
+			return '0';
+	}
+	
+	private function getActionButtonForAgentChat($status) {
+	   $return = '<div class="btn-group"><button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">'.$this->lh->translationFor("choose_action").'
+		    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="height: 34px;">
+					    <span class="caret"></span>
+					    <span class="sr-only">Toggle Dropdown</span>
+		    </button>
+		    <ul class="dropdown-menu" role="menu">';
+			if ($status == 1) {
+				$return .= '<li><a class="activate-agent-chat" href="#" data-id="0" >'.$this->lh->translationFor("disable").'</a></li>';
+			}else{
+				$return .= '<li><a class="activate-agent-chat" href="#" data-id="1" >'.$this->lh->translationFor("enable").'</a></li>';
+			}
+		$return .= '</ul>
+		</div>';
+		return $return;
+	}
+
+	public function API_getWhatsappActivation() {
+		$url = gourl."/goWhatsApp/goAPI.php"; #URL to GoAutoDial API. (required)
+		$postfields["goUser"] = goUser; #Username goes here. (required)
+		$postfields["goPass"] = goPass; #Password goes here. (required)
+		$postfields["goAction"] = "goGetWhatsappActivation"; #action performed by the [[API:Functions]]. (required)
+		$postfields["responsetype"] = responsetype; #json. (required)
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 100);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		$data = curl_exec($ch);
+		curl_close($ch);
+		$output = json_decode($data);
+		if ($output->result == "success")
+			return $output->data->value;
+		else
+			return '0';
+	}
+	
+	private function getActionButtonForWhatsapp($status) {
+	   $return = '<div class="btn-group"><button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">'.$this->lh->translationFor("choose_action").'
+		    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="height: 34px;">
+					    <span class="caret"></span>
+					    <span class="sr-only">Toggle Dropdown</span>
+		    </button>
+		    <ul class="dropdown-menu" role="menu">';
+			if ($status == 1) {
+				$return .= '<li><a class="activate-whatsapp" href="#" data-id="0" >'.$this->lh->translationFor("disable").'</a></li>';
+			}else{
+				$return .= '<li><a class="activate-whatsapp" href="#" data-id="1" >'.$this->lh->translationFor("enable").'</a></li>';
+			}
+		$return .= '</ul>
+		</div>';
+		return $return;
+	}
 	
 	public function getCheckAll($action) {
 		$return = '<div class="btn-group">
@@ -6294,7 +6527,7 @@ error_reporting(E_ERROR | E_PARSE);
 			$hideOnMedium = array();
 			$hideOnLow = array( );
 			$outbound = "";
-			$outbound = $this->generateTableHeaderWithItems($columns, "table_outbound", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow);
+			$outbound = $this->generateTableHeaderWithItems($columns, "table_outbound", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow, '');
 			
 			for($i=0;$i < count($output->outbound->campaign_id);$i++) {
 				$outbound .= '<tr>
@@ -6314,7 +6547,7 @@ error_reporting(E_ERROR | E_PARSE);
 			$hideOnMedium = array();
 			$hideOnLow = array( );
 			$inbound = "";
-			$inbound = $this->generateTableHeaderWithItems($columns, "table_inbound", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow);
+			$inbound = $this->generateTableHeaderWithItems($columns, "table_inbound", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow, '');
 			
 			for($i=0;$i < count($output->inbound->campaign_id);$i++) {
 				$inbound .= '<tr>
@@ -6334,7 +6567,7 @@ error_reporting(E_ERROR | E_PARSE);
 			$hideOnMedium = array();
 			$hideOnLow = array( );
 			$userlog = "";
-			$userlog = $this->generateTableHeaderWithItems($columns, "table_userstat", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow);
+			$userlog = $this->generateTableHeaderWithItems($columns, "table_userstat", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow, '');
 			
 			for($i=0;$i < count($output->userlog->user_log_id);$i++) {
 				$userlog .= '<tr>

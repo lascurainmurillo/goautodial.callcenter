@@ -22,6 +22,8 @@
 
 	require_once('APIHandler.php');
 	
+			
+	
 	$api 										= \creamy\APIHandler::getInstance();
 	$output 									= $api->API_getTotalAgentsPaused();        
     $agent 										= $output->data;
@@ -30,6 +32,6 @@
         $agent									= 0;
     }
         
-    echo number_format($agent); 
+    echo json_encode($agent); 
 
 ?>

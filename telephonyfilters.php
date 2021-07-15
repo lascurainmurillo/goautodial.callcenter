@@ -2,7 +2,7 @@
 /**
  * @file 		telephonyfilters.php
  * @brief 		Manage filters
- * @copyright 	Copyright (c) 2019 GOautodial Inc. 
+ * @copyright 	Copyright (c) 2020 GOautodial Inc. 
  * @author		Christopher P. Lomuntad
  *
  * @par <b>License</b>:
@@ -30,6 +30,13 @@
 	$api = \creamy\APIHandler::getInstance();
 	$lh = \creamy\LanguageHandler::getInstance();
 	$user = \creamy\CreamyUser::currentUser();
+	
+	//proper user redirects
+	if($user->getUserRole() != CRM_DEFAULTS_USER_ROLE_ADMIN){
+		if($user->getUserRole() == CRM_DEFAULTS_USER_ROLE_AGENT){
+			header("location: agent.php");
+		}
+	}	
 	
 	$perm = $api->goGetPermissions('filters');	
 	$user_groups = $api->API_getAllUserGroups();
@@ -79,7 +86,7 @@
                     <div class="panel panel-default">
                         <div class="panel-body">
                             <legend><?php $lh->translateText("filters"); ?></legend>
-							<?php print $ui->getListAllFilters($_SESSION['user'], $perm); ?>
+							<?php print $ui->getListAllFilters($_SESSION['user'], $perm, $_SESSION['usergroup']); ?>
                         </div>
                     </div>
 				<!-- /fila con acciones, formularios y demás -->

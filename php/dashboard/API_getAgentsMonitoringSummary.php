@@ -2,7 +2,7 @@
 /**
  * @file        API_getAgentsMonitoringSummary.php
  * @brief       Displays summary of agents monitoring data and HTML
- * @copyright   Copyright (c) 2018 GOautodial Inc.
+ * @copyright   Copyright (c) 2020 GOautodial Inc.
  * @author		Demian Lizandro A. Biscocho 
  *
  * @par <b>License</b>:
@@ -20,7 +20,10 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+	
 	require_once('APIHandler.php');
+	
+	
 	
 	$api 										= \creamy\APIHandler::getInstance();
 	$output 									= $api->API_getRealtimeAgentsMonitoring();
@@ -38,9 +41,8 @@
 
     } else {        
         $max = 0;
-		if(is_array(@$output->data)) {
-
-			foreach (@$output->data as $key => $value) {        
+		if (is_array($output->data)) {    
+			foreach ($output->data as $key => $value) {        
 				if(++$max > 6) break;
 				
 				$userid 							= $api->escapeJsonString($value->vu_user_id);
@@ -121,7 +123,6 @@
 					</div>
 				</a>';
 			}
-
 		}
     }
 ?>

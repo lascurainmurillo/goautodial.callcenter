@@ -2,7 +2,7 @@
 /**
  * @file        API_getTotalAgentsCall.php
  * @brief       Displays the total number of talking agents
- * @copyright   Copyright (c) 2018 GOautodial Inc.
+ * @copyright   Copyright (c) 2020 GOautodial Inc.
  * @author		Demian Lizandro A. Biscocho 
  *
  * @par <b>License</b>:
@@ -30,6 +30,6 @@
         $agent									= 0;
     }
         
-    echo number_format($agent); 
+    echo json_encode($agent); 
     
 ?>

@@ -2,7 +2,7 @@
 /**
  * @file 		telephonylist.php
  * @brief 		Manage List and Upload Leads
- * @copyright 	Copyright (c) 2018 GOautodial Inc. 
+ * @copyright 	Copyright (c) 2020 GOautodial Inc. 
  * @author		Demian Lizandro A. Biscocho
  * @author     	Alexander Jim H. Abenoja
  *
@@ -20,24 +20,32 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
-        ini_set('memory_limit','1024M');
-        ini_set('upload_max_filesize', '600M');
-        ini_set('post_max_size', '600M');
-        ini_set('max_execution_time', 0);
+	ini_set('memory_limit','1024M');
+	ini_set('upload_max_filesize', '600M');
+	ini_set('post_max_size', '600M');
+	ini_set('max_execution_time', 0);
 
 	require_once('./php/UIHandler.php');
 	require_once('./php/APIHandler.php');
 	require_once('./php/CRMDefaults.php');
-        require_once('./php/LanguageHandler.php');
-        include('./php/Session.php');
+	require_once('./php/LanguageHandler.php');
+	include('./php/Session.php');
 
 	$ui = \creamy\UIHandler::getInstance();
 	$api = \creamy\APIHandler::getInstance();
 	$lh = \creamy\LanguageHandler::getInstance();
 	$user = \creamy\CreamyUser::currentUser();
+	
+	//proper user redirects
+	if($user->getUserRole() != CRM_DEFAULTS_USER_ROLE_ADMIN){
+		if($user->getUserRole() == CRM_DEFAULTS_USER_ROLE_AGENT){
+			header("location: agent.php");
+		}
+	}	
 
 	$perm = $api->goGetPermissions('list,customfields');
 	$checkbox_all = $ui->getCheckAll("list");
+	
 ?>
 <html>
     <head>
@@ -56,7 +64,7 @@
         <link href="css/style.css" rel="stylesheet" type="text/css" />
 
         <!-- Datetime picker CSS -->
-		<link rel="stylesheet" src="js/dashboard/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css">
+		<link rel="stylesheet" href="js/dashboard/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css">
 
         <!-- Date Picker JS -->
         <script type="text/javascript" src="js/dashboard/eonasdan-bootstrap-datetimepicker/build/js/moment.js"></script>
@@ -460,7 +468,7 @@ print $ui->calloutErrorMessage($lh->translationFor("you_dont_have_permission"));
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-sm-3 control-label" for="list_desc"><?php $lh->translateText("list_description"); ?>:</label>
+						<label class="col-sm-3 control-label text-nowrap" for="list_desc"><?php $lh->translateText("list_description"); ?>:</label>
 						<div class="col-sm-9 mb">
 							<input type="text" class="form-control" name="list_desc" id="list_desc" placeholder="<?php $lh->translateText("list_description"); ?>"  value="<?php echo $next_listdesc;?>" maxlength="255" />
 						</div>
@@ -1192,6 +1200,7 @@ print $ui->calloutErrorMessage($lh->translationFor("you_dont_have_permission"));
 				mimeType:"multipart/form-data",
 				statusCode: {
 					503: function(responseObject, textStatus, errorThrown) {
+						//console.log(responseObject, textStatus, errorThrown);
 				            // Service Unavailable (503)
 				            // This code will be executed if the server returns a 503 response
 					    //alert(responseObject + textStatus);

@@ -47,6 +47,38 @@
 			} 
 		});
     }
+
+    function load_agent_sales(){
+		 $.ajax({
+                        url: "./php/dashboard/API_getSalesAgent.php",
+                        //cache: false,
+                        dataType: 'json',
+                        success: function(data){
+				var JSONStringSalesAgent = data;
+                                var JSONObjectSalesAgent = JSON.parse(JSONStringSalesAgent);
+                                $('#agent-sales').DataTable({
+                                        destroy: true,
+                                        responsive: true,
+                                        data: JSONObjectSalesAgent,
+                                        searching: false,
+                                        filter: false,
+                                        info: false,
+                                        paging: false,
+                                        paginate: false,
+                                        stateSave: true,
+                                        drawCallback: function() {
+                                                var pagination = $(this).closest('.dataTables_wrapper').find('.dataTables_paginate');
+                                                pagination.toggle(this.api().page.info().pages > 1);
+                                        },
+                                        columnDefs:[
+                                                { searchable: false, targets: 0 },
+                                                { sortable: false, targets: 0 }
+                                        ]
+                                });
+                                goAvatar._init(goOptions);
+			}
+		});
+    }
     
     function load_view_agent_information(){        
 		var user = document.getElementById("modal-username").innerText;
@@ -150,6 +182,34 @@
 			} 
 		});
     } 
+
+    function load_realtime_inbound_monitoring(inbTable){
+        var thisData = {
+            "ingroup": $("#inbound_filter").val()
+        };
+		$.ajax({
+			url: "./php/dashboard/API_getRealtimeInboundMonitoring.php?ingroup="+$("#inbound_filter").val(),
+			cache: false,
+			dataType: 'json',
+			success: function(values){
+				var JSONStringrealtime = values;
+				var JSONObjectrealtime = JSON.parse(JSONStringrealtime);
+				$('#realtime_inbound_monitoring_table').DataTable({
+					destroy:true,
+					responsive:true,
+                    searching: false,
+                    order: [[ 5, "desc" ]],
+					data:JSONObjectrealtime,
+					stateSave: true,
+					drawCallback: function() {
+						var pagination = $(this).closest('.dataTables_wrapper').find('.dataTables_paginate');
+						pagination.toggle(this.api().page.info().pages > 1);
+					}
+				});
+				goAvatar._init(goOptions);
+			} 
+		});
+    }
     
     function load_realtime_sla_monitoring(){
     $.ajax({
@@ -190,6 +250,106 @@
         } 
     });
     }     
+
+
+/*
+ * * WhatsApp box
+ * */
+    function load_whatsapp_realtime_monitoring(){
+    $.ajax({
+        url: "./php/dashboard/API_getWhatsAppRealtimeMonitoring.php",
+        cache: false,
+        success: function(data){
+	    var data = JSON.parse(data); 
+            $("#refresh_totalagentschat").html(data.active_agents);
+            $("#refresh_totalagentswaitchats").html(data.waiting_agents);
+            $("#refresh_totalagentspausedchat").html(data.paused_agents);
+            $("#refresh_totalunreadchats").html(data.unread_chats);
+            $("#refresh_totalqueuechats").html(data.in_queue_chats);
+            $("#refresh_totalactivechats").html(data.active_chats);
+        } 
+    });
+    }
+
+    function load_whatsapp_agents_chat_monitoring(){
+		$.ajax({
+			url: "./php/dashboard/API_getWhatsAppUsersSummary.php",
+			cache: false,
+			dataType: 'json',
+			success: function(values){
+				var JSONStringrealtime = values;
+				var JSONObjectrealtime = JSON.parse(JSONStringrealtime);
+				$('#realtime_agents_chat_monitoring_table').DataTable({
+					destroy:true,
+					responsive:true,
+					data:JSONObjectrealtime,
+					stateSave: true,
+					drawCallback: function() {
+						var pagination = $(this).closest('.dataTables_wrapper').find('.dataTables_paginate');
+						pagination.toggle(this.api().page.info().pages > 1);
+					}
+				});
+				goAvatar._init(goOptions);
+			} 
+		});
+    }
+
+    function load_whatsapp_chat_monitoring(){
+		$.ajax({
+			url: "./php/dashboard/API_getWhatsAppChatSummary.php",
+			cache: false,
+			dataType: 'json',
+			success: function(values){
+				var JSONStringrealtime = values;
+				var JSONObjectrealtime = JSON.parse(JSONStringrealtime);
+				$('#realtime_chats_monitoring_table').DataTable({
+					destroy:true,
+					responsive:true,
+					data:JSONObjectrealtime,
+					stateSave: true,
+					drawCallback: function() {
+						var pagination = $(this).closest('.dataTables_wrapper').find('.dataTables_paginate');
+						pagination.toggle(this.api().page.info().pages > 1);
+					}
+				});
+			} 
+		});
+    }
+
+    function load_whatsapp_assigned_chats(userid){
+                $.ajax({
+                        url: "./php/dashboard/API_getWhatsAppAssignedChats.php",
+			type: "POST",
+                        cache: false,
+			data: {userid:userid},
+                        dataType: 'json',
+                        success: function(values){
+                                var JSONStringrealtime = values;
+                                var JSONObjectrealtime = JSON.parse(JSONStringrealtime);
+                                $('#assigned_chats_monitoring_table').DataTable({
+                                        destroy:true,
+                                        responsive:true,
+                                        data:JSONObjectrealtime,
+                                        stateSave: true,
+                                        drawCallback: function() {
+                                                var pagination = $(this).closest('.dataTables_wrapper').find('.dataTables_paginate');
+                                                pagination.toggle(this.api().page.info().pages > 1);
+                                        }
+                                });
+                        }
+                 });
+    }
+
+    function load_whatsapp_queue(){
+                $.ajax({
+                        url: "./php/WhatsappQueue.php",
+                        cache: false,
+                        dataType: 'json',
+                        success: function(values){
+				//console.log();
+                        }
+                });
+    }
 
 /*
 * Agents status box 
@@ -280,11 +440,12 @@
 
     function load_OUTSalesPerHour(){
 		$.ajax({
+			type: "POST",
 			url: "./php/dashboard/API_getTotalSales.php",
 			data: { type: "out-hourly" },			
 			cache: false,
 			success: function(data){
-				console.log(data);
+				//console.log(data);
 				$("#refresh_GetOutSalesHour").html(data);
 			} 
 		});
@@ -331,7 +492,7 @@
 		data: { type: "all" },
         cache: false,
         success: function(data){
-			console.log(data);
+			//console.log(data);
             $("#refresh_TotalCalls").html(data);
         } 
     });
@@ -339,13 +500,12 @@
     
     function load_TotalInboundCalls(){
     $.ajax({
-        //url: "./php/dashboard/API_getTotalInboundCalls.php",
 		type: "POST",
 		url: "./php/dashboard/API_getTotalCalls.php",
 		data: { type: "inbound" },		
         cache: false,
         success: function(data){
-			console.log(data);
+			//console.log(data);
             $("#refresh_TotalInCalls").html(data);
         } 
     });
@@ -353,13 +513,12 @@
 
     function load_TotalOutboundCalls(){
     $.ajax({
-        //url: "./php/dashboard/API_getTotalOutboundCalls.php",
 		type: "POST",
 		url: "./php/dashboard/API_getTotalCalls.php",
 		data: { type: "outbound" },		
         cache: false,
         success: function(data){
-			console.log(data);
+			//console.log(data);
             $("#refresh_TotalOutCalls").html(data);
         } 
     });

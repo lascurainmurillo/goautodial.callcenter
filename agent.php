@@ -143,8 +143,8 @@ function response($order_id,$amount,$response_code,$response_desc){
 	echo "</table>";
 */
 
-
-
+$agent_chat_status = $ui->API_getAgentChatActivation();
+$whatsapp_status = $ui->API_getWhatsappActivation();
 
 ?>
 
@@ -201,14 +201,17 @@ function response($order_id,$amount,$response_code,$response_desc){
 		<script type="text/javascript" src="js/notify.min.js"></script>
 		
         <!-- X-Editable -->
-        <link rel="stylesheet" src="js/dashboard/x-editable/dist/css/bootstrap-editable.css">
-        <script type="text/javascript" src="js/dashboard/x-editable/dist/js/bootstrap-editable.min.js"></script>
+        <!--<link rel="stylesheet" src="js/dashboard/x-editable/dist/css/bootstrap-editable.css">-->
+        <!--<script type="text/javascript" src="js/dashboard/x-editable/dist/js/bootstrap-editable.min.js"></script>-->
 
         <!-- preloader -->
         <link rel="stylesheet" href="css/customizedLoader.css">
 		
 		<!-- flag sprites -->
 		<link rel="stylesheet" href="css/flags/flags.min.css">
+
+		<!-- CHAT -->	
+	        <!-- <script src="modules/GoChat/js/chat.js"></script> -->
 
         <script type="text/javascript">
 			history.pushState('', document.title, window.location.pathname);
@@ -239,69 +242,69 @@ function response($order_id,$amount,$response_code,$response_desc){
 			});
 			
 			$(function() {
-			//turn to inline mode
-			//$.fn.editable.defaults.mode = 'inline';    //buttons
-			$.fn.editable.defaults.disabled = true;
-			$.fn.editableform.buttons =
-				'<button type="submit" class="btn btn-primary btn-sm editable-submit" style="padding: 8px 10px;">'+
-					'<i class="fa fa-check"></i>'+
-				'</button>'+
-				'<button type="button" class="btn btn-default btn-sm editable-cancel" style="padding: 8px 10px;">'+
-					'<i class="fa fa-remove"></i>'+
-				'</button>';
+				//turn to inline mode
+				//$.fn.editable.defaults.mode = 'inline';    //buttons
+				//$.fn.editable.defaults.disabled = true;
+				//$.fn.editableform.buttons =
+				//	'<button type="submit" class="btn btn-primary btn-sm editable-submit" style="padding: 8px 10px;">'+
+				//		'<i class="fa fa-check"></i>'+
+				//	'</button>'+
+				//	'<button type="button" class="btn btn-default btn-sm editable-cancel" style="padding: 8px 10px;">'+
+				//		'<i class="fa fa-remove"></i>'+
+				//	'</button>';
 				
-				$("a[id='first_name'], a[id='middle_initial'], a[id='last_name']").on('hidden', function() {
-					var thisID = $(this).attr('id');
-					//$('#'+thisID+'_label').addClass('hidden');
-				});
+				//$("a[id='first_name'], a[id='middle_initial'], a[id='last_name']").on('hidden', function() {
+				//	var thisID = $(this).attr('id');
+				//	//$('#'+thisID+'_label').addClass('hidden');
+				//});
+				//
+				//$("a[id='first_name'], a[id='middle_initial'], a[id='last_name']").on('shown', function() {
+				//	var thisID = $(this).attr('id');
+				//	var oldValue = $(this).editable('getValue', true);
+				//	if ($(this).html() !== '   ') {
+				//		//$('div.editable-input input').val($(this).text());
+				//		//$(this).editable('setValue', oldValue, true);
+				//	} else {
+				//		//$('div.editable-input input').val('');
+				//		//$(this).editable('setValue', '', true);
+				//	}
+				//	//$('#'+thisID+'_label').removeClass('hidden');
+				//});
 				
-				$("a[id='first_name'], a[id='middle_initial'], a[id='last_name']").on('shown', function() {
-					var thisID = $(this).attr('id');
-					var oldValue = $(this).editable('getValue', true);
-					if ($(this).html() !== '   ') {
-						//$('div.editable-input input').val($(this).text());
-						//$(this).editable('setValue', oldValue, true);
-					} else {
-						//$('div.editable-input input').val('');
-						//$(this).editable('setValue', '', true);
-					}
-					//$('#'+thisID+'_label').removeClass('hidden');
-				});
-				
-				$("a[id='first_name']").editable({
-					type: 'text',
-					title: '<?=$lh->translationFor('enter_first_name')?>',
-					placeholder: '<?=$lh->translationFor('enter_first_name')?>',
-					emptytext: '   ',
-					unsavedclass: null,
-					inputclass: 'text-color-black',
-					onblur: 'submit',
-					placement: 'bottom',
-					success: function(response, newValue) {
-						console.log(response, newValue);
-					}
-				});
-				$("a[id='middle_initial']").editable({
-					type: 'text',
-					title: '<?=$lh->translationFor('enter_middle_initial')?>',
-					placeholder: '<?=$lh->translationFor('enter_middle_initial')?>',
-					emptytext: '   ',
-					unsavedclass: null,
-					inputclass: 'text-color-black',
-					placement: 'bottom',
-					onblur: 'submit'
-				});
-				$("a[id='last_name']").editable({
-					type: 'text',
-					value: '',
-					title: '<?=$lh->translationFor('enter_last_name')?>',
-					placeholder: '<?=$lh->translationFor('enter_last_name')?>',
-					emptytext: '   ',
-					unsavedclass: null,
-					inputclass: 'text-color-black',
-					placement: 'bottom',
-					onblur: 'submit'
-				});
+				//$("a[id='first_name']").editable({
+				//	type: 'text',
+				//	title: '<?=$lh->translationFor('enter_first_name')?>',
+				//	placeholder: '<?=$lh->translationFor('enter_first_name')?>',
+				//	emptytext: 'Firstname',
+				//	unsavedclass: null,
+				//	inputclass: 'text-color-black',
+				//	onblur: 'submit',
+				//	placement: 'bottom',
+				//	success: function(response, newValue) {
+				//		console.log(response, newValue);
+				//	}
+				//});
+				//$("a[id='middle_initial']").editable({
+				//	type: 'text',
+				//	title: '<?=$lh->translationFor('enter_middle_initial')?>',
+				//	placeholder: '<?=$lh->translationFor('enter_middle_initial')?>',
+				//	emptytext: 'M.I.',
+				//	unsavedclass: null,
+				//	inputclass: 'text-color-black',
+				//	placement: 'bottom',
+				//	onblur: 'submit'
+				//});
+				//$("a[id='last_name']").editable({
+				//	type: 'text',
+				//	value: '',
+				//	title: '<?=$lh->translationFor('enter_last_name')?>',
+				//	placeholder: '<?=$lh->translationFor('enter_last_name')?>',
+				//	emptytext: 'Lastname',
+				//	unsavedclass: null,
+				//	inputclass: 'text-color-black',
+				//	placement: 'bottom',
+				//	onblur: 'submit'
+				//});
 				
 				//$("#callback-list").DataTable({"bDestroy": true, "aoColumnDefs": [{ "bSortable": false, "aTargets": [ 5 ] }, { "bSearchable": false, "aTargets": [ 2, 5 ] }] });
 			});
@@ -468,7 +471,10 @@ function response($order_id,$amount,$response_code,$response_desc){
                         }
                         .editableform .form-group {
                                 padding: 0 !important;
-                        }	
+                        }
+			.editable-disabled {
+					color: #fff !important;
+			}
 	</style>
 
 	<!-- ECCS Customiztion -->
@@ -489,13 +495,13 @@ function response($order_id,$amount,$response_code,$response_desc){
 			height: 60px;
 	}
 
-	/* toggle
-	.switch {
-	position: relative;
-	display: inline-block;
-	width: 60px;
-	height: 34px;
-	}
+		/*toggle*/
+		.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
 
 	/* Hide default HTML checkbox */
 	.switch input {
@@ -548,13 +554,14 @@ function response($order_id,$amount,$response_code,$response_desc){
 	border-radius: 34px;
 	}
 
-	.slider.round:before {
-	border-radius: 50%;
-	}
-</style>
+.slider.round:before {
+  border-radius: 50%;
+}
+
+		</style>
 		<!-- ECCS CSS -->
 	<!--	<link href="./css/bootstrap-toggle.min.css" type="text/css" /> -->
-		<link href="eccs4.css" rel="stylesheet" type="text/css"/>
+		<link href="./css/eccs4.css" rel="stylesheet" type="text/css"/>
 		
 	<!--	<script src="./js/bootstrap-toggle.min.js" type="text/javascript"></script> -->
 	<?php }// end if ?>
@@ -568,57 +575,94 @@ function response($order_id,$amount,$response_code,$response_desc){
         <!-- header logo: style can be found in header.less -->
 		<?php print $ui->creamyAgentHeader($user); ?>
             <!-- Left side column. contains the logo and sidebar -->
-			<?php print $ui->getSidebar($user->getUserId(), $user->getUserName(), $user->getUserRole(), $user->getUserAvatar()); ?>
+		<?php print $ui->getAgentSidebar($user->getUserId(), $user->getUserName(), $user->getUserRole(), $user->getUserAvatar()); ?>
 
             <!-- Right side column. Contains the navbar and content of the page -->
-            <aside class="content-wrapper">
+            <aside class="content-wrapper" style="padding-left: 0 !important; padding-right: 0 !important;" >
                 <!-- Content Header (Page header) -->
   				<!-- ECCS Customization -->
                 <?php if(ECCS_BLIND_MODE !== 'y'){ ?> 
 				
-					<!-- Content Header (Page header) -->
-					<section id="contact_info_crumbs" class="content-heading">
-						<span id="contact_info_bar"><?php $lh->translateText("contact_information"); ?></span>
-						<ol class="breadcrumb hidden-xs pull-right">
-							<li class="active"><i class="fa fa-home"></i> <?php $lh->translateText('home'); ?></li>
-						</ol>
-					</section>
-				<?php }//end if ?>
-                <!-- /.ECCS Customization -->
-
+                <!-- Content Header (Page header) 
+                <section id="contact_info_crumbs" class="content-heading">
+                <span id="contact_info_bar"><?php $lh->translateText("contact_information"); ?></span>
+                    <ol class="breadcrumb hidden-xs pull-right">
+                          <li class="active"><i class="fa fa-home"></i> <?php $lh->translateText('home'); ?></li>
+                    </ol>
+                </section> -->
+			<?php }//end if ?>
+                        <!-- /.ECCS Customization -->
+		
                 <!-- Main content -->
-                <section class="content">
-					<?php if(ECCS_BLIND_MODE === 'y'){ ?>
-						<div class="col-lg-3">
-					<?php } ?>
-                          <div id="popup-hotkeys" class="panel clearfix">
-                          <div class="panel-heading"><b><?=$lh->translationFor('hotkeys')?></b></div>
-                              <div class="panel-body"><?=$lh->translationFor('no_available_hotkeys')?></div>
-                                  <div class="panel-footer clearfix">
-                                      <div class="text-danger sidecolor" style="padding-right: 5px; background-color: inherit;">
-                                          <?php if(ECCS_BLIND_MODE === 'n'){ ?>
-                                          <small><b><?=$lh->translationFor('note')?>:</b> <?=$lh->translationFor('hotkeys_note')?></small>
-                                          <?php } else { ?>
-                                          <small id="" style="" class="">Login to Phone Dialer [Shift + Home]</small><br>
-                                          <small id"" style="" class="">Shortcut Keys to Exit [Shift + End]</small><br>
-                                          <small id"" style="" class="">Shortcut Keys to Dial/Hangup [Shift + 1]</small><br>
-                                          <small id"" style="" class="">Shortcut Keys to Pause/Resume [Shift + 2]</small><br>
-                                          <small id"" style="" class="">Shortcut Keys to Open Webform [Shift + 3]</small><br>
-                                          <small id"" style="" class="">Shortcut Keys to Lead Preview [Shift + 4]</small><br>
-                                          <small id"" style="" class="">Shortcut Keys to Callback List [Shift + 5]</small>
-                                          <?php } ?>
-                                      </div>
-                                  </div>
-                              </div>
-					<?php if(ECCS_BLIND_MODE === 'y'){ ?>
-					<div class="row">
-						<input type="text" id="freeTestField" class="hidden">
-					</div> 
+<!-- <ul class="nav nav-tabs nav-justified content-tabs" style="position: absolute; top: 120px; width: 84%; left: 55px;"> -->
+    <!-- <li id="dialer-tab" class="active"><a href="#control-dialer-tab" data-toggle="tab">Dialer</a></li>
+    <li id="whatsapp-tab" class=""><a href="#control-whatsapp-tab" data-toggle="tab">Whatsapp</a></li>-->
+    <style>
+	#btn-dialer-tab, #btn-whatsapp-tab{
+		box-shadow: 0 0 black;
+		color: black;
+		margin: 5px 50px 0px 0px;
+		background: lightgrey;
+	}
+	section#contact_info_crumbs{
+		margin-bottom: 0px; /*5px;*/
+		padding-left: 40px;
+		padding-right: 40px;
+	}
+	div.tab-content, div.tab-pane section.content{
+		/*padding-top: 2.5px;*/
+		padding-top: 0px !important;
+	}
+    </style>
+<!-- WhatsApp Button
+    <div class="row">
+    <a href="#" class="btn col-lg-3 pull-right" id="btn-dialer-tab">Dialer</a>
+    <?php if($whatsapp_status) { ?>
+    <a href="#" class="btn col-lg-3 pull-right" id="btn-whatsapp-tab" style="background-color: #009688; color: white;">Whatsapp<span id="wa-notiff-badge"></span></a>
+    <?php } ?>
+    </div>
+-->
+<!-- </ul> -->
+<div class="tab-content" style="border-width:0; overflow-y: auto; padding-left: 0px; padding-right: 0px;">
+    <!-- Home tab content -->
+    <?php if($whatsapp_status) { ?>
+    <div class="tab-pane" id="control-whatsapp-tab">
+		<section class="whatsapp-content content" style="overflow: hidden;"></section>
+    </div>
+    <?php } ?>
+    <div class="tab-pane active" id="control-dialer-tab">
+		<input type="hidden" id="wa-userid" name="userid" value="<?php print $user->getUserId(); ?>">
+                <section class="content" style="padding-left:0px !important; padding-right:0px !important; padding-top:0px !important;">
+			<?php if(ECCS_BLIND_MODE === 'y'){ ?>
+			<div class="col-lg-3">
+			<?php } ?>
+				<div id="popup-hotkeys" class="panel clearfix">
+				<div class="panel-heading"><b><?=$lh->translationFor('hotkeys')?></b></div>
+					<div class="panel-body"><?=$lh->translationFor('no_available_hotkeys')?></div>
+						<div class="panel-footer clearfix">
+							<div class="text-danger sidecolor" style="padding-right: 5px; background-color: inherit;">
+								<?php if(ECCS_BLIND_MODE === 'n'){ ?>
+								<small><b><?=$lh->translationFor('note')?>:</b> <?=$lh->translationFor('hotkeys_note')?></small>
+								<?php } else { ?>
+								<small id="" style="" class="">Login to Phone Dialer [Shift + Home]</small><br>
+								<small id"" style="" class="">Shortcut Keys to Exit [Shift + End]</small><br>
+								<small id"" style="" class="">Shortcut Keys to Dial/Hangup [Shift + 1]</small><br>
+								<small id"" style="" class="">Shortcut Keys to Pause/Resume [Shift + 2]</small><br>
+								<small id"" style="" class="">Shortcut Keys to Open Webform [Shift + 3]</small><br>
+								<small id"" style="" class="">Shortcut Keys to Lead Preview [Shift + 4]</small><br>
+								<small id"" style="" class="">Shortcut Keys to Callback List [Shift + 5]</small>
+								<?php } ?>
+							</div>
+						</div>
 					</div>
-					
-						<div class="col-lg-9">
-					<?php } ?>
-					
+			<?php if(ECCS_BLIND_MODE === 'y'){ ?>
+                        <div class="row">
+				<input type="text" id="freeTestField" class="hidden">
+			</div> 
+			</div>
+			
+                         <div class="col-lg-9">
+			<?php } ?>
 					<!-- standard custom edition form -->
 					<div class="container-custom ng-scope">
 						<div id="cust_info" class="card">
@@ -632,50 +676,50 @@ function response($order_id,$amount,$response_code,$response_desc){
 									</div>
 								</div>
 							</div>
-
+						<?php /* card-header?>
 								<!-- ECCS Customization -->
 								<?php // if(ECCS_BLIND_MODE === 'y'){?>
-								<div style="background-image:;" class="card-heading bg-inverse">
-									<?php //}//end if?>
+								<!-- <div style="background-image:;" class="card-heading bg-inverse">
+								<?php //}//end if?>
 									<div class="row">
 										<div id="cust_avatar" class="col-lg-1 col-md-1 col-sm-2 text-center hidden-xs" style="height: 64px;">
-											<avatar username="Dialed Client" src="<?php echo CRM_DEFAULTS_USER_AVATAR;?>" :size="64"></avatar>
+											<avatar username="Dialed Client" src="<?php //echo CRM_DEFAULTS_USER_AVATAR;?>" :size="64"></avatar>
 										</div>
-										<div class="col-lg-9 col-md-8 col-sm-10">
-											<!-- ECCS Customization-->
-											<h4 id="cust_full_name" class="hidden">
-												<?php if(ECCS_BLIND_MODE === 'n'){ ?>
-												<span id="first_name_label" class="hidden"><?=$lh->translationFor('first_name')?>: </span><a href="#" id="first_name"></a> 
-												<span id="middle_initial_label" class="hidden"><?=$lh->translationFor('middle_initial')?>: </span><a href="#" id="middle_initial"></a> 
-												<span id="last_name_label" class="hidden"><?=$lh->translationFor('last_name')?>: </span><a href="#" id="last_name"></a>
-												<?php } ?>
-												<!-- ECCS Customization -->
-												<?php if(ECCS_BLIND_MODE === 'y'){ ?>
-												<span id="cust_campaign_name"></span>
-												<span id="first_name_label" class="hidden"><?=$lh->translationFor('first_name')?>: </span><a href="#" id="first_name"></a> 
-												<span id="middle_initial_label" class="hidden"><?=$lh->translationFor('middle_initial')?>: </span><a href="#" id="middle_initial"></a> 
-												<span id="last_name_label" class="hidden"><?=$lh->translationFor('last_name')?>: </span><a href="#" id="last_name"></a>
-												<span id="cust_call_type"></span>
-												<?php }//end if ?>
-											</h4>
-											<!-- /.ECCS Customization -->
-											<p class="ng-binding animated fadeInUpShort">
-												<!-- ECCS Customization -->
-												<?php if(ECCS_BLIND_MODE === 'y'){ ?> 
-													<span id="span-cust-number" class="hidden"><label for="cust_number"> Client Number[#CN]: </label> <input type="text" id="cust_number" style="background-color:; border:; color:black; margin-top: 5px; padding-left: 5px; font-size: 14pt; font-weight: 600;" onclick="this.setSelectionRange(0, this.value.length)" readonly/>"Ctrl+C" to Copy Number.</span>
-												<?php } else { ?>
-												<!-- /.ECCS Customization -->
-													<span id="cust_number"></span>
-												<?php } ?>
-											</p>
+										<div class="<?php //if (ECCS_BLIND_MODE === 'n') { echo "col-lg-9 col-md-9 col-sm-7"; } else { echo "col-lg-11 col-md-11 col-sm-10"; } ?>">
+								<!-- ECCS Customization-->
+						  <!-- <h4 id="cust_full_name" class="isDisabled">
+									<?php //if(ECCS_BLIND_MODE === 'n'){ ?>
+									<span id="first_name_label" class="hidden"><?//=$lh->translationFor('first_name')?>: </span><a href="#" id="first_name">Firstname</a> <span id="middle_initial_label" class="hidden"><?//=$lh->translationFor('middle_initial')?>: </span><a href="#" id="middle_initial">M.I.</a> <span id="last_name_label" class="hidden"><?//=$lh->translationFor('last_name')?>: </span><a href="#" id="last_name">Lastname</a>
+									<?php //} ?>
+									<!-- ECCS Customization -->
+									<?php //if(ECCS_BLIND_MODE === 'y'){ ?>
+									<!-- <span id="cust_campaign_name"></span>
+									<span id="first_name_label" class="hidden"><?//=$lh->translationFor('first_name')?>: </span><a href="#" id="first_name"></a> <span id="middle_initial_label" class="hidden"><?//=$lh->translationFor('middle_initial')?>: </span><a href="#" id="middle_initial"></a> <span id="last_name_label" class="hidden"><?//=$lh->translationFor('last_name')?>: </span><a href="#" id="last_name"></a>
+									<span id="cust_call_type"></span>
+									<?php //}//end if ?>
+         <!-- /.ECCS Customization -->
+								<!-- </h4>
+						                <p class="ng-binding animated fadeInUpShort">
+									 <!-- ECCS Customization -->
+                                                                        <?php //if(ECCS_BLIND_MODE === 'y'){ ?> 
+										<!-- <span id="span-cust-number" class="hidden"><label for="cust_number"> Client Number[#CN]: </label> <input type="text" id="cust_number" style="background-color:; border:; color:black; margin-top: 5px; padding-left: 5px; font-size: 14pt; font-weight: 600;" onclick="this.setSelectionRange(0, this.value.length)" readonly/>"Ctrl+C" to Copy Number.</span>
+
+									<?php //} else { ?>
+                                                                        <!-- /.ECCS Customization -->
+									<!-- <span id="cust_number"></span>
+									<?php //} ?>
+								</p>
+						    </div>
+										<?php //if (ECCS_BLIND_MODE === 'n') { ?>
+										<div id="agent_stats" class="col-lg-2 col-md-2 col-sm-3 hidden-xs" style="font-size: 18px; display: none;">
+											<p style="margin: 0;">Sales: <span id="agent_sales_count" style="float: right;">0</span></p>
+											<p id="amount_container" style="margin: 0; display: none;">Amount: <span id="agent_total_amount" style="float: right;">0</span></p>
 										</div>
-										<div class="col-lg-2 col-md-3 col-sm-12 col-xs-12">
-											
-										</div>
+										<?php //} ?>
 									</div>
 								</div>
 							<!-- /.card heading -->
-						
+						<?php */?>				
 							<!-- Card body -->
 						        <div class="card-body custom-tabpanel">
 				                	<div role="tabpanel" class="panel panel-transparent">
@@ -702,6 +746,15 @@ function response($order_id,$amount,$response_code,$response_desc){
 											 	Chat
 											</a>
 										 </li>
+										<?php if(ROCKETCHAT_ENABLE === 'y'){?>
+										 <li role="presentation">
+                                                                                        <a href="#rc" aria-controls="home" id="loginRC" role="tab" data-toggle="tab" class="bb0">
+                                                                                                <!--<span class="fa fa-rocket"></span>-->
+                                                                                                <?=$lh->translationFor('Chat')?></a>
+												<input type="hidden" id="rc-user-id" value="">
+												<input type="hidden" id="rc-auth-token" value="">
+                                                                                 </li>
+										<?php }?>
 									  </ul>
 									</div>
 									<!-- Tab panes-->
@@ -709,49 +762,50 @@ function response($order_id,$amount,$response_code,$response_desc){
 										<div id="contact_info" role="tabpanel" class="tab-pane active">
 
 											<fieldset style="padding-bottom: 0px; margin-bottom: 0px;">
-												<h4>
-													<a href="#" data-role="button" class="pull-right edit-profile-button hidden" id="edit-profile"><?=$lh->translationFor('edit_information')?></a>
+												<h4 style="display: flex;">
+													<a href="#" data-role="button" class="pull-right edit-profile-button hidden" id="edit-profile" style="margin-left: auto;"><?=$lh->translationFor('edit_information')?></a>
 												</h4>
 												<!-- <br/> -->
 												<form role="form" id="name_form" class="formMain form-inline" >
 												
-													<!--LEAD ID-->
-													<input type="hidden" value="<?php echo $lead_id;?>" name="lead_id">
-													<!--LIST ID-->
-													<input type="hidden" value="<?php echo $list_id;?>" name="list_id">
-													<!--ENTRY LIST ID-->
-													<input type="hidden" value="<?php echo $entry_list_id;?>" name="entry_list_id">
-													<!--VENDOR ID-->
-													<input type="hidden" value="<?php echo $vendor_lead_code;?>" name="vendor_lead_code">
-													<!--GMT OFFSET-->
-													<input type="hidden" value="<?php echo $gmt_offset_now;?>" name="gmt_offset_now">
-													<!--SECURITY PHRASE-->
-													<input type="hidden" value="<?php echo $security_phrase;?>" name="security_phrase">
-													<!--RANK-->
-													<input type="hidden" value="<?php echo $rank;?>" name="rank">
-													<!--CALLED COUNT-->
-													<input type="hidden" value="<?php echo $call_count;?>" name="called_count">
-													<!--UNIQUEID-->
-													<input type="hidden" value="<?php echo $uniqueid;?>" name="uniqueid">
-													<!--SECONDS-->
-													<input type="hidden" value="" name="seconds">
-													<!--CUSTOM FORM LOADED-->
-													<input type="hidden" value="0" name="FORM_LOADED">
-													
-													<!--<div class="row">
-														<div class="col-sm-4">
-															<div class="mda-form-group label-floating">
-																<input id="first_name" name="first_name" type="text" maxlength="30"  value="<?php echo $first_name;?>"
-																	class="mda-form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched input-disabled" disabled required>
-																<label for="first_name">First Name</label>
-															</div>
+												<!--LEAD ID-->
+												<input type="hidden" value="<?php echo $lead_id;?>" name="lead_id">
+												<!--LIST ID-->
+												<input type="hidden" value="<?php echo $list_id;?>" name="list_id">
+												<!--ENTRY LIST ID-->
+												<input type="hidden" value="<?php echo $entry_list_id;?>" name="entry_list_id">
+												<!--VENDOR ID-->
+												<input type="hidden" value="<?php echo $vendor_lead_code;?>" name="vendor_lead_code">
+												<!--GMT OFFSET-->
+												<input type="hidden" value="<?php echo $gmt_offset_now;?>" name="gmt_offset_now">
+												<!--SECURITY PHRASE-->
+												<input type="hidden" value="<?php echo $security_phrase;?>" name="security_phrase">
+												<!--RANK-->
+												<input type="hidden" value="<?php echo $rank;?>" name="rank">
+												<!--CALLED COUNT-->
+												<input type="hidden" value="<?php echo $call_count;?>" name="called_count">
+												<!--UNIQUEID-->
+												<input type="hidden" value="<?php echo $uniqueid;?>" name="uniqueid">
+												<!--SECONDS-->
+												<input type="hidden" value="" name="seconds">
+												<!--CUSTOM FORM LOADED-->
+												<input type="hidden" value="0" name="FORM_LOADED">
+												<!--ADDRESS3-->
+												<input type="hidden" value="<?php echo $address3;?>" name="address3">
+												
+												<div class="row">
+													<div class="col-sm-4">
+														<div class="mda-form-group label-floating">
+															<input id="first_name" name="first_name" type="text" maxlength="30"  value="<?php echo $first_name;?>"
+																class="mda-form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched input-disabled" disabled required>
+															<label for="first_name">First Name</label>
 														</div>
-														<div class="col-sm-4">
-															<div class="mda-form-group label-floating">
-																<input id="middle_initial" name="middle_initial" type="text" maxlength="1" value="<?php echo $middle_initial;?>"
-																	class="mda-form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched input-disabled" disabled>
-																<label for="middle_initial">Middle Name</label>
-															</div>
+													</div>
+													<div class="col-sm-4">
+														<div class="mda-form-group label-floating">
+															<input id="middle_initial" name="middle_initial" type="text" maxlength="1" value="<?php echo $middle_initial;?>"
+																class="mda-form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched input-disabled" disabled>
+															<label for="middle_initial">Middle Initial</label>
 														</div>
 														<div class="col-sm-4">
 															<div class="mda-form-group label-floating">
@@ -760,7 +814,8 @@ function response($order_id,$amount,$response_code,$response_desc){
 																<label for="last_name">Last Name</label>
 															</div>
 														</div>
-													</div>-->
+													</div>
+												</div>
 												</form>
 												
 												<form id="contact_details_form" class="formMain">
@@ -908,6 +963,19 @@ function response($order_id,$amount,$response_code,$response_desc){
 							                	<button type="submit" name="submit" id="submit_edit_form" class="btn btn-primary btn-block btn-flat"><?=$lh->translationFor('submit')?></button>
 							                </div>
 							               </fieldset>
+
+								<div id="custom_fields_content" class="card-body" style="border: 1px solid rgb(221, 230, 233); margin: 0 32px 0 22px; display: none;">
+                                                                        <h4 style="font-weight: 600;">
+                                                                                <?=$lh->translationFor('custom_forms')?>
+                                                                        </h4>
+                                                                        <br>
+                                                                        <form role="form" id="custom_form" class="formMain">
+                                                                                <div id="custom_fields">
+
+                                                                                </div>
+                                                                        </form>
+                                                                </div>
+                                                                <br id="custom_br" style="display: none;">
 										</div><!--End of Profile-->
 										
 										<div id="comments_tab" role="tabpanel" class="tab-pane">
@@ -1208,6 +1276,19 @@ function response($order_id,$amount,$response_code,$response_desc){
 								</div>
 								<br id="custom_br" style="display: none;">
 
+										
+										<?php if(ROCKETCHAT_ENABLE === 'y'){?>
+										<!-- Rocket Chat -->
+                                                                                <div id="rc" role="tabpanel" class="tab-pane">
+                                                                                        <div class="row" id="rc_row">
+                                                                                        	<div id="rc_div"></div>
+											</div><!-- /.row -->
+                                                                                </div>
+                                                                                <!-- End of Rocket Chat -->
+										<?php } ?>
+									</div>
+								</div>
+								
 					<!-- SCRIPT MODAL -->
 							<div class="modal fade" id="script" name="script" tabindex="-1" role="dialog" aria-hidden="true">
 						        <div class="modal-dialog">
@@ -1962,7 +2043,12 @@ function response($order_id,$amount,$response_code,$response_desc){
 							</div>
 						</div>
 					</div-->
+			
+			<!-- AGENT CHAT -->
+			<?php if($agent_chat_status) include("includes/chatapp.php");?>
                 </section><!-- /.content -->
+	</div>
+</div>	
             </aside><!-- /.right-side -->
 
             <?php //print $ui->creamyFooter(); ?>
@@ -1972,11 +2058,12 @@ function response($order_id,$amount,$response_code,$response_desc){
     <!-- Create the tabs -->
     <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
       <li id="dialer-tab" class="active"><a href="#control-sidebar-dialer-tab" data-toggle="tab"><i class="fa fa-phone"></i></a></li>
+      <?php if($agent_chat_status) echo '<li id="chat-tab"><a href="#control-sidebar-chat-tab" data-toggle="tab"><i class="fa fa-comments-o"></i></a></li>'; ?> 
       <li id="agents-tab" class="hidden"><a href="#control-sidebar-users-tab" data-toggle="tab"><i class="fa fa-users"></i></a></li>
       <li id="settings-tab"><a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-user"></i></a></li>
     </ul>
     <!-- Tab panes -->
-    <div class="tab-content" style="border-width:0; overflow-y: auto; padding-bottom: 30px;">
+    <div class="tab-content" style="border-width:0; overflow-y: auto;">
       <!-- Home tab content -->
       <div class="tab-pane active" id="control-sidebar-dialer-tab">
         <ul class="control-sidebar-menu" id="go_agent_dialer">
@@ -2049,7 +2136,7 @@ function response($order_id,$amount,$response_code,$response_desc){
 			</li>
         </ul>
 		
-        <ul class="control-sidebar-menu" id="go_agent_login" style="width: 100%; margin: 25px auto 15px; text-align: center;">
+        <ul class="control-sidebar-menu" id="go_agent_login" style="width: 100%; margin: 15px auto 15px; text-align: center;">
 			
         </ul>
 		
@@ -2122,8 +2209,36 @@ function response($order_id,$amount,$response_code,$response_desc){
         </ul>
       </div>
       <!-- /.tab-pane -->
+	<?php if($agent_chat_status){ ?>
+      <!-- tab-pane -->
+      <!-- chat tab -->
+      <div class="tab-pane" id="control-sidebar-chat-tab">
+	<ul class="contacts-list">
+	<li>
+           <div class="center-block" style="text-align: center; /*background: #181f23 none repeat scroll 0 0;*/ margin: 0 10px; padding-bottom: 1px; pa
+dding-top: 10px;">
+               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+               <p><?=$ui->getVueAvatar($user->getUserName(), $user->getUserAvatar(), 96, false, true, false)?></p>
+               <p style="color:white;"><?=$user->getUserName()?><br><small><?=$lh->translationFor("nice_to_see_you_again")?></small></p>
+               </a>
+           </div>
+       </li>
+       <li>
+	Contact List
+           <!--<div>&nbsp;</div>-->
+       </li>
+	
+	
+	<?php
+	   include('includes/chat-tab.php');
+	?>
+	</ul>	
+      </div>
+      <!-- /. tab-pane -->
+	<?php } ?>
     </div>
   </aside>
+
   <!-- /.control-sidebar -->
   <!-- Add the sidebar's background. This div must be placed
        immediately after the control sidebar -->
@@ -2142,10 +2257,81 @@ function response($order_id,$amount,$response_code,$response_desc){
 <button onclick="socketcus.initCallWhatsapp('+51955794343', 'Lili bon ifacio', '1004')" class="">iniciar simular Lily</button>
 
 		<?php print $ui->standardizedThemeJS();?>
-
-		<script type="text/javascript">									
+		<script type="text/javascript">	
+			var rcToken = "";								
 			$(document).ready(function() {
-				
+		               <?php if(ROCKETCHAT_ENABLE === 'y'){?> 
+				//Initialize RocketChat
+				$('<iframe>', {
+		                   src: '<?php echo ROCKETCHAT_URL;?>?layout=embedded',
+		                   id:  'rc_frame',
+				   name: 'rc_frame',
+		                   frameborder: 0,
+                		   width: '100%',
+		                   height: '100%',
+                		   scrolling: 'no'
+		                   }).appendTo('#rc_div');
+
+				var rcUser = '<?php echo $_SESSION['user']?>';
+				var rcHandshake = '<?php echo $_SESSION['phone_this'];?>';	
+				$.ajax({
+					url: "./php/LoginRocketChat.php",
+					type: 'POST',
+					dataType: "json",
+					data: {user: rcUser, pass: rcHandshake},
+					success: function(data) {
+						rcToken = data.data.authToken;
+						console.log(data.data);
+						$("#rc-user-id").val(data.data.userId);
+						$("#rc-auth-token").val(rcToken);
+						rcWin = document.getElementById('rc_frame').contentWindow;
+						//rcWin.postMessage({
+						//	event: 'login-with-token',
+						//	loginToken: rcToken
+						//}, '<?php echo ROCKETCHAT_URL;?>');
+						setTimeout(function() {
+							rcWin.postMessage({
+								event: 'log-me-in-iframe',
+								user: rcUser,
+								pass: rcHandshake
+							}, '<?php echo ROCKETCHAT_URL;?>');
+						}, 3000);
+					}
+				});
+
+				//btnLogMeIn
+				$("#loginRC").click(function(e) {
+					var rcUser = '<?php echo $_SESSION['user']?>';
+	                                var rcHandshake = '<?php echo $_SESSION['phone_this'];?>';
+					var rcWin = document.getElementById('rc_frame').contentWindow
+					rcWin.postMessage({
+                                             event: 'log-me-in-iframe',
+                                             user: rcUser,
+                                             pass: rcHandshake
+                                        }, '<?php echo ROCKETCHAT_URL;?>');
+				});
+
+				/*$("#cream-agent-logout").click(function(e) {
+					var rcWin = document.getElementById('rc_frame').contentWindow;
+					var rcUserID = $("#rc-user-id").val();
+					var rcAuthToken = $("#rc-auth-token").val();
+					$.ajax({
+                                        url: "./php/LogoutRocketChat.php",
+                                        type: 'POST',
+                                        dataType: "json",
+                                        data: {userID: rcUserID, authToken: rcAuthToken},
+                                        success: function(data) {
+                                                console.log(data);
+                                        	rcWin.postMessage({
+                                                	event: 'log-me-out-iframe'
+                                        	}, '<?php echo ROCKETCHAT_URL;?>');
+						alert("Logging out of Rocketchat...");
+					}
+                                	});
+				});*/
+				//./rocketchat
+				<?php } ?>				
+
 				var folder = <?php print $folder; ?>;
 				var selectedAll = false;
 				var selectedMessages = [];
@@ -2297,26 +2483,27 @@ function response($order_id,$amount,$response_code,$response_desc){
 				
 				$("#edit-profile").click(function(){
 				    $('.input-disabled').prop('disabled', false);
-					if (typeof disable_alter_custphone !== 'undefined') {
-							if (disable_alter_custphone == 'N') {
-									$('.input-phone-disabled').prop('disabled', false);
-							}
-					} else {
-							$('.input-phone-disabled').prop('disabled', false);
-					}
-					$('#cust_full_name .editable').editable('enable');
+								if (typeof disable_alter_custphone !== 'undefined') {
+										if (disable_alter_custphone == 'N') {
+												$('.input-phone-disabled').prop('disabled', false);
+										}
+								} else {
+										$('.input-phone-disabled').prop('disabled', false);
+								}
+								//$('#cust_full_name .editable').editable('enable');
+								//$("#cust_full_name").removeClass('isDisabled');
 				    //$('.hide_div').show();
 				    $("input:required, select:required").addClass("required_div");
 				    $('#edit-profile').addClass('hidden');
 								
-					$('#cust_full_name .editable').each(function() {
-						var thisXvalue = $(this).html();
-						if (thisXvalue == '   ') {
-							$(this).css('text-decoration', 'underline dashed');
-						} else {
-							$(this).css('text-decoration', 'none');
-						}
-					});
+								//$('#cust_full_name .editable').each(function() {
+								//	var thisXvalue = $(this).html();
+								//	if (thisXvalue.length < 1) {
+								//		$(this).css('text-decoration', 'underline dashed');
+								//	} else {
+								//		$(this).css('text-decoration', 'none');
+								//	}
+								//});
 				    
 				    var txtBox=document.getElementById("first_name" );
 								txtBox.focus();
@@ -2324,6 +2511,7 @@ function response($order_id,$amount,$response_code,$response_desc){
 				    //$('input[name="first_name"]').focus();
 					editProfileEnabled = true;
 				});
+				//$('#cust_full_name .editable').editable('disable');
 
 				$("#submit_edit_form").click(function(){
 				//alert("User Created!");
@@ -2852,10 +3040,10 @@ function response($order_id,$amount,$response_code,$response_desc){
 		<!-- SnackbarJS -->
         <script src="js/snackbar.js" type="text/javascript"></script>
 		<!-- Vue Avatar -->
-        <!-- <script src="js/vue-avatar/vue.min.js" type="text/javascript"></script>
+        <!--<script src="js/vue-avatar/vue.min.js" type="text/javascript"></script>
         <script src="js/vue-avatar/vue-avatar.min.js" type="text/javascript"></script> -->
 		<script type='text/javascript'>
-			var goOptions = {
+			/*var goOptions = {
 				el: 'body',
 				components: {
 					'avatar': Avatar.Avatar,
@@ -2880,7 +3068,7 @@ function response($order_id,$amount,$response_code,$response_desc){
 			};
 			var goAvatar = new Vue(goOptions);
 			
-			goAvatar._init();
+			goAvatar._init();*/
 		</script>
 		<!-- ECCS Customization -->
 		<?php
@@ -3104,7 +3292,6 @@ function response($order_id,$amount,$response_code,$response_desc){
 				} else {
 					$("[data-toggle='control-sidebar']").attr("title", "Enter to Show Login Tab");
 				}
-				
 			});
 		</script>
 		<?php } //end if ECCS_BLIND_MODE ?>

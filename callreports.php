@@ -32,6 +32,13 @@
 	$lh = \creamy\LanguageHandler::getInstance();
 	$user = \creamy\CreamyUser::currentUser();
 	
+	//proper user redirects
+	if($user->getUserRole() != CRM_DEFAULTS_USER_ROLE_ADMIN){
+		if($user->getUserRole() == CRM_DEFAULTS_USER_ROLE_AGENT){
+			header("location: agent.php");
+		}
+	}	
+	
 	$perm = $api->goGetPermissions('reportsanalytics');
 	
 	$allowed_page = 0;
@@ -184,6 +191,7 @@
                                     <select class="form-control select2" name="ingroup_id" id="ingroup_id" style="width:100%;">
                                         <?php
                                             for($i=0; $i < count($ingroups->group_id);$i++) {
+												if ($_SESSION['usergroup'] !== "ADMIN" && preg_match("/^AGENTDIRECT/", $ingroups->group_id[$i])) continue;
                                         ?>
                                             <option value="<?php echo $ingroups->group_id[$i];?>"><?php echo $ingroups->group_id[$i].' - '.$ingroups->group_name[$i];?></option>
                                         <?php
@@ -265,7 +273,7 @@
                                     <label><?php $lh->translateText("end_date"); ?></label>
                                     <div class="form-group">
                                         <div class='input-group date' id='datetimepicker2'>
-                                            <input type='text' class="form-control" id="end_filterdate" name="end_filterdate" placeholder="<?php echo date("m/d/Y H:i:s");?>" value="<?php echo date("m/d/Y H:i:s");?>" />
+                                            <input type='text' class="form-control" id="end_filterdate" name="end_filterdate" placeholder="<?php echo date("m/d/Y H:i:s");?>" value="<?php echo date("m/d/Y");?> 11:59 PM" />
                                             <span class="input-group-addon">
                                                 <!-- <span class="glyphicon glyphicon-calendar"></span>-->
                                                 <span class="fa fa-calendar"></span>
@@ -310,9 +318,10 @@
 				$('body').append(form);  // This line is not necessary
 				$(form).submit();
 			});
-
+			filterchange();
 			$('#agent_detail_login').DataTable();
-			
+			$('#table_agent_pdetailSM').DataTable();
+	
 			$('.select2-3').select2({ theme: 'bootstrap' });
 			$.fn.select2.defaults.set( "theme", "bootstrap" );
 
@@ -537,7 +546,9 @@
 				var request = "";
 				var URL = 'reports.php';
 				var campaign_ID = $("#campaign_id").val();
-				
+
+                                $('.campaign_div').show();
+	
 				$('#table').empty();
 				$(".report-loader").fadeIn("slow");				
 				
@@ -578,7 +589,7 @@
 				}
 
 				if(filter_type === "call_export_report"){
-				     URL = './exportcallreport.php';
+				     URL = './php/reports/exportcallreport.php';
 				}
 				
 				$.ajax({
@@ -733,56 +744,57 @@
 								$('#agent_pdetail_bottom').DataTable({
 									destroy: true,
 									responsive: true,
-									dom: 'Bfrtip',  
-									buttons: [ 
-										{ extend: 'copy', title: title }, 
-										{ extend: 'csv', title: title }, 
-										{ extend: 'excel', title: title }, 
-										{ extend: 'print', title: title } 
-									] 
+									dom: 'Bfrtip'  
+									//buttons: [ 
+									//	{ extend: 'copy', title: title }, 
+									//	{ extend: 'csv', title: title }, 
+									//	{ extend: 'excel', title: title }, 
+									//	{ extend: 'print', title: title } 
+									//]
 								});
 								
 								$('#agent_pdetail_login').DataTable({
 									destroy: true,
 									responsive: true,
-									dom: 'Bfrtip',  
-									buttons: [ 
-										{ extend: 'copy', title: title }, 
-										{ extend: 'csv', title: title }, 
-										{ extend: 'excel', title: title }, 
-										{ extend: 'print', title: title } 
-									] 
+									dom: 'Bfrtip'  
+									//buttons: [ 
+									//	{ extend: 'copy', title: title }, 
+									//	{ extend: 'csv', title: title }, 
+									//	{ extend: 'excel', title: title }, 
+									//	{ extend: 'print', title: title } 
+									//] 
 								});
 								
 								$('.request_div').hide();
 								$('.campaign_div').show();
 								$('.ingroup_div').hide();
 							}
-
+							
 							// SERVICE MONKEY AGENT PERFORMANCE DETAIL
-						<?php if(REPORTS_SM_AGENT_PERFORMANCE_DETAIL === 'y'){ ?>
+						<?php //if(REPORTS_SM_AGENT_PERFORMANCE_DETAIL === 'y'){ ?>
 							if (filter_type == "agent_detailSM") {
                                                                 var title = "<?php $lh->translateText("agent_detail"); ?> SM";
-                                                                $('#agent_detail_top').DataTable({
+                                                                $('#table_agent_pdetailSM').DataTable({
                                                                         destroy: true,
                                                                         responsive: true,
                                                                         stateSave:true,
-                                                                        dom: 'Bfrtip',
-                                                                        buttons: [
-                                                                                {
-                                                                                        text: 'Export Agent Performance Detail',
-                                                                                        action: function ( ) {
-                                                                                                console.log("Exporting...");
-                                                                                                $( "#export_agentdetail_form" ).submit();
-                                                                                        }
-                                                                                }
-                                                                        ]
+                                                                        dom: 'Bfrtip'
+                                                                        //buttons: [
+									//	{ extend: 'csv', title: title },
+                                                                        //        {
+                                                                        //                text: 'Export Agent Performance Detail',
+                                                                        //                action: function ( ) {
+                                                                        //                        console.log("Exporting...");
+                                                                        //                        $( "#export_agentPdetailSM_form" ).submit();
+                                                                        //                }
+                                                                        //        }
+                                                                        //]
                                                                 });
                                                                 $('.request_div').hide();
                                                                 $('.campaign_div').show();
                                                                 $('.ingroup_div').hide();
                                                         }
-						<?php } ?>
+						<?php //} ?>
 							if (filter_type == "dispo") {
 								var title = "<?php $lh->translateText("dispo"); ?>";
 								

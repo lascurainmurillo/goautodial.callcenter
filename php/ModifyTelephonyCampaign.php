@@ -102,6 +102,12 @@
 			$campaign_cid 							= stripslashes($campaign_cid);
 		}
 
+		$use_custom_cid								= 'N';
+		if (isset($_POST["use_custom_cid"]))  {
+			$use_custom_cid 						= $_POST["use_custom_cid"];
+			$use_custom_cid 						= stripslashes($use_custom_cid);
+		}
+
 		$campaign_recording 						= NULL; 
 		if (isset($_POST["campaign_recording"])) { 
 			$campaign_recording 					= $_POST["campaign_recording"]; 
@@ -156,6 +162,18 @@
 			$lead_filter 							= stripslashes($lead_filter);
 		}
 		
+		$call_count_limit 							= ""; 
+		if (isset($_POST["call_count_limit"])) { 
+			$call_count_limit 						= $_POST["call_count_limit"]; 
+			$call_count_limit 						= stripslashes($call_count_limit);
+		}
+		
+		$call_count_target 							= ""; 
+		if (isset($_POST["call_count_target"])) { 
+			$call_count_target 						= $_POST["call_count_target"]; 
+			$call_count_target 						= stripslashes($call_count_target);
+		}
+		
 		$dial_timeout 								= NULL; 
 		if (isset($_POST["dial_timeout"])) { 
 			$dial_timeout 							= $_POST["dial_timeout"]; 
@@ -175,9 +193,13 @@
 		}
 
 		$am_message_exten 							= NULL; 
-		if (isset($_POST["am_message_exten"])) { 
-			$am_message_exten 						= $_POST["am_message_exten"]; 
-			$am_message_exten 						= stripslashes($am_message_exten);
+		if (isset($_POST["am_message_exten"])) {
+			if(!empty($_POST["am_message_exten"])){ 
+				$am_message_exten 						= $_POST["am_message_exten"]; 
+				$am_message_exten 						= stripslashes($am_message_exten);
+			} else {
+				$am_message_exten						= 'vm-goodbye';
+			}
 		}
 
 		$am_message_chooser 						= NULL;
@@ -538,6 +560,18 @@
 			$xfer_groups 							= stripslashes($xfer_groups);
 		}*/
 		
+		$survey_wait_sec	 						= NULL; 
+		if (isset($_POST["survey_wait_sec"])) { 
+			$survey_wait_sec 						= $_POST["survey_wait_sec"]; 
+			$survey_wait_sec 						= stripslashes($survey_wait_sec);
+		}
+		
+		$survey_no_response_action 					= NULL; 
+		if (isset($_POST["survey_no_response_action"])) { 
+			$survey_no_response_action 				= $_POST["survey_no_response_action"]; 
+			$survey_no_response_action 				= stripslashes($survey_no_response_action);
+		}
+		
 		if (is_array($_POST["closer_campaigns"])) {
 			$closerCampaigns 						= "";
 			
@@ -564,6 +598,12 @@
 			$xfergroups 							= $xfer_groups; 
 		}
 		
+		$default_country_code 						= NULL; 
+		if (isset($_POST["default_country_code"])) { 
+			$default_country_code 					= $_POST["default_country_code"]; 
+			$default_country_code 					= stripslashes($default_country_code);
+		}
+		
 		$postfields 								= array(
 			"goAction" 									=> "goEditCampaign", #action performed by the [[API:Functions]]
 			"campaign_id" 								=> $campaign_id,
@@ -587,6 +627,8 @@
 			"lead_order" 								=> $lead_order,
 			"lead_order_secondary" 						=> $lead_order_secondary,
 			"lead_filter" 								=> $lead_filter,
+			"call_count_limit"							=> $call_count_limit,
+			"call_count_target"							=> $call_count_target,
 			"dial_timeout" 								=> $dial_timeout,
 			"manual_dial_prefix" 						=> $manual_dial_prefix,
 			"get_call_launch" 							=> $get_call_launch,
@@ -650,7 +692,11 @@
 			"disable_alter_custphone" 					=> $disable_alter_custphone,
 			"inbound_man"								=> $inbound_man,
 			"closer_campaigns"							=> $closerCampaigns,
-			"xfer_groups" 								=> $xfergroups		
+			"xfer_groups" 								=> $xfergroups,
+			"use_custom_cid"							=> $use_custom_cid,
+			"survey_wait_sec"							=> $survey_wait_sec,
+			"survey_no_response_action"					=> $survey_no_response_action,
+			"default_country_code"						=> $default_country_code
 		);
 		
 		$output 									= $api->API_Request("goCampaigns", $postfields);

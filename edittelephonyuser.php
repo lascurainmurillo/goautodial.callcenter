@@ -2,7 +2,7 @@
 /**
  * @file 		edittelephonyusers.php
  * @brief 		Modify user accounts
- * @copyright 	Copyright (c) 2018 GOautodial Inc. 
+ * @copyright 	Copyright (c) 2020 GOautodial Inc. 
  * @author     	Alexander Jim H. Abenoja <alex@goautodial.com> 
  * @author		Demian Lizandro A. Biscocho <demian@goautodial.com>
  * @author     	Noel Umandap <noel@goautodial.com>
@@ -32,6 +32,13 @@
 	$api = \creamy\APIHandler::getInstance();
 	$lh = \creamy\LanguageHandler::getInstance();
 	$user = \creamy\CreamyUser::currentUser();
+	
+	//proper user redirects
+	if($user->getUserRole() != CRM_DEFAULTS_USER_ROLE_ADMIN){
+		if($user->getUserRole() == CRM_DEFAULTS_USER_ROLE_AGENT){
+			header("location: agent.php");
+		}
+	}	
 
 	$userid = NULL;
 	if (isset($_POST["user_id"])) {
@@ -49,7 +56,11 @@
 	$voicemails = $api->API_getAllVoiceMails();
 	$user_groups = $api->API_getAllUserGroups();
 	$perm = $api->goGetPermissions('user');
-
+	$use_webrtc = $api->CheckWebrtc();
+	//$modify_phones = $api->CheckPhones();
+	
+	$admin_level = $_SESSION['level'];
+	$admin_group = $_SESSION['usergroup'];
 ?>
 <html>
     <head>
@@ -105,7 +116,7 @@
 							if(isset($userid)) {
 								if ($output->result=="success") {
 								# Result was OK!
-
+								//var_dump($output->data);
 						?>
 							<div class="panel-body">
 							<legend><?php $lh->translateText("modify_user"); ?> : <u id="agent_name"><?php echo $output->data->user; ?></u></legend>
@@ -132,15 +143,15 @@
 												<div class="form-group mt">
 													<label for="fullname" class="col-sm-2 control-label"><?php $lh->translateText("full_name"); ?></label>
 													<div class="col-sm-10 mb">
-														<input type="text" class="form-control" name="fullname" id="fullname" 
+														<input type="text" class="form-control" name="fullname" id="fullname" autocomplete="new-password" 
 															value="<?php echo $output->data->full_name;?>" maxlength="50" placeholder="<?php $lh->translateText("full_name"); ?>" />
 													</div>
 												</div>
 												<div class="form-group">
 													<label for="email" class="col-sm-2 control-label"><?php $lh->translateText("email"); ?></label>
 													<div class="col-sm-10 mb">
-														<input type="text" class="form-control" name="email" id="email" 
-															value="<?php echo $output->data->email;?>"  maxlength="100" placeholder="<?php $lh->translateText("email"); ?>" />
+														<input type="text" class="form-control" name="email" id="email" autocomplete="new-password" 
+															value="<?php echo $output->data->email;?>" maxlength="100" placeholder="<?php $lh->translateText("email"); ?>" />
 														<small><span id="email_check"></span></small>
 													</div>
 												</div>
@@ -229,22 +240,40 @@
 																}else{
 																	$userlevel .= '<option value="8" > 8 </option>';
 																}
-																if($output->data->user_level == "9"){
-																	$userlevel .= '<option value="9" selected> 9 </option>';
-																}else{
-																	$userlevel .= '<option value="9" > 9 </option>';
+																if ($admin_level > 8 && $admin_group === "ADMIN") {
+																	if($output->data->user_level == "9"){
+																		$userlevel .= '<option value="9" selected> 9 </option>';
+																	}else{
+																		$userlevel .= '<option value="9" > 9 </option>';
+																	}
 																}
 															echo $userlevel;
 														?>
 														</select>
 													</div>
 												</div>
+												<?php
+												if($use_webrtc == "1" && !is_null($output->data->enable_webrtc)) {
+												?>
+												<div class="form-group" <?=($user->getUserRole() != CRM_DEFAULTS_USER_ROLE_ADMIN) ? 'style="display: none;"' : ""; ?>>
+													<label for="userlevel" class="col-sm-2 control-label"><?php if($use_webrtc == "1"){ echo "<i class='fa fa-info-circle' title='You can see this field because WebRTC is enabled in the system.'></i> ";} ?><?php $lh->translateText("enable_webrtc"); ?></label>
+													<div class="col-sm-10 mb">
+														<select class="form-control" name="enable_webrtc" id="enable_webrtc">
+															<option value="1" <?=($output->data->enable_webrtc > 0) ? "selected" : "" ?>> ENABLED </option>
+															<option value="0" <?=($output->data->enable_webrtc == 0) ? "selected" : "" ?>> DISABLED </option>
+														</select>
+													</div>
+												</div>
+												<?php
+												}
+												?>
 											</fieldset>
 											<fieldset>
 												<div class="form-group">
-													<label for="phone_login" class="col-sm-2 control-label"><?php if(isset($_SESSION['use_webrtc']) && $_SESSION['use_webrtc'] == 1){ echo "<i class='fa fa-info-circle' title='You cannot edit this field since WebRTC is enabled.'></i> ";} ?> Phone Login</label>
+			<?php //var_dump($use_webrtc);?>
+													<label for="phone_login" class="col-sm-2 control-label"><?php if($use_webrtc == "1"){ echo "<i class='fa fa-info-circle' title='You cannot edit this field since WebRTC is enabled.'></i> ";} ?> Phone Login</label>
 													<div class="col-sm-10 mb">
-														<input type="text" class="form-control" name="phone_login" id="phone_login"  <?php if(isset($_SESSION['use_webrtc']) && $_SESSION['use_webrtc'] == 1){ echo "disabled";} ?>
+														<input type="text" class="form-control" name="phone_login" id="phone_login"  <?php if($use_webrtc == "1" && !$modify_phones){ echo "disabled";} ?>
 															value="<?php echo $output->data->phone_login;?>" maxlength="20" placeholder="<?php $lh->translateText("phone_login"); ?>" />
 														<label id="phone_login-error"></label>
 													</div>
@@ -295,19 +324,20 @@
 															<option value="N" selected> No </option>
 															<option value="Y" > Yes </option>
 														</select>
+														<small><span id="change_pass_check"></span></small>
 													</div>
 												</div>
 												<div class="form-group form_password" style="display:none;">
 													<label for="password" class="col-sm-2 control-label"><?php $lh->translateText("password"); ?></label>
 													<div class="col-sm-10 mb">
-														<input type="password" class="form-control" name="password" id="password" <?php if($output->data->user_level >= 8){echo 'maxlength="20"';}else{echo 'maxlength="10"';} ?> placeholder="<?php $lh->translateText("password"); ?>" />
+														<input type="password" class="form-control" name="password" id="password" autocomplete="new-password" <?php if($output->data->user_level >= 8){echo 'maxlength="20"';}else{echo 'maxlength="10"';} ?> placeholder="<?php $lh->translateText("password"); ?>" />
 														<small><i><span id="pass_result"></span></i></small>
 													</div>
 												</div>
 												<div class="form-group form_password" style="display:none;">
 													<label for="conf_password" class="col-sm-2 control-label"><?php $lh->translateText("confirm_password"); ?></label>
 													<div class="col-sm-10 mb">
-														<input type="password" class="form-control" id="conf_password" placeholder="<?php $lh->translateText("confirm_password"); ?>" required />
+														<input type="password" class="form-control" id="conf_password" autocomplete="new-password" placeholder="<?php $lh->translateText("confirm_password"); ?>" required />
 														<span id="pass_result"></span></i></small>
 													</div> 
 												</div>
@@ -585,7 +615,7 @@
 
         <?php print $ui->standardizedThemeJS(); ?>
 		<!-- Modal Dialogs -->
-		<?php include_once "./php/ModalPasswordDialogs.php" ?>
+		<?php //include_once "./php/ModalPasswordDialogs.php" ?>
 
 <script type="text/javascript">
 	$(document).ready(function() {
@@ -639,6 +669,10 @@
             var atpos = x.indexOf("@");
             var dotpos = x.lastIndexOf(".");
 			
+			// variables for checking webrtc
+			var validate_webrtc = 0;
+			//var enable_webrtc = document.getElementById('enable_webrtc').value;
+			
 			// conditional statements
 			if (change_pass == "Y") {
 				if (password != conf_password) {
@@ -658,11 +692,15 @@
 			if (email == "") {
 				validate_email = 0;
 			}
+			
+			//if (enable_webrtc == "0" && change_pass == "N") {
+			//	validate_webrtc = 1;
+			//}
 
 			// validate results
 			if (validate_email == 1) {
 				$('#update_button').html("<i class='fa fa-check'></i> Update");
-				$('#modifyUserOkButton').prop("disabled", false);	
+				$('#modifyUserOkButton').prop("disabled", false);
 				$("#email_check").html("<font color='red'>Input a Valid Email Address</font>");
 				$('#email_check').show().focus().delay(5000).fadeOut().queue(function(n){$(this).hide(); n();});
 			}
@@ -675,10 +713,16 @@
 				$('#update_button').html("<i class='fa fa-check'></i> Update");
 				$('#modifyUserOkButton').prop("disabled", false);
 			}
+			//if (validate_webrtc == 1) {
+			//	$('#update_button').html("<i class='fa fa-check'></i> Update");
+			//	$('#modifyUserOkButton').prop("disabled", false);
+			//	$("#change_pass_check").html("<font color='red'>WebRTC for this user was disabled. Please enter new or the same password to update the user's assigned phone.</font>");
+			//	$('#change_pass_check').show().focus().delay(10000).fadeOut().queue(function(n){$(this).hide(); n();});
+			//}
 
 			// validations
-			if (validate_email == 0 && validate_password == 0 && <?=($perm->user_update === 'U')?>) {
-				$("#phone_login").prop("disabled", false);				
+			if (validate_email == 0 && validate_password == 0 && validate_webrtc == 0 && <?=($perm->user_update === 'U')?>) {
+				$("#phone_login").prop("disabled", false);
 				$.ajax({
 					url: "./php/ModifyTelephonyUser.php",
 					type: 'POST',

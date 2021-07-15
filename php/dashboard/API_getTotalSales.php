@@ -2,7 +2,7 @@
 /**
  * @file        API_getTotalSales.php
  * @brief       Displays total inbound and outbound calls
- * @copyright   Copyright (c) 2018 GOautodial Inc.
+ * @copyright   Copyright (c) 2020 GOautodial Inc.
  * @author		Demian Lizandro A. Biscocho 
  *
  * @par <b>License</b>:

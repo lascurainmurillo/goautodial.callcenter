@@ -10,6 +10,13 @@ define('VERIFY_SSL', false);
 define('DOMAIN_SOCKET', 'http://localhost:3001');
 define('LIST_ID', 1004);
 define('KEY_JWT', 'xxxx');
+
+define('DB_USERNAME_KAMAILIO', 'kamailiou');
+define('DB_PASSWORD_KAMAILIO', 'kamailiou1234');
+define('DB_HOST_KAMAILIO', 'localhost');
+define('DB_NAME_KAMAILIO', 'kamailio');
+define('DB_PORT_KAMAILIO', '3306');
+
 // other configuration parameters
 define('CRM_ADMIN_EMAIL', 'admin@localhost.com');
 

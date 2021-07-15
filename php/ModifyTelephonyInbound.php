@@ -219,6 +219,24 @@
 			$no_agents_callmenu 				= stripslashes($no_agents_callmenu);
 		}
 		
+		$no_agents_did	 					= NULL; 
+		if (isset($_POST["no_agents_did"])) { 
+			$no_agents_did 					= $_POST["no_agents_did"]; 
+			$no_agents_did 					= stripslashes($no_agents_did);
+		}
+		
+		$no_agents_extension 					= NULL; 
+		if (isset($_POST["no_agents_extension"])) { 
+			$no_agents_extension				= $_POST["no_agents_extension"]; 
+			$no_agents_extension				= stripslashes($no_agents_extension);
+		}
+		
+		$no_agents_extension_context 				= NULL; 
+		if (isset($_POST["no_agents_extension_context"])) { 
+			$no_agents_extension_context			= $_POST["no_agents_extension_context"]; 
+			$no_agents_extension_context			= stripslashes($no_agents_extension_context);
+		}
+		
 		$welcome_message_filename 				= NULL; 
 		if (isset($_POST["welcome_message_filename"])) { 
 			$welcome_message_filename 			= $_POST["welcome_message_filename"]; 
@@ -241,6 +259,18 @@
 		if (isset($_POST["onhold_prompt_filename"])) { 
 			$onhold_prompt_filename 			= $_POST["onhold_prompt_filename"]; 
 			$onhold_prompt_filename 			= stripslashes($onhold_prompt_filename);
+		}
+		
+		$no_agents_extension_context					= NULL;
+		if (isset($_POST["no_agents_extension_context"])) {
+			$no_agents_extension_context 				= $_POST["no_agents_extension_context"];
+			$no_agents_extension_context 				= stripslashes($no_agents_extension_context);
+		}
+
+		$no_agents_extension							= NULL;
+		if (isset($_POST["no_agents_extension"])) {
+			$no_agents_extension		 				= $_POST["no_agents_extension"];
+			$no_agents_extension		 				= stripslashes($no_agents_extension);
 		}
 		
 		$postfields 							= array(
@@ -274,6 +304,9 @@
 			'no_agents_voicemail' 					=> $no_agents_voicemail, 
 			'no_agents_ingroup' 					=> $no_agents_ingroup, 
 			'no_agents_callmenu' 					=> $no_agents_callmenu, 
+			'no_agents_did'						=> $no_agents_did, 
+			'no_agents_extension'					=> $no_agents_extension, 
+			'no_agents_extension_context'				=> $no_agents_extension_context, 
 			'welcome_message_filename' 				=> $welcome_message_filename, 
 			'play_welcome_message' 					=> $play_welcome_message, 
 			'moh_context' 							=> $moh_context, 
@@ -514,29 +547,58 @@
 			$filter_clean_cid_number 			= $_POST["cid_num"]; 
 			$filter_clean_cid_number 			= stripslashes($filter_clean_cid_number);
 		}
+		
+		$list_id	 							= NULL; 
+		if (isset($_POST["list_id"])) { 
+			$list_id 							= $_POST["list_id"];
+			$list_id 							= stripslashes($list_id);
+		}
+		
+		$voicemail_ext = $_POST['route_voicemail'];
+		$ext = $_POST['route_exten'];
+		$ext_cont = $_POST['route_exten_context'];
+		$phone = $_POST['route_phone_exten'];
+		$ingroup = $_POST['route_ingroupid'];
+		$defaultAD = $_POST['user_route_settings_ingroup'];
+		$call_handle_method = $_POST['call_handle_method'];
+		$agent_search_method = $_POST['agent_search_method'];
 
-		$postfields 							= array(
-			'goAction' 								=> 'goEditDID',
-			'did_id' 								=> $modify_did,
-			'did_pattern' 							=> $did_pattern,
-			'did_description' 						=> $desc,
-			'did_route' 							=> $route,
-			'did_active' 							=> $status,
+		if($route == "AGENT"){
+			$voicemail_ext = $_POST['ru_voicemail'];
+			$ext = $_POST['ru_exten'];
+			$ext_cont = $_POST['ru_exten_context'];
+			$phone = $_POST['ru_phone'];
+			$ingroup = $_POST['ru_ingroup'];
+		}else{
+			$defaultAD = "AGENTDIRECT";
+		}
+		
+
+		$postfields = array(
+			'goAction' 						=> 'goEditDID',
+			'did_id' 						=> $modify_did,
+			'did_pattern' 						=> $did_pattern,
+			'did_description' 					=> $desc,
+			'did_route' 						=> $route,
+			'did_active' 						=> $status,
 			'filter_clean_cid_number' 				=> $filter_clean_cid_number,
-			'user' 									=> $_POST['route_agentid'],
+			'user' 							=> $_POST['route_agentid'],
 			'user_unavailable_action' 				=> $_POST['route_unavail'],
-			'user_route_settings_ingroup' 			=> $_POST['user_route_settings_ingroup'],
-			'group_id' 								=> $_POST['route_ingroupid'],
-			'phone' 								=> $_POST['route_phone_exten'],
-			'server_ip' 							=> $_POST['route_phone_server'],
-			'menu_id' 								=> $_POST['route_ivr'],
-			'voicemail_ext' 						=> $_POST['route_voicemail'],
-			'extension' 							=> $_POST['route_exten'],
-			'exten_context' 						=> $_POST['route_exten_context']
+			'user_route_settings_ingroup' 				=> $defaultAD,
+			'group_id' 						=> $ingroup,
+			'phone' 						=> $phone,
+			'server_ip' 						=> $_POST['route_phone_server'],
+			'menu_id' 						=> $_POST['route_ivr'],
+			'voicemail_ext' 					=> $voicemail_ext,
+			'extension' 						=> $ext,
+			'exten_context' 					=> $ext_cont,
+			'list_id'						=> $list_id,
+			'call_handle_method'			=> $call_handle_method,
+			'agent_search_method'			=> $agent_search_method
 		);				
 
 		$output 								= $api->API_modifyDID($postfields);
-
+		
 		if ($output->result == "success") { 
 			$status 							= 1; 
 		} else { 

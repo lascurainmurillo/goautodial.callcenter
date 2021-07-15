@@ -49,6 +49,7 @@ class DbHandler {
     /** Database connector */
     private $dbConnector;
 	private $dbConnectorAsterisk;
+    private $dbConnectorKamailio;
 	/** Language handler */
 	private $lh;
 	private $api;
@@ -59,6 +60,7 @@ class DbHandler {
 		// Database connector
 		$this->dbConnector = \creamy\DatabaseConnectorFactory::getInstance()->getDatabaseConnectorOfType($dbConnectorType);
 		$this->dbConnectorAsterisk = \creamy\DatabaseConnectorFactory::getInstance()->getDatabaseConnectorOfTypeAsterisk($dbConnectorType);
+		$this->dbConnectorKamailio = \creamy\DatabaseConnectorFactory::getInstance()->getDatabaseConnectorOfTypeKamailio($dbConnectorType);
 
 		// language handler
 		$locale = $this->getLocaleSetting();
@@ -306,7 +308,7 @@ class DbHandler {
                     'salt' => base64_encode($salt)
                 ];
                 $pass_hash = password_hash($password, PASSWORD_BCRYPT, $pass_options);
-                $pass_hash = substr($pass_hash, 29, 31);				
+                $pass_hash = substr($pass_hash, 29, 31);
 			} else {$pass_hash = $password;}
 
 			if ( preg_match("/Y/i", $status) ) {
@@ -480,7 +482,13 @@ class DbHandler {
 	 */
 	public function changePassword($userid, $oldpassword, $password1, $password2) {
 		// safety check
-		if ($password1 != $password2) return false;
+		if ($password1 !== $password2) return false;
+        
+        $rpasshash 			= $this->dbConnectorAsterisk->getOne("system_settings");
+        $pass_hash_enabled 	= $rpasshash['pass_hash_enabled'];
+        $pass_cost 			= $rpasshash['pass_cost'];
+        $pass_key 			= $rpasshash['pass_key'];
+        
 		// get old password hash to check both.
 		// $this->dbConnector->where("id", $userid);
 		$this->dbConnectorAsterisk->where("user_id", $userid);
@@ -489,20 +497,61 @@ class DbHandler {
 		if ($userobj) {
 			// $password_hash = $userobj["password_hash"];
 			// $status = $userobj["status"];
-			$password_hash = $userobj["pass"];
+			$password_hash = ($pass_hash_enabled > 0) ? $userobj["pass_hash"] : $userobj["pass"];
 			$status = $userobj["active"];
+            $phone_login = $userobj['phone_login'];
+            $ha1 = '';
+            $ha1b = '';
+
 			// if ($status == 1) { // user is active, check old password.
-			if ($status == 'Y' || $status == 'y') { 
+			if (strtoupper($status) === 'Y') {
 				// if (\creamy\PassHash::check_password($password_hash, $oldpassword)) {
+                if ($pass_hash_enabled > 0) {
+                    $oldpassword = $this->encrypt_passwd($oldpassword, $pass_cost, $pass_key);
+                }
+                
 				if ($password_hash == $oldpassword) {
 	                // oldpassword is correct, change password.
 	                // $newPasswordHash = \creamy\PassHash::hash($password1);
-	                $newPasswordHash = $password1;
+                    if ($pass_hash_enabled > 0) {
+                        $newPasswordHash = $this->encrypt_passwd($password1, $pass_cost, $pass_key);
+                        $data = array("pass" => '', "phone_pass" => '', "pass_hash" => $newPasswordHash);
+                    } else {
+                        $newPasswordHash = $password1;
+                        $data = Array("pass" => $newPasswordHash, "phone_pass" => $newPasswordHash, "pass_hash" => '');
+                    }
 					// $this->dbConnector->where("id", $userid);
 					$this->dbConnectorAsterisk->where("user_id", $userid);
 					// $data = Array("password_hash" => $newPasswordHash);
-					$data = Array("pass" => $newPasswordHash, "phone_pass" => $newPasswordHash);
-					return $this->dbConnectorAsterisk->update(CRM_USERS_TABLE_NAME_ASTERISK, $data);
+					$chUserPass = $this->dbConnectorAsterisk->update(CRM_USERS_TABLE_NAME_ASTERISK, $data);
+                    
+                    if ($chUserPass) {
+                        $this->dbConnector->where("setting", "GO_agent_wss_sip");
+                        $querygo 	            = $this->dbConnector->getOne("settings", "value");
+                        $realm 		            = $querygo['value'];
+                        
+                        if  ($pass_hash_enabled > 0) {
+                            $ha1 			    = md5 ("{$phone_login}:{$realm}:{$newPasswordHash}");
+                            $ha1b 			    = md5 ("{$phone_login}@{$realm}:{$realm}:{$newPasswordHash}");
+                            $newPasswordHash 	= '';
+                        }
+
+                        $this->dbConnector->where("setting", "GO_agent_domain");
+                        $rowd 					= $this->dbConnector->getOne("settings", "value");
+
+                        $domain 				= (!is_null($rowd['value']) || $rowd['value'] !== '') ? $rowd['value'] : 'goautodial.com';
+                    
+                        $datakam 				= array(
+                            "password" 				=> $newPasswordHash,
+                            "ha1" 					=> $ha1,
+                            "ha1b" 					=> $ha1b
+                        );
+                        $this->dbConnectorKamailio->where('username', $phone_login);
+                        $this->dbConnectorKamailio->where('domain', $domain);
+                        $this->dbConnectorKamailio->update('subscriber', $datakam);
+                    }
+                    
+                    return $chUserPass;
 	            } else {
 	                // oldpassword is incorrect
 	                return false;
@@ -725,12 +774,48 @@ class DbHandler {
 					$this->dbConnector->rollback();
 					return false;
 				}
-				
 			}
+			$log_user = session_user ;
+			$log_ip = $_SERVER['REMOTE_ADDR'];
+			$log_group = session_usergroup;
+
+			$log_id = $this->log_action( $this->dbConnector, 'MODIFY', $log_user, $log_ip, "Updated System Settings", $log_group, $this->dbConnector->getLastQuery() );
 		}
 		$this->dbConnector->commit();
 		return true;
 	}
+
+	public function log_action($link, $action, $user, $ip, $details, $user_group, $db_query = '') {
+		$action = $link->escape(strtoupper($action));
+		$event_date = date("Y-m-d H:i:s");
+		$user = $link->escape($user);
+		$ip = $link->escape($ip);
+		$user_group = $link->escape($user_group);
+		$details = $link->escape($details);
+		$db_query = $link->escape($db_query);
+		
+		if ((!is_null($user) && strlen($user) > 0) && (!is_null($ip) && strlen($ip) > 0) && $link) {
+			//$logSQL = "INSERT INTO go_action_logs (user, ip_address, event_date, action, details, db_query, user_group) VALUES ('$user', '$ip', '$event_date', '$action', '$details', '$db_query', '$user_group');";
+			$insertData = array(
+				'user' => $user,
+				'ip_address' => $ip,
+				'event_date' => $event_date,
+				'action' => $action,
+				'details' => $details,
+				'db_query' => $db_query,
+				'user_group' => $user_group
+			);
+			$result = $link->insert('go_action_logs', $insertData);
+		}
+		
+		if ($result) {
+			$log_id = $link->getInsertId();
+			return $log_id;
+		} else {
+			return false;
+		}
+	}
+	##### END ACTION LOGS #####
 	
 	public function getMainAdminUserData() {
 		$adminUserId = $this->getSettingValueForKey(CRM_SETTING_ADMIN_USER);
@@ -1381,7 +1466,7 @@ class DbHandler {
 		$data = array(
 			"user_from" => $fromuserid,
 			"user_to" => $touserid,
-			"external_recepient" => $external_recepients,
+			"external_recepient" => $external_recipients,
 			"subject" => $subject,
 			"message" => $message,
 			"date" => $this->dbConnector->now(),
@@ -2128,19 +2213,26 @@ class DbHandler {
 	 * @return Bool true if active modules changed, false otherwise.
 	 */
 	public function changeModuleStatus($moduleName, $status) {
+		$log_user = session_user ;
+                $log_ip = $_SERVER['REMOTE_ADDR'];
+                $log_group = session_usergroup;
+
 		$modules = $this->getActiveModules();
 		$modulesChanged = false;
 		// check status
 		if ($status == "1" || $status == true) {
-			if (!in_array($moduleName, $modules, true)) { $modules[] = $moduleName; $modulesChanged = true; }
+			if (!in_array($moduleName, $modules, true)) { $modules[] = $moduleName; $modulesChanged = true; $log_message="Enabled Module: "; }
 		} else if ($status == "0" || $status == false) {
-			if ( ($key = array_search($moduleName, $modules)) !== false) { unset($modules[$key]); $modulesChanged = true; } 
+			if ( ($key = array_search($moduleName, $modules)) !== false) { unset($modules[$key]); $modulesChanged = true; $log_message="Disabled Module: ";} 
 		}
 		
 		// change status and return success.
 		if ($modulesChanged) {
+			$log_id = $this->log_action( $this->dbConnector, 'MODIFY', $log_user, $log_ip, $log_message.$moduleName, $log_group );
 			return $this->setActiveModules($modules);
 		}
+
+		$log_id = $this->log_action( $this->dbConnector, 'MODIFY', $log_user, $log_ip, "Failed to Modify: ".$moduleName, $log_group, $this->dbConnector->getLastQuery() );
 		return false;
 	}
 	
@@ -2252,6 +2344,17 @@ class DbHandler {
 		return $this->dbConnector->count;
 	}
 
+    
+    private function encrypt_passwd($password, $cost, $salt) {
+        $pass_options = [
+            'cost' => $cost,
+            'salt' => base64_encode($salt)
+        ];
+        $pass_hash = password_hash($password, PASSWORD_BCRYPT, $pass_options);
+        $pass_hash = substr($pass_hash, 29, 31);
+        
+        return $pass_hash;
+    }
 }
 
 ?>

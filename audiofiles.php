@@ -2,7 +2,7 @@
 /**
  * @file        telephonyaudiofiles.php
  * @brief       Manage audio files
- * @copyright   Copyright (c) 2018 GOautodial Inc.
+ * @copyright   Copyright (c) 2020 GOautodial Inc.
  * @author		Demian Lizandro A. Biscocho
  * @author      Alexander Jim Abenoja
  *
@@ -31,6 +31,13 @@
 	$api = \creamy\APIHandler::getInstance();
 	$lh = \creamy\LanguageHandler::getInstance();
 	$user = \creamy\CreamyUser::currentUser();
+	
+	//proper user redirects
+	if($user->getUserRole() != CRM_DEFAULTS_USER_ROLE_ADMIN){
+		if($user->getUserRole() == CRM_DEFAULTS_USER_ROLE_AGENT){
+			header("location: agent.php");
+		}
+	}	
 	
 	$perm = $api->goGetPermissions('voicefiles,moh', $_SESSION['usergroup']);
 ?>
@@ -243,8 +250,9 @@
                                                 <option value="conf">  conf  </option>
 						<?php
 						for($i=0;$i<count($audio_files->file_name);$i++){
+							$file = substr($audio_files->file_name[$i], 0, strrpos($audio_files->file_name[$i], "."));
 						?>
-							<option value="<?php echo $audio_files->file_name[$i];?>">  <?php echo $audio_files->file_name[$i]; ?>  </option>
+							<option value="<?php echo $file;?>">  <?php echo $file; ?>  </option>
 	    		<?php
            		    }		
             		?>
@@ -321,13 +329,17 @@
 	                            <label class="col-sm-4 control-label" for="user_group"><?php $lh->translateText("user_group"); ?>: </label>
 	                            <div class="col-sm-8 mb">
 	                                <select id="user_group" class="form-control select2-1" name="user_group" style="width:100%;">
+												<?php
+												if ($_SESSION['usergroup'] === "ADMIN") {
+												?>
 	                                	<option value="---ALL---">  ALL USER GROUPS  </option>
+	                                 <?php
+												}
+	                                    for($i=0;$i<count($user_groups->user_group);$i++){
+	                                 ?>
+	                                    <option value="<?php echo $user_groups->user_group[$i];?>">  <?php echo $user_groups->user_group[$i].' - '.$user_groups->group_name[$i];?>  </option>
 	                                    <?php
-	                                        for($i=0;$i<count($user_groups->user_group);$i++){
-	                                    ?>
-	                                        <option value="<?php echo $user_groups->user_group[$i];?>">  <?php echo $user_groups->user_group[$i].' - '.$user_groups->group_name[$i];?>  </option>
-	                                    <?php
-	                                        }
+	                                    }
 	                                    ?>
 	                                </select>
 	                            </div>
@@ -348,8 +360,9 @@
                                                 <option value="conf">  conf  </option>
                                                 <?php
                                                 for($i=0;$i<count($audio_files->file_name);$i++){
+							$file = substr($audio_files->file_name[$i], 0, strrpos($audio_files->file_name[$i], "."));
                                                 ?>
-                                                        <option value="<?php echo $audio_files->file_name[$i];?>">  <?php echo $audio_files->file_name[$i]; ?>  </option>
+                                                        <option value="<?php echo $file;?>">  <?php echo $file; ?>  </option>
 
                         <?php
                             }

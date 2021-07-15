@@ -2,7 +2,7 @@
 /**
  * @file 		edittelephonylist.php
  * @brief 		Edit list details
- * @copyright 	Copyright (c) 2018 GOautodial Inc. 
+ * @copyright 	Copyright (c) 2020 GOautodial Inc. 
  * @author		Demian Lizandro A. Biscocho
  * @author     	Alexander Jim H. Abenoja
  *
@@ -31,6 +31,13 @@
 	$api = \creamy\APIHandler::getInstance();
 	$lh = \creamy\LanguageHandler::getInstance();
 	$user = \creamy\CreamyUser::currentUser();
+	
+	//proper user redirects
+	if($user->getUserRole() != CRM_DEFAULTS_USER_ROLE_ADMIN){
+		if($user->getUserRole() == CRM_DEFAULTS_USER_ROLE_AGENT){
+			header("location: agent.php");
+		}
+	}	
 
 	$modifyid = NULL;
 	if (isset($_POST["modifyid"])) {
@@ -232,21 +239,21 @@
 											<input type="text" class="form-control" name="xferconf_b_number" placeholder="<?php $lh->translateText("xferconf_b_number"); ?>">
 										</div>
 									</div>
-									<div class="form-group clearfix">
+									<!-- <div class="form-group clearfix">
 										<label class="control-label col-lg-3" style="text-align: left;"></label>
 										<div class="col-lg-4">
-											<input type="text" class="form-control" name="xferconf_c_number" placeholder="<?php $lh->translateText("xferconf_c_number"); ?>">
+											<input type="text" class="form-control" name="xferconf_c_number" placeholder="<?php //$lh->translateText("xferconf_c_number"); ?>">
 										</div>
 										<div class="col-lg-4">
-											<input type="text" class="form-control" name="xferconf_d_number" placeholder="<?php $lh->translateText("xferconf_d_number"); ?>">
+											<input type="text" class="form-control" name="xferconf_d_number" placeholder="<?php //$lh->translateText("xferconf_d_number"); ?>">
 										</div>
 									</div>
 									<div class="form-group clearfix">
 										<label class="control-label col-lg-3" style="text-align: left;"></label>
 										<div class="col-lg-4">
-											<input type="text" class="form-control" name="xferconf_e_number" placeholder="<?php $lh->translateText("xferconf_e_number"); ?>">
+											<input type="text" class="form-control" name="xferconf_e_number" placeholder="<?php //$lh->translateText("xferconf_e_number"); ?>">
 										</div>
-									</div>
+									</div> -->
 								
 								</div><!-- tab 1 -->
 								<div id="tab_2" class="tab-pane">

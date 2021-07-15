@@ -395,7 +395,7 @@ EOF;
 			}
 			$str .= <<<EOF
 <audio id="remoteStream" style="display: none;" autoplay controls></audio>
-<script type="text/javascript" src="{$goModuleDIR}js/jssip-3.0.13.js"></script>
+<script type="text/javascript" src="{$goModuleDIR}js/jssip-3.4.4.js"></script>
 <script>
 	var audioElement = document.querySelector('#remoteStream');
 	var localStream;
@@ -866,7 +866,7 @@ EOF;
 					</div>
 				</div>
 				<div class="row">
-					$eccsTabStopDatePicker;
+					$eccsTabStopDatePicker
 					<div class="col-md-12">
 						<div class="mda-form-group label-floating">
 							<textarea id="callback-comments" name="callback-comments" rows="5" data-tooltip="tooltip" title="Callback Comment" class="mda-form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched textarea" style="resize:none; width: 100%;"></textarea>
@@ -998,6 +998,11 @@ $str .= \moduleCustom::javascriptAll($this->goDB);
 		$rslt = $this->goDB->getOne('settings', 'value');
 		$showPhones = (strlen($rslt['value']) > 0) ? $rslt['value'] : 0;
 		$_SESSION['show_phones'] = $showPhones;
+		
+		//$this->goDB->where('setting', 'GO_modify_phones');
+		//$rslt = $this->goDB->getOne('settings', 'value');
+		//$modifyPhones = (strlen($rslt['value']) > 0) ? $rslt['value'] : 0;
+		//$_SESSION['modify_phones'] = $modifyPhones;
 		
 		if ($useWebRTC) {
 			$this->goDB->where('setting', 'GO_agent_wss');
@@ -1364,8 +1369,10 @@ EOF;
 		$moduleSettings = array(
 			"GO_agent_use_wss_info" => CRM_SETTING_TYPE_LABEL,
 			"GO_agent_use_wss" => CRM_SETTING_TYPE_BOOL,
-			"GO_show_phones" => CRM_SETTING_TYPE_BOOL,
 			"GO_show_phones_info" => CRM_SETTING_TYPE_LABEL,
+			"GO_show_phones" => CRM_SETTING_TYPE_BOOL,
+			//"GO_modify_phones_info" => CRM_SETTING_TYPE_LABEL,
+			//"GO_modify_phones" => CRM_SETTING_TYPE_BOOL,
 			"GO_agent_wss" => CRM_SETTING_TYPE_STRING,
 			"GO_agent_wss_info" => CRM_SETTING_TYPE_LABEL,
 			"GO_agent_wss_port" => CRM_SETTING_TYPE_INT,

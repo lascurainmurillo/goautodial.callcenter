@@ -2,9 +2,10 @@
  /**
  * @file 		telephonycampaigns.php
  * @brief 		Manage Campaigns, Dispositions & etc.
- * @copyright 	Copyright (C) GOautodial Inc.
- * @author		Alexander Jim H. Abenoja  <alex@goautodial.com>
- * @author     	Noel Umandap  <noelumandap@goautodial.com>
+ * @copyright 	Copyright (c) 2020 GOautodial Inc.
+ * @author		Alexander Jim H. Abenoja
+ * @author     	Noel Umandap
+ * @author		Demian Lizandro A. Biscocho
  *
  * @par <b>License</b>:
  *  This program is free software: you can redistribute it and/or modify
@@ -31,6 +32,13 @@
 	$api = \creamy\APIHandler::getInstance();
 	$lh = \creamy\LanguageHandler::getInstance();
 	$user = \creamy\CreamyUser::currentUser();
+	
+	//proper user redirects
+	if($user->getUserRole() != CRM_DEFAULTS_USER_ROLE_ADMIN){
+		if($user->getUserRole() == CRM_DEFAULTS_USER_ROLE_AGENT){
+			header("location: agent.php");
+		}
+	}	
 
 	$perm = $api->goGetPermissions('campaign,disposition,pausecodes,hotkeys,list', $_SESSION['usergroup']);
 	$gopackage = $api->API_getGOPackage();
@@ -161,25 +169,27 @@
 								*/
 								$campaign = $api->API_getAllCampaigns();
 								if($campaign->result !== "success"){
-									die("API ERROR: ".$campaign->result);
+									// die("API ERROR: ".$campaign->result);
 								}
 								$disposition = $api->API_getAllDispositions();
 								$leadrecycling = $api->API_getAllLeadRecycling();
-								$dialStatus = $api->API_getAllDialStatuses();
+								$dialStatus = $api->API_getAllDialStatuses('ALL', 1);
 								$ingroup = $api->API_getAllInGroups();
 								$ivr = $api->API_getAllIVRs();
 								$voicemails = $api->API_getAllVoiceFiles();
 								$users = $api->API_getAllUsers();
 								$carriers = $api->API_getAllCarriers();
 								$checkbox_all = $ui->getCheckAll("campaign");
+								$areacode = $api->API_getAllAreacodes();
+
 								//echo "<pre>";
-								//var_dump($leadrecycling);
+								//var_dump($areacodes);
 							?>
 							 <div role="tabpanel">
 								<ul role="tablist" class="nav nav-tabs nav-justified">
 
 								 <!-- Campaign panel tabs-->
-									 <li role="presentation" <?php if(!isset($_GET['T_disposition']) && !isset($_GET['T_recycling']) ) echo 'class="active"'; ?> >
+									 <li role="presentation" <?php if(!isset($_GET['T_disposition']) && !isset($_GET['T_recycling']) && !isset($_GET['T_areacode']) ) echo 'class="active"'; ?> >
 										<a href="#T_campaign" aria-controls="T_campaign" role="tab" data-toggle="tab" class="bb0">
 										   <?php $lh->translateText("campaigns"); ?> </a>
 									 </li>
@@ -199,13 +209,18 @@
 										   Lead Filters </a>
 									 </li>
 								-->
+								<!-- AC-CID panel tab -->
+									<li role="presentation" <?php if(isset($_GET['T_areacode']))echo 'class="active"'; ?>  >
+										<a href="#T_areacode" aria-controls="T_areacode" role="tab" data-toggle="tab" class="bb0">
+										   <?php $lh->translateText("Areacode CID"); ?> </a>
+									</li>
 								  </ul>
 
 								<!-- Tab panes-->
 								<div class="tab-content bg-white">
 									
 								<!--==== Campaigns ====-->							
-								  <div id="T_campaign" role="tabpanel" class="tab-pane <?php if(!isset($_GET['T_disposition']) && !isset($_GET['T_recycling']) ) echo 'active'; ?> ">
+								  <div id="T_campaign" role="tabpanel" class="tab-pane <?php if(!isset($_GET['T_disposition']) && !isset($_GET['T_recycling']) && !isset($_GET['T_areacode'])) echo 'active'; ?> ">
 										<table class="display responsive no-wrap table-bordered table-striped" width="100%" id="table_campaign">
 										   <thead>
 											  <tr>
@@ -224,6 +239,7 @@
 										   </thead>
 										   <tbody>
 											   	<?php
+												if($campaign->result == 'success') {
 											   		for($i=0;$i < count($campaign->campaign_id);$i++){
 
 														if($campaign->active[$i] == "Y"){
@@ -268,6 +284,7 @@
 													</tr>
 												<?php
 													}
+												}
 												?>
 										   </tbody>
 										</table>
@@ -290,7 +307,15 @@
 											   	<?php			
 													if (count($disposition->campaign_id) > 0){
 														for($i=0;$i < count($campaign->campaign_id);$i++){
-															
+															$dispoStatuses = array();
+															foreach ($disposition->custom_dispo as $cCamp => $cDispo){
+																if($cCamp == $campaign->campaign_id[$i]){
+																	foreach ($cDispo as $idx => $val) {
+																		$dispoStatuses[] = $idx;
+																	}
+																}
+															}
+															if(!empty($dispoStatuses)){
 											   	?>
 													<tr>
 														<td><?php 																
@@ -301,14 +326,6 @@
 														<td><?php echo $campaign->campaign_name[$i];?></td>
 														<td>
 												<?php
-															$dispoStatuses = array();
-															foreach ($disposition->custom_dispo as $cCamp => $cDispo){
-																if($cCamp == $campaign->campaign_id[$i]){
-																	foreach ($cDispo as $idx => $val) {
-																		$dispoStatuses[] = $idx;
-																	}
-																}
-															}
 															echo implode(", ", $dispoStatuses);
 															
 															$action_DISPOSITION = $ui->ActionMenuForDisposition($campaign->campaign_id[$i], $campaign->campaign_name[$i], $perm);
@@ -316,7 +333,8 @@
 														</td>
 														<td><?php echo $action_DISPOSITION;?></td>
 													</tr>
-												<?php
+												<?php	
+															}
 														}
 													}
 												?>
@@ -405,6 +423,50 @@
 										</table>
 								 </div>
 
+								<!--==== AC-CID ====-->							
+								 <div id="T_areacode" role="tabpanel" class="tab-pane <?php if(isset($_GET['T_areacode'])) echo 'active'; ?> ">
+										<table class="display responsive no-wrap table-bordered table-striped" width="100%" id="table_areacode">
+										   <thead>
+											  <tr>
+												 <th></th>
+												 <th><?php $lh->translateText("campaign_id"); ?></th>
+												 <th><?php $lh->translateText("campaign_name"); ?></th>
+												 <th><?php $lh->translateText("areacode"); ?></th>
+												 <th><?php $lh->translateText("caller_id"); ?></th>
+												 <th><?php $lh->translateText("status"); ?></th>
+												 <th class='action_areacode'><?php $lh->translateText("action"); ?></th>											 
+											  </tr>
+										   </thead>
+										   <tbody>
+											   <?php
+												if($areacode->result == "success"){
+											   		for($i=0;$i < count($areacode->campaign_id);$i++){
+
+														if($areacode->active[$i] == "Y"){
+															$areacode->active[$i] = $lh->translationFor("active");
+														}else{
+															$areacode->active[$i] = $lh->translationFor("inactive");
+														}
+
+													$action_CAMPAIGN = $ui->ActionMenuForAreacodes($areacode->areacode[$i], $areacode->campaign_id[$i], $perm);
+											   ?>
+													<tr>
+														<td><?php if ($perm->campaign->campaign_update !== 'N') { echo '<a class="view_areacode" data-toggle="modal" data-target="#modal_edit_areacode" data-camp="'.$areacode->campaign_id[$i].'" data-ac="'.$areacode->areacode[$i].'">'; } ?><avatar username='<?php echo $areacode->campaign_name[$i];?>' :size='32'></avatar><?php if ($perm->campaign->campaign_update !== 'N') { echo '</a>'; } ?></td>
+														<td><strong><?php if ($perm->campaign->campaign_update !== 'N') { echo '<a class="view_areacode" data-toggle="modal" data-target="#modal_edit_areacode"  data-camp="'.$areacode->campaign_id[$i].'" data-ac="'.$areacode->areacode[$i].'">'; } ?><?php echo $areacode->campaign_id[$i];?><?php if ($perm->campaign->campaign_update !== 'N') { echo '</a>'; } ?></strong></td>
+														<td><?php echo $areacode->campaign_name[$i];?></td>
+														<td><?php echo $areacode->areacode[$i];?></td>
+														<td><?php echo $areacode->outbound_cid[$i];?></td>
+														<td><?php echo $areacode->active[$i];?></td>
+														<td><?php echo $action_CAMPAIGN;?></td>													
+													</tr>
+											   <?php
+													}
+												} 
+											   ?>
+										   </tbody>
+										</table>
+								 </div>
+
 								</div><!-- END tab content-->
 							</div>
 							<?php
@@ -418,8 +480,8 @@
 								</div>
 								<div class="fab-div-area" id="fab-div-area">
 									<?php
-									$menu = 3;
-									$menuHeight = '250px';
+									$menu = 4;
+									$menuHeight = '310px';
 									$hideInbound = '';
 									$hideIVR = '';
 									$hideDID = '';
@@ -435,14 +497,20 @@
 										$menu--;
 										$hideLeadRecycling = ' hidden';
 									}
-									if ($menu < 3) { $menuHeight = '170px'; }
-									if ($menu < 2) { $menuHeight = '110px'; }
+									if ($perm->disposition->disposition_create === 'N') {
+										$menu--;
+										$hideAreacode = ' hidden';
+									}
+									if ($menu < 4) { $menuHeight = '240px'; }
+									if ($menu < 3) { $menuHeight = '180px'; }
+									if ($menu < 2) { $menuHeight = '120px'; }
 									?>
 									<ul class="fab-ul" style="height: <?=$menuHeight?>;">
 										<li class="li-style<?=$hideCampaign?>"><a class="fa fa-dashboard fab-div-item" data-toggle="modal" data-target="#add_campaign" title="Add Campaign"></a></li><br/>
 										<li class="li-style<?=$hideDisposition?>"><a class="fa fa-tty fab-div-item" data-toggle="modal" data-target="#modal_add_disposition" title="Add Disposition"></a></li><br/>
 										<li class="li-style<?=$hideLeadRecycling?>"><a class="fa fa-recycle fab-div-item" data-toggle="modal" data-target="#add_leadrecycling" title="Add Lead Recycling"></a></li><br/>
 										<!--<li class="li-style"><a class="fa fa-phone-square fab-div-item" data-toggle="modal" data-target="#add_leadfilter" title="Add Phone Numbers"> </a></li>-->
+										<li class="li-style<?=$hideAreacode?>"><a class="fa fa-paper-plane fab-div-item" data-toggle="modal" data-target="#add_areacode" title="Add Areacode"></a></li>
 									</ul>
 								</div>
 							</div>
@@ -1109,10 +1177,10 @@
 		                            <div class="col-sm-9 mb">
 		                                <select id="leadrecycling_status" name="leadrecycling_status" class="form-control select2" 
 						size="" onmousedown="if(this.options.length>8){this.size=8;}"  onchange='this.size=0;' onblur="this.size=0;"
-						style="width:100%; height:100%;">
+						style="width:100%;">
 											<optgroup label="System Statuses">
 												<?php 
-													$dialStatus = $api->API_getAllDialStatuses();
+													//$dialStatus = $api->API_getAllDialStatuses('ALL', 1);
 													 //foreach($output->status as key => $val){
 													for($i=0;$i<=count($dialStatus->status->system);$i++) { 
 												?>
@@ -1171,16 +1239,161 @@
 	        </div>
 	    </div>
     <!-- end of modal -->
+
+	<!-- AC-CID Modal -->
+	<div id="add_areacode" class="modal fade" role="dialog">
+		  <div class="modal-dialog">
+		    <!-- Modal content-->
+		    <div class="modal-content">
+
+	            <!-- Header -->
+	                <div class="modal-header">
+	                    <h4 class="modal-title animated bounceInRight" id="ingroup_modal">
+	                    	<b><?php $lh->translateText("areacode_wizard"); ?> » <?php $lh->translateText("create_new_areacode"); ?></b>
+	                    	<button type="button" class="close" data-dismiss="modal" aria-label="close_ingroup"><span aria-hidden="true">&times;</span></button>
+	                    </h4>
+	                </div>
+	                <div class="modal-body">
+			
+	                <form action="#" method="POST" id="create_areacode" role="form">
+	                	<input type="hidden" name="userid" id="userid" value="<?php echo $user->getUserId();?>"/>
+	                    <div class="row">
+	                    	<h4><?php $lh->translateText("create_areacode"); ?>
+	                           <br>
+	                           <small><?php $lh->translateText("assign_an_areacode_in_a_campaign"); ?></small>
+	                        </h4>
+	                        <fieldset>
+		                    	<div class="form-group mt">
+		                            <label class="col-sm-3 control-label" for="areacode_campaign"><?php $lh->translateText("campaign"); ?>: </label>
+		                            <div class="col-sm-9 mb">
+		                                <select id="areacode_campaign" name="areacode_campaign" class="form-control select2" style="width:100%;" required>
+							<option value="" selected disabled> -- Choose Campaign -- </option>
+						<?php
+		                                   	for($i=0;$i < count($campaign->campaign_id);$i++){
+								//if($campaign->use_custom_cid[$i] === 'AREACODE'){
+						?>
+		                                   		<option value='<?php echo $campaign->campaign_id[$i];?>'> <?php echo $campaign->campaign_id[$i] . " - " .$campaign->campaign_name[$i];?></option>
+						<?php
+								//}
+		                                   	}
+		                                ?>
+		                                </select>
+		                            </div>
+		                        </div>
+		                        <div class="form-group">
+		                            <label class="col-sm-3 control-label" for="areacode"><?php $lh->translateText("areacode"); ?></label>
+		                            <div class="col-sm-9 mb">
+		                                <input type="text" name="areacode" id="areacode" class="form-control" placeholder="<?php $lh->translateText("areacode"); ?>" minlength="1" maxlength="5" required>
+		                            	<label id="areacode-duplicate-error"></label>
+		                            </div>
+		                        </div>
+		                        <div class="form-group">
+		                            <label class="col-sm-3 control-label" for="areacode_outbound_cid"><?php $lh->translateText("outbound_cid"); ?></label>
+		                            <div class="col-sm-9 mb">
+		                                <input type="text" name="areacode_outbound_cid" id="areacode_outbound_cid" class="form-control" placeholder="<?php $lh->translateText("outbound_cid"); ?>" maxlength="20" required>
+		                            </div>
+		                        </div>
+		                        <div class="form-group">
+		                            <label class="col-sm-3 control-label" for="areacode_description"><?php $lh->translateText("description"); ?></label>
+		                            <div class="col-sm-9 mb">
+						<input type="text" name="areacode_description" id="areacode_description" class="form-control" placeholder="<?php $lh->translateText("description"); ?>" maxlength="50">
+		                            </div>
+		                        </div>
+	                        </fieldset>
+	                    </div><!-- end of step -->
+	                	<input type="hidden" id="areacode_checker" value="0">
+	                </form>
+
+	                </div> <!-- end of modal body -->
+	            </div>
+		  </div>
+		</div>
+	<!-- End of modal -->
+	
+	<!-- Edit AC-CID Modal -->
+	<div id="modal_edit_areacode" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+			<!-- Modal content-->
+			<div class="modal-content">
+
+			<!-- Header -->
+				<div class="modal-header">
+					<h4 class="modal-title animated bounceInRight" id="ingroup_modal">
+						<b><?php $lh->translateText("areacode_wizard"); ?> » <?php $lh->translateText("modify_areacode"); ?></b>
+						<button type="button" class="close" data-dismiss="modal" aria-label="close_ingroup"><span aria-hidden="true">&times;</span></button>
+					</h4>
+				</div>
+				<div class="modal-body">
+					<form action="#" method="POST" id="modify_areacode" role="form">
+						<input type="hidden" name="userid" id="userid" value="<?php echo $user->getUserId();?>"/>
+						<div class="row">
+							<h4><?php $lh->translateText("modify_areacode"); ?>
+								<br>
+								<small><?php $lh->translateText("modifying_an_areacode"); ?></small>
+							</h4>
+							<fieldset>
+								<div class="form-group mt">
+									<label class="col-sm-3 control-label" for="areacode_campaign"><?php $lh->translateText("campaign"); ?>: </label>
+									<div class="col-sm-9 mb">
+										<input type="hidden" id="edit_areacode_campaign" name="areacode_campaign" required readonly>
+										<select id="edit_areacode_campaign_select" name="areacode_campaign_select" class="form-control select2" style="width:100%;" disabled>
+										<?php
+											for($i=0;$i < count($campaign->campaign_id);$i++){
+										?>
+												<option value='<?php echo $campaign->campaign_id[$i];?>'> <?php echo $campaign->campaign_id[$i] . " - " .$campaign->campaign_name[$i];?></option>
+										<?php
+											}
+										?>
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-3 control-label" for="areacode"><?php $lh->translateText("areacode"); ?></label>
+									<div class="col-sm-9 mb">
+										<input type="text" name="areacode" id="edit_areacode" class="form-control" placeholder="<?php $lh->translateText("areacode"); ?>" minlength="1" maxlength="5" readonly required>
+										<label id="areacode-duplicate-error"></label>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-3 control-label" for="edit_areacode_outbound_cid"><?php $lh->translateText("outbound_cid"); ?></label>
+									<div class="col-sm-9 mb">
+										<input type="text" name="areacode_outbound_cid" id="edit_areacode_outbound_cid" class="form-control" placeholder="<?php $lh->translateText("outbound_cid"); ?>" maxlength="20" required>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-3 control-label" for="areacode_description"><?php $lh->translateText("description"); ?></label>
+									<div class="col-sm-9 mb">
+										<input type="text" name="areacode_description" id="edit_areacode_description" class="form-control" placeholder="<?php $lh->translateText("description"); ?>" maxlength="50">
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-3 control-label" for="areacode_status"><?php $lh->translateText("Status"); ?></label>
+									<div class="col-sm-9 mb">
+										<select id="edit_areacode_status" name="areacode_status" class="form-control" style="width:100%;">
+											<option value="Y">Active</option>
+											<option value="N">Inactive</option>
+										</select>
+									</div>
+								</div>
+							</fieldset>
+						</div><!-- end of step -->
+						<input type="hidden" id="edit_areacode_checker" value="0">
+					</form>
+				</div> <!-- end of modal body -->
+			</div>
+		</div>
+	</div>
+	<!-- End of modal -->
 	
 	<?php
 		// pause codes modal + datatable
 		$modalTitle = $lh->translationFor("pause_codes");
 		$modalSubtitle = "";
 		$columns = array($lh->translationFor("pause_codes"), $lh->translationFor("pause_name"), $lh->translationFor("billable"), $lh->translationFor("action"));
-		$result = $ui->generateTableHeaderWithItems($columns, "pause_codes_list", "display responsive no-wrap table-bordered table-striped", true, false);
+		$result = $ui->generateTableHeaderWithItems($columns, "pause_codes_list", "display responsive no-wrap table-bordered table-striped", true, false, '', '', '');
 		$bodyInputs = $result.'</tbody></table>';				
 		$modalFooter = $ui->buttonWithLink("", "", "Create New", "button", null, "success", "btn-new-pause-code", "data-campaign=''");
-		$modalFormPC = $ui->modalFormStructure('modal_view_pause_codes', '', $modalTitle, $modalSubtitle, $bodyInputs, $modalFooter, '', '');
+		$modalFormPC = $ui->modalFormStructure('modal_view_pause_codes', '', $modalTitle, $modalSubtitle, $bodyInputs, $modalFooter, '', '', '');
 		
 		echo $modalFormPC;
 		
@@ -1190,11 +1403,11 @@
 		$pauseCodeInput = $ui->singleFormGroupWrapper($ui->singleFormInputElement("", "pause_code", "text", "", null, null, false, false, false, "pause-code", "col-lg-9"), $lh->translationFor("pause_code"), "col-lg-3");
 		$pauseCodeNameInput = $ui->singleFormGroupWrapper($ui->singleFormInputElement("", "pause_code_name", "text", "", null, null, false, false, false, "pause-code-name", "col-lg-9"), $lh->translationFor("pause_name"), "col-lg-3");
 		$options = array("YES" => "YES", "NO" => "NO", "HALF" => "HALF");
-		$billableInput = $ui->singleFormGroupWithSelect($lh->translationFor("billable"), "", "billable", $options, "", true, "col-lg-3", "col-lg-9");
+		$billableInput = $ui->singleFormGroupWithSelect($lh->translationFor("billable"), "", "billable", $options, "", true, "col-lg-3", "col-lg-9", "");
 		//$hiddenidinput = $ui->hiddenFormField("customer-type-id");
 		$bodyInputs = $campaignIdInput.$pauseCodeInput.$pauseCodeNameInput.$billableInput;
 		$modalFooter = $ui->buttonWithLink("", "", $lh->translationFor("save"), "button", null, "success", "btn-save-pause-code", "data-id='$id'").$ui->buttonWithLink("", "", $lh->translationFor("update"), "button", null, "success", "btn-update-pause-code", "", "hide");		
-		$modalFormPCF = $ui->modalFormStructure('modal_form_pause_codes', 'form_pause_codes', $modalTitle, $modalSubtitle, $bodyInputs, $modalFooter, '');
+		$modalFormPCF = $ui->modalFormStructure('modal_form_pause_codes', 'form_pause_codes', $modalTitle, $modalSubtitle, $bodyInputs, $modalFooter, '', '', '');
 	
 		echo $modalFormPCF;
 		
@@ -1203,10 +1416,10 @@
 	<?php
 		// hotkeys modal + datatable
 		$columnsHKT = array($lh->translationFor("hotkeys"), $lh->translationFor("status"), $lh->translationFor("description"), $lh->translationFor("action"));
-		$resultHKT = $ui->generateTableHeaderWithItems($columnsHKT, "hotkeys_list", "display responsive no-wrap table-bordered table-striped", true, false);
+		$resultHKT = $ui->generateTableHeaderWithItems($columnsHKT, "hotkeys_list", "display responsive no-wrap table-bordered table-striped", true, false, '', '', '');
 		$bodyInputsHKT = $resultHKT.'</tbody></table>';				
 		$modalFooterHKT = $ui->buttonWithLink("", "", $lh->translationFor("create_new"), "button", null, "success", "btn-new-hotkey", "data-campaign=''");
-		$modalFormHKT = $ui->modalFormStructure('modal_view_hotkeys', '', $lh->translationFor("hotkeys"), "", $bodyInputsHKT, $modalFooterHKT, '', '');
+		$modalFormHKT = $ui->modalFormStructure('modal_view_hotkeys', '', $lh->translationFor("hotkeys"), "", $bodyInputsHKT, $modalFooterHKT, '', '', '');
 		
 		echo $modalFormHKT;
 		
@@ -1217,7 +1430,7 @@
 		$statusInputHKF = $ui->singleFormGroupWithSelectHiddenInput($lh->translationFor("status"), "", "status", "", "", true, "col-lg-3", "col-lg-9", "select2 status", array("id" => "hotkey_status_name", "name" => "status_name", "value" => ""));		
 		$bodyInputsHKF = $campaignIdInputHKF.$hotkeyInputHKF.$statusInputHKF;
 		$modalFooterHKF = $ui->buttonWithLink("", "", $lh->translationFor("save"), "button", null, "success", "btn-save-hotkey", "data-id='$id'");		
-		$modalFormHKF = $ui->modalFormStructure('modal_form_hotkeys', 'form_hotkeys', $lh->translationFor("hotkeys"), "", $bodyInputsHKF, $modalFooterHKF, '');
+		$modalFormHKF = $ui->modalFormStructure('modal_form_hotkeys', 'form_hotkeys', $lh->translationFor("hotkeys"), "", $bodyInputsHKF, $modalFooterHKF, '', '', '');
 	
 		echo $modalFormHKF;
 		
@@ -1225,7 +1438,7 @@
 		$modalTitle = $lh->translationFor("lists");
 		$modalSubtitle = "";
 		$columns = array($lh->translationFor("list_id"), $lh->translationFor("list_name"), $lh->translationFor("description"), $lh->translationFor("leads_count"), $lh->translationFor("active"), $lh->translationFor("last_call_date"), $lh->translationFor("action"));
-		$result = $ui->generateTableHeaderWithItems($columns, "lists_list", "display responsive no-wrap table-bordered table-striped", true, false);
+		$result = $ui->generateTableHeaderWithItems($columns, "lists_list", "display responsive no-wrap table-bordered table-striped", true, false, '', '', '');
 		$bodyInputs = $result.'</tbody></table>';
 		$appendToBody = '<div class="form-group pull-left" style="margin-left: 5px;"><p style="text-align: left;"> This Campaign has <b><span class="count_active"></span> active</b> lists and <b><span class="count_inactive"></span> inactive</b> lists<br/> This Campaign has <b><span class="count_leads"></span> leads</b> in the queue (hopper)<br/><a href="#" style="color: green;" class="view-leads-on-hopper" data-campaign="">'.$lh->translationFor("view_leads").'</a></p></div>';
 		$modalFooter = $ui->modalDismissButton("", $lh->translationFor("close"));
@@ -1414,7 +1627,7 @@
 			$columns = array($lh->translationFor("order"), $lh->translationFor("priority"), $lh->translationFor("lead_id"), $lh->translationFor("list_id"), $lh->translationFor("phone_number"), $lh->translationFor("state"), $lh->translationFor("status"), $lh->translationFor("count"), $lh->translationFor("gmt"), $lh->translationFor("alt_phone"), $lh->translationFor("source"));
 			//$hideOnMedium = array($lh->translationFor("order"), $lh->translationFor("priority"), $lh->translationFor("state"), $lh->translationFor("count"), $lh->translationFor("gmt"));
 			//$hideOnLow = array($lh->translationFor("order"), $lh->translationFor("priority"), $lh->translationFor("state"), $lh->translationFor("count"), $lh->translationFor("gmt"), $lh->translationFor("alt"), $lh->translationFor("source"));
-			$result = $ui->generateTableHeaderWithItems($columns, "leads_on_hopper", "display responsive no-wrap table-bordered table-striped", true, false);
+			$result = $ui->generateTableHeaderWithItems($columns, "leads_on_hopper", "display responsive no-wrap table-bordered table-striped", true, false, '', '', '');
 			$bodyInputs = $result.'</tbody></table>';
 			$modalFooter = $ui->modalDismissButton("", $lh->translationFor("close"));
 			$modalFormVLH = $ui->modalFormStructure('modal_view_leads_on_hopper', '', $modalTitle, $modalSubtitle, $bodyInputs, $modalFooter, '', '', 'modal-lg');
@@ -1425,7 +1638,7 @@
 			$modalTitle = $lh->translationFor("custom_disposition");
 			$modalSubtitle = "";
 			$columns = array($lh->translationFor("status"), $lh->translationFor("status_name"), $lh->translationFor("SEL"), $lh->translationFor("HA"), $lh->translationFor("sale"), "dnc", $lh->translationFor("CC"), "ni", $lh->translationFor("UW"), $lh->translationFor("SCB"), $lh->translationFor("action"));
-			$result = $ui->generateTableHeaderWithItems($columns, "table_campaign_disposition", "display responsive compact table-bordered table-striped", true, false);
+			$result = $ui->generateTableHeaderWithItems($columns, "table_campaign_disposition", "display responsive compact table-bordered table-striped", true, false, '', '', '');
 			$hiddenidinput = $ui->hiddenFormField("edit_campaign", "", "edit_campaign");
 			$bodyInputs = $hiddenidinput.$result.'</tbody></table>';
 			$appendToBody = '<div class="form-group pull-left" style="margin-left: 5px;"><h4>LEGEND</h4><p style="text-align: left;"><b>SEL:</b>  '.$lh->translationFor("selectable").'<br/><b>HA:</b>  '.$lh->translationFor("human_answered").'<br/><b>DNC:</b>  '.$lh->translationFor("DNC").'<br/><b>NI:</b>  '.$lh->translationFor("NI").'<br/><b>CC:</b>  '.$lh->translationFor("customer_contact").'<br/><b>UW:</b>  '.$lh->translationFor("unworkable").'<br/><b>SCB:</b>  '.$lh->translationFor("scheduled_callback").'</p></div>';
@@ -1438,7 +1651,7 @@
 			$modalTitle = $lh->translationFor("Lead Recycling");
 			$modalSubtitle = "";
 			$columns = array($lh->translationFor("ID"), $lh->translationFor("status"), $lh->translationFor("Attempt Delay"), $lh->translationFor("Max Attempts"), $lh->translationFor("active"), $lh->translationFor("action"));
-			$result = $ui->generateTableHeaderWithItems($columns, "table_campaign_leadrecycling", "display responsive compact no-wrap table-bordered table-striped", true, false);
+			$result = $ui->generateTableHeaderWithItems($columns, "table_campaign_leadrecycling", "display responsive compact no-wrap table-bordered table-striped", true, false, '', '', '');
 			$hiddenidinput = $ui->hiddenFormField("edit_leadrecycling_campaign", "", "edit_leadrecycling_campaign");
 			$hiddenidinputLR = $ui->hiddenFormField("edit_leadrecycling", "", "edit_leadrecycling");
 			$bodyInputs = $hiddenidinput.$hiddenidinputLR.$result.'</tbody></table>';
@@ -1549,6 +1762,8 @@
 					{ targets: -1, className: "dt-body-right" }
 				]
 			});
+
+			$('#table_areacode').dataTable();
 			
 			$('#table_leadfilter').dataTable();
 			
@@ -1829,7 +2044,8 @@
 				}
 			});
 
-			$(document).on('click', '.view-pause-codes', function(){				
+			$(document).on('click', '.view-pause-codes', function(){
+				$('#pause_codes_list').DataTable().clear().draw();
 				$('#modal_view_pause_codes').modal("toggle");				
 				var campaign_id = $(this).data('id');
 				$('.btn-new-pause-code').attr('data-campaign', campaign_id);
@@ -1850,9 +2066,13 @@
 							destroy: true,
 							responsive: true,
 							stateSave: true,
+							processing: true,
 							drawCallback: function(settings) {
 								var pagination = $(this).closest('.dataTables_wrapper').find('.dataTables_paginate');
 								pagination.toggle(this.api().page.info().pages > 1);
+							},
+							language: {
+								processing: "Loading data... Please wait..."
 							},
 							columnDefs: [{ 
 								width: "25%", 
@@ -1932,7 +2152,7 @@
 			});
 
 			$(document).on('click', '.btn-new-pause-code', function(){
-				var campaign_id = $(this).data('campaign');
+				var campaign_id = $(this).attr('data-campaign');
 				$('.campaign-id').val(campaign_id);
 
 				$('.pause-code').val('');
@@ -3133,6 +3353,272 @@
 			        });
 			//------------------ end of leadfilter
 
+			/*************
+			** AC-CID Events
+			*************/
+
+				// initialization and add of areacode
+				$('#modal_add_areacode').on('shown.bs.modal', function () {
+						$("#status-color").colorpicker();
+					});
+					
+					var areacode_form = $("#create_areacode"); // init form wizard
+
+				    areacode_form.validate({
+				        errorPlacement: function errorPlacement(error, element) { element.after(error); }
+				    });
+
+				    areacode_form.children("div").steps({
+				        headerTag: "h4",
+				        bodyTag: "fieldset",
+				        transitionEffect: "slideLeft",
+			        onStepChanging: function (event, currentIndex, newIndex)
+			        {
+			        	// Allways allow step back to the previous step even if the current step is not valid!
+				        if (currentIndex > newIndex) {
+				            return true;
+				        }
+
+						// Clean up if user went backward before
+					    if (currentIndex < newIndex)
+					    {
+					        // To remove error styles
+					        $(".body:eq(" + newIndex + ") label.error", areacode_form).remove();
+					        $(".body:eq(" + newIndex + ") .error", areacode_form).removeClass("error");
+					    }
+
+			            areacode_form.validate().settings.ignore = ":disabled,:hidden";
+			            return areacode_form.valid();
+			        },
+			        onFinishing: function (event, currentIndex)
+			        {
+			            areacode_form.validate().settings.ignore = ":disabled";
+
+			            var num_errors = $("#areacode_checker").val();
+
+			            console.log(num_errors);
+				        // Disable submit if there are duplicates
+				        if(num_errors > 0){
+					        $(".body:eq(" + currentIndex + ") .error", areacode_form).addClass("error");
+				        	return false;
+				        }
+
+			            return areacode_form.valid();
+			        },
+			        onFinished: function (event, currentIndex)
+			        {
+
+			        	$('#finish').text("Loading...");
+			        	$('#finish').attr("disabled", true);
+
+			        	var campaign_id = $('#areacode_campaign option:selected').val();
+						var status_id = $('#areacode_status').val();
+						//var resultCheck = checkStatus(campaign_id, status_id);
+						//console.log(resultCheck);
+						//if (resultCheck == "1") {
+							$.ajax({
+								url: "./php/AddAreacode.php",
+								type: 'POST',
+								data: $("#create_areacode").serialize(),
+								success: function(data) {
+									console.log(data);
+									console.log($("#create_areacode").serialize());
+									if (data == 1) {
+										swal({
+											title: "<?php $lh->translateText("success"); ?>",
+											text: "<?php $lh->translateText("success_areacode"); ?>!",
+											type: "success"
+											},
+											function(){
+												window.location.href = 'telephonycampaigns.php?T_areacode';
+												$(".preloader").fadeIn();
+											});
+									} else {
+										sweetAlert("Oops...", "<?php $lh->translateText("something_went_wrong"); ?>! "+data, "error");
+										$('#finish').val("Submit");
+										$('#finish').prop("disabled", false);
+										areacode_form.children("div").steps("previous");
+										$('#modal_add_areacode').modal('hide');									
+									}
+								}
+							});
+						//} else {
+						//	areacode_form.children("div").steps("previous");
+						//}
+
+
+			        }
+			    });
+
+				//Edit Areacode
+				$('.view_areacode').on('click', function() {
+					$(".preloader").fadeIn();
+					var campaign_id = $(this).attr("data-camp");
+					var areacode = $(this).attr("data-ac");
+					$.ajax({
+                                                url: "./php/ViewAreacode.php",
+                                                type: 'POST',
+                                                data:
+                                                {
+                                                        campaign_id : campaign_id,
+                                                        areacode : areacode
+                                                },
+                                                dataType: 'json',
+                                                success: function(data) {
+                                                        if (data.result == 'success') {
+                                                                console.log(data);
+								$('#edit_areacode_campaign_select option[value="'+data.campaign_id+'"').attr('selected', 'selected');
+								$('#edit_areacode_campaign').val(data.campaign_id);
+                                                                $('#edit_areacode').val(data.areacode);
+                                                                $('#edit_areacode_outbound_cid').val(data.outbound_cid);
+                                                                $('#edit_areacode_description').val(data.cid_description);
+                                                                $('#edit_areacode_status option[value="'+data.active+'"').attr('selected', 'selected');
+								$(".preloader").fadeOut();
+							}
+                                                }
+                                        });
+				});
+
+				$('#modal_edit_areacode').on('shown.bs.modal', function () {
+					$("#status-color").colorpicker();
+                        	});
+
+	                        var edit_areacode_form = $("#modify_areacode"); // init form wizard
+
+	                        edit_areacode_form.validate({
+					errorPlacement: function errorPlacement(error, element) { element.after(error); }
+				});
+
+                	    	edit_areacode_form.children("div").steps({
+                        	    headerTag: "h4",
+	                            bodyTag: "fieldset",
+        	                    transitionEffect: "slideLeft",
+                	            onStepChanging: function (event, currentIndex, newIndex)
+                        	    {
+					// Allways allow step back to the previous step even if the current step is not valid!
+					if (currentIndex > newIndex) {
+						return true;
+					}
+					// Clean up if user went backward before
+					if (currentIndex < newIndex) {
+						// To remove error styles
+						$(".body:eq(" + newIndex + ") label.error", edit_areacode_form).remove();
+						$(".body:eq(" + newIndex + ") .error", edit_areacode_form).removeClass("error");
+					}
+	
+					edit_areacode_form.validate().settings.ignore = ":disabled,:hidden";
+					return edit_areacode_form.valid();
+        	                    },
+                	            onFinishing: function (event, currentIndex)
+                        	    {
+					edit_areacode_form.validate().settings.ignore = ":disabled";
+					var num_errors = $("#edit_areacode_checker").val();
+
+					console.log(num_errors);
+					// Disable submit if there are duplicates
+					if(num_errors > 0){
+						$(".body:eq(" + currentIndex + ") .error", edit_areacode_form).addClass("error");
+						return false;
+					}
+
+					return edit_areacode_form.valid();
+				    },
+	  			    onFinished: function (event, currentIndex)
+				    {
+					$('#finish').text("Loading...");
+					$('#finish').attr("disabled", true);
+
+					var edit_campaign_id = $('#edit_areacode_campaign option:selected').val();
+					var edit_status_id = $('#edit_areacode_status').val();
+					//var resultCheck = checkStatus(edit_campaign_id, edit_status_id);
+					//console.log(resultCheck);
+					//if (resultCheck == "1") {
+					$.ajax({
+						url: "./php/ModifyAreacode.php",
+						type: 'POST',
+						data: $("#modify_areacode").serialize(),
+						success: function(data) {
+								console.log(data);
+								console.log($("#modify_areacode").serialize());
+								if (data == 1) {
+									swal({
+										title: "<?php $lh->translateText("success"); ?>",
+										text: "<?php $lh->translateText("success_modified_areacode"); ?>!",
+										type: "success"
+									},
+									function(){
+										window.location.href = 'telephonycampaigns.php?T_areacode';
+										$(".preloader").fadeIn();
+									});
+								} else {
+									sweetAlert("Oops...", "<?php $lh->translateText("something_went_wrong"); ?>! "+data, "error");
+									$('#finish').val("Submit");
+									$('#finish').prop("disabled", false);
+									edit_areacode_form.children("div").steps("previous");
+									$('#modal_edit_areacode').modal('hide');
+								}
+							}
+					});
+						//} else {
+						//      edit_areacode_form.children("div").steps("previous");
+						//}
+					}
+				});
+
+				//delete areacode
+                                $(document).on('click','.delete-areacode',function() {
+                                        var campId = $(this).attr('data-camp');
+					var areacode = $(this).attr('data-ac');
+                                        console.log(campId + " " + areacode);
+                                        swal({
+                                                title: "<?php $lh->translateText("are_you_sure"); ?>",
+                                                text: "<?php $lh->translateText("action_cannot_be_undone"); ?>.",
+                                                type: "warning",
+                                                showCancelButton: true,
+                                                confirmButtonColor: "#DD6B55",
+                                                confirmButtonText: "<?php $lh->translateText("delete_areacode"); ?>!",
+                                                cancelButtonText: "<?php $lh->translateText("cancel_please"); ?>!",
+                                                closeOnConfirm: false,
+                                                closeOnCancel: false
+                                        },
+                                                function(isConfirm){
+                                                        if (isConfirm) {
+                                                                $.ajax({
+                                                                        url: "./php/DeleteAreacode.php",
+                                                                        type: 'POST',
+                                                                        data: {
+                                                                                campaign_id: campId,
+										areacode: areacode,
+                                                                                action: "delete_selected"
+                                                                        },
+                                                                        success: function(data) {
+                                                                        console.log(data);
+                                                                                if (data == 1) {
+                                                                                        swal(
+                                                                                                {
+                                                                                                        title: "<?php $lh->translateText("success"); ?>",
+                                                                                                        text: "<?php $lh->translateText("areacode_deleted"); ?>!",
+                                                                                                        type: "success"
+                                                                                                },
+                                                                                                function(){
+                                                                                                        window.location.href = 'telephonycampaigns.php?T_areacode';
+                                                                                                }
+                                                                                        );
+                                                                                } else {
+                                                                                    sweetAlert("Oops...", "<?php $lh->translateText("something_went_wrong"); ?>! "+data, "error");
+                                                                                    window.setTimeout(function(){$('#delete_notification_modal').modal('hide');}, 3000);
+                                                                                }
+                                                                        }
+                                                                });
+                                                        } else {
+                                                                swal("Cancelled", "<?php $lh->translateText("cancel_msg"); ?>", "error");
+                                                        }
+                                                }
+                                        );
+                                });
+
+			//-------- End of AC-CID 
+			
 			/********
 			** Other Events
 			********/
@@ -3389,6 +3875,63 @@
 						      e.preventDefault();
 						});
 				/*** end of disposition filters ***/
+
+				/*** AREACODE ***/
+                                        // disable special characters on adding areacode
+                                                $('#areacode').bind('keypress', function (event) {
+                                                    var regex = new RegExp("^[0-9]+$");
+                                                    var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+                                                    if (!regex.test(key)) {
+                                                       event.preventDefault();
+                                                       return false;
+                                                    }
+                                                });
+                                        // disables pasting
+                                                $('#areacode').bind("paste",function(e) {
+                                                      e.preventDefault();
+                                                });
+                                        // disables special characters on adding outbound cid
+                                                $('#areacode_outbound_cid').bind('keypress', function (event) {
+                                                    var regex = new RegExp("^[0-9 ]+$");
+                                                    var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+                                                    if (!regex.test(key)) {
+                                                       event.preventDefault();
+                                                       return false;
+                                                    }
+                                                });
+                                        // disables pasting
+                                                $('#areacode_outbound_cid').bind("paste",function(e) {
+                                                      e.preventDefault();
+                                                });
+
+					// disable special characters on edit areacode
+                                                $('#edit_areacode').bind('keypress', function (event) {
+                                                    var regex = new RegExp("^[0-9]+$");
+                                                    var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+                                                    if (!regex.test(key)) {
+                                                       event.preventDefault();
+                                                       return false;
+                                                    }
+                                                });
+                                        // disables pasting
+                                                $('#edit_areacode').bind("paste",function(e) {
+                                                      e.preventDefault();
+                                                });
+                                        // disables special characters on edit outbound cid
+                                                $('#edit_areacode_outbound_cid').bind('keypress', function (event) {
+                                                    var regex = new RegExp("^[0-9 ]+$");
+                                                    var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+                                                    if (!regex.test(key)) {
+                                                       event.preventDefault();
+                                                       return false;
+                                                    }
+                                                });
+                                        // disables pasting
+                                                $('#edit_areacode_outbound_cid').bind("paste",function(e) {
+                                                      e.preventDefault();
+                                                });
+                                /*** end of areacode filters ***/
+
 
 				$('#auto-dial-level').change(function(){
 					var val = $(this).val();

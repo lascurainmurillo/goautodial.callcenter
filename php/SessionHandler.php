@@ -112,6 +112,7 @@ class SessionHandler {
 		// Run the garbage collector in 15% of f. calls
 		if (rand(1, 100) <= 15) $this->_GC();
 		// Run the garbage collector for expired sessions
+		$session_id = $session_id ?? '';
 		$this->db->where('session_id', md5($session_id));
 		$this->db->where('last_activity', time(), '<');
 		$result = $this->db->get($this->table);
@@ -137,7 +138,11 @@ class SessionHandler {
 		$result = $this->db->getOne($this->table, 'user_data');
 		
 		// Return data or null
-		return ($this->db->getRowCount() > 0 && ($row = $result)) ? $this->encrypt ?  $this->decrypt($row['user_data']) : $row['user_data'] : NULL;
+		//return ($this->db->getRowCount() > 0 && ($row = $result)) ? $this->encrypt ?  $this->decrypt($row['user_data']) : $row['user_data'] : NULL;
+		
+		// Return empty string not null PHP > 7.0
+		// https://www.php.net/manual/en/function.session-start.php#120589
+		return ($this->db->getRowCount() > 0 && ($row = $result)) ? $this->encrypt ?  $this->decrypt($row['user_data']) : $row['user_data'] : '';		
 	}
 	
 	/** Initialize session
@@ -202,17 +207,32 @@ class SessionHandler {
      * @param 	string 	$data 	- Data to encrypt
      * @return 	string 	- Encrypted data
      */
-    function encrypt($data) {
+     
+	function encrypt($data) {
+		$iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length('aes-256-cbc'));
+		$encrypted = openssl_encrypt($data, 'aes-256-cbc',  $this->key, 0, $iv);
+		return base64_encode($encrypted . '::' . $iv);
+	}
+	
+	/* PHP mcrypt deprecated */
+    /*function encrypt($data) {
         return rtrim(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $this->key, $data, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND))), "\0");
-    }
+    }*/
 	
 	/** Decrypt session data
      * @param 	string 	$data 	- Data to decrypt
      * @return 	string 	- Decrypted data
      */
-    function decrypt($data) {
+     
+	function decrypt($data) {
+		list($encrypted_data, $iv) = explode('::', base64_decode($data), 2);
+		return openssl_decrypt($encrypted_data, 'aes-256-cbc',  $this->key, 0, $iv);
+	}
+	
+	/* PHP mcrypt deprecated */
+    /*function decrypt($data) {
         return rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $this->key, base64_decode($data), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)), "\0");
-    }
+    }*/
 	
 	/** Returns "digital fingerprint" of user
      * @param 	void

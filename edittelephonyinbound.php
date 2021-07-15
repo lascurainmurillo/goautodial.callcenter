@@ -2,8 +2,8 @@
 /**
  * @file        edittelephonyinbound.php
  * @brief       Edit Inbound, IVR & DID
- * @copyright   Copyright (C) GOautodial Inc.
- * @author      Alexander Jim Abenoja  <alex@goautodial.com>
+ * @copyright   Copyright (c) 2020 GOautodial Inc.
+ * @author      Alexander Jim Abenoja
  *
  * @par <b>License</b>:
  *  This program is free software: you can redistribute it and/or modify
@@ -30,6 +30,13 @@
 	$api = \creamy\APIHandler::getInstance();
 	$lh = \creamy\LanguageHandler::getInstance();
 	$user = \creamy\CreamyUser::currentUser();
+	
+	//proper user redirects
+	if($user->getUserRole() != CRM_DEFAULTS_USER_ROLE_ADMIN){
+		if($user->getUserRole() == CRM_DEFAULTS_USER_ROLE_AGENT){
+			header("location: agent.php");
+		}
+	}	
 
 $groupid = NULL;
 if (isset($_POST["groupid"])) {
@@ -453,7 +460,7 @@ if (!isset($_POST["groupid"]) && !isset($_POST["ivr"]) && !isset($_POST["did"]))
 																	<?php
 																		$drop_action_ingroup = NULL;
 																			for($x=0; $x<count($ingroup->group_id);$x++) {
-																				if ($output->data->drop_inbound_group == $ingroup->voicemail_id[$x]) {
+																				if ($output->data->drop_inbound_group == $ingroup->group_id[$x]) {
 																					$drop_action_ingroup .= '<option value="'.$ingroup->group_id[$x].'" selected> '.$ingroup->group_id[$x].' - '.$ingroup->group_name[$x].' </option>';
 																				} else {
 																					$drop_action_ingroup .= '<option value="'.$ingroup->group_id[$x].'"> '.$ingroup->group_id[$x].' - '.$ingroup->group_name[$x].' </option>';
@@ -1066,14 +1073,14 @@ if (!isset($_POST["groupid"]) && !isset($_POST["ivr"]) && !isset($_POST["did"]))
 														    <div class="col-sm-6">
 				                                                                                        <label for="no_agents_extension" class="col-sm-4 control-label"><?php $lh->translateText("extension"); ?></label>
                                 				                                                        <div class="col-sm-8 mb">
-                                                                				                                <input type="number" class="form-control" name="no_agents_extension" id="no_agents_extension" maxlength="255" min="0" value="<?php if ($output->data->no_agents_extension != NULL)echo $output->data->no_agents_extension; else echo "8304";?>" />
+                                                                				                                <input type="number" class="form-control" name="no_agents_extension" id="no_agents_extension" maxlength="255" min="0" value="<?php if ($output->data->no_agent_action_value  != NULL && strpos($output->data->no_agent_action_value, '|')!==false)echo explode('|',$output->data->no_agent_action_value,2)[0]; else echo "8304";?>" />
                                                                                         					<br/>
                                                                               					        </div>
 														    </div>
 														    <div class="col-sm-6">
 															<label for="no_agents_extension_context" class="col-sm-4 control-label"><?php $lh->translateText("context"); ?></label>
                                                                                                                         <div class="col-sm-8 mb">
-                                                                                                                                <input type="text" class="form-control" name="no_agents_extension_context" id="no_agents_extension_context" maxlength="255" value="<?php if ($output->data->no_agents_extension_context != NULL)echo $output->data->no_agents_extension_context; else echo "default";?>" />
+                                                                                                                                <input type="text" class="form-control" name="no_agents_extension_context" id="no_agents_extension_context" maxlength="255" value="<?php if ($output->data->no_agent_action_value != NULL && strpos($output->data->no_agent_action_value, '|')!==false)echo explode('|',$output->data->no_agent_action_value,2)[1]; else echo "default";?>" />
                                                                                                                                 <br/>
                                                                                                                           </div>
 														    </div>
@@ -1350,6 +1357,9 @@ if (!isset($_POST["groupid"]) && !isset($_POST["ivr"]) && !isset($_POST["did"]))
 													<label class="col-sm-3 control-label" for="tracking_group"><?php $lh->translateText("tracking_group"); ?>: </label>
 													<div class="col-sm-9">
 														<select name="tracking_group" id="tracking_group" class="form-control select2" style="width:100%;">
+															<option value="CALLMENU" <?php if ($output->data->tracking_group == 'CALLMENU') {echo "selected";}?> >
+																CALLMENU - Default
+															</option>
 														<?php
 															for($i=0;$i<count($ingroups->group_id);$i++) {
 														?>
@@ -1820,7 +1830,7 @@ if (!isset($_POST["groupid"]) && !isset($_POST["ivr"]) && !isset($_POST["did"]))
 				$ivr = $api->API_getAllIVRs();
 				$scripts = $api->API_getAllScripts();
 				$voicefiles = $api->API_getAllVoiceFiles();
-				
+				$phones = $api->API_getAllPhones();	
 				$output = $api->API_getDIDInfo($did);
 				//var_dump($ingroups);
 	
@@ -1965,23 +1975,33 @@ if (!isset($_POST["groupid"]) && !isset($_POST["ivr"]) && !isset($_POST["did"]))
 													</select>
 												</div>
 											</div>
-												<!-- FOR AGENT UNAVAILABLE ACTION --
-												<!--IF route_unavail = EXTEN --
-													<div class="form-group" id="ru_exten" style="display: none;">
-														<label for="ru_exten" class="col-sm-3 control-label">Extension</label>
-														<div class="col-sm-9 mb">
-															<input type="text" class="form-control" name="ru_exten" id="ru_exten" value="<?php /*echo $output->data->did_pattern;?>">
-														</div>
+												<!-- FOR AGENT UNAVAILABLE ACTION -->
+												<!--IF route_unavail = EXTEN -->
+													<div class="form-group" id="ru_exten" <?php if ($output->data->user_unavailable_action  != "EXTEN") { ?> style="display: none;" <?php }?>>
+															<div class="form-group">
+                                                                                                <label for="ru_exten" class="col-sm-3 control-label"><?php $lh->translateText("custom_extension"); ?>: </label>
+                                                                                                <div class="col-sm-9 mb">
+                                                                                                        <input type="text" name="ru_exten" id="route_exten" placeholder="Extension" class="form-control" value="<?php echo $output->data->extension; ?>" required>
+                                                                                                </div>
+                                                                                        </div>
+                                                                                        <div class="form-group">
+                                                                                                <label for="ru_exten_context" class="col-sm-3 control-label"><?php $lh->translateText("extension_context"); ?>: </label>
+                                                                                                <div class="col-sm-9 mb">
+                                                                                                        <input type="text" name="ru_exten_context" id="ru_exten_context" placeholder="Extension Context" class="form-control" value="<?php echo $output->data->exten_context;?>" required>
+                                                                                                </div>
+                                                                                        </div>
+															<!--<input type="text" class="form-control" name="ru_exten" id="ru_exten" value="<?php //echo $output->data->did_pattern;?>">
+														</div>-->
 													</div>
-												<!--IF route_unavail = INGROUP --
-													<div class="form-group" id="ru_ingroup" style="display: none;">
+												<!--IF route_unavail = INGROUP -->
+													<div class="form-group" id="ru_ingroup" <?php if ($output->data->user_unavailable_action  != "IN_GROUP") { ?> style="display: none;" <?php }?>>
 														<label for="ru_ingroup" class="col-sm-3 control-label">Ingroup</label>
 														<div class="col-sm-9 mb">
 															<select name="ru_ingroup" id="ru_ingroup" class="form-control">
 																<?php
 																	for($i=0;$i<count($ingroups->group_id);$i++) {
 																?>
-																	<option value="<?php echo $ingroups->group_id[$i];?>">
+																	<option value="<?php echo $ingroups->group_id[$i];?>" <?php if ($ingroups->group_id[$i] == $output->data->group_id)echo "selected";?>>
 																		<?php echo $ingroups->group_id[$i].' - '.$ingroups->group_name[$i];?>
 																	</option>									
 																<?php
@@ -1990,15 +2010,15 @@ if (!isset($_POST["groupid"]) && !isset($_POST["ivr"]) && !isset($_POST["did"]))
 															</select>
 														</div>
 													</div>
-												<!--IF route_unavail = PHONE --
-													<div class="form-group" id="ru_phone" style="display: none;">
+												<!--IF route_unavail = PHONE -->
+													<div class="form-group" id="ru_phone" <?php if ($output->data->user_unavailable_action  != "PHONE") { ?> style="display: none;" <?php }?>>
 														<label for="exten" class="col-sm-3 control-label">Phone</label>
 														<div class="col-sm-9 mb">
 															<select name="ru_phone" id="ru_phone" class="form-control">
 																<?php
 																	for($i=0;$i<count($phones->extension);$i++) {
 																?>
-																	<option value="<?php echo $phones->extension[$i];?>">
+																	<option value="<?php echo $phones->extension[$i];?>" <?php if ($phones->extension[$i] == $output->data->phone)echo "selected";?>>
 																		<?php echo $phones->extension[$i].' - '.$phones->server_ip[$i].' - '.$phones->dialplan_number[$i];?>
 																	</option>									
 																<?php
@@ -2007,27 +2027,40 @@ if (!isset($_POST["groupid"]) && !isset($_POST["ivr"]) && !isset($_POST["did"]))
 															</select>
 														</div>
 													</div>
-												<!--IF route_unavail = VOICEMAIL --
-													<div class="form-group" id="ru_voicemail" style="display: none;">
+												<!--IF route_unavail = VOICEMAIL -->
+													<div class="form-group" id="ru_voicemail" <?php if ($output->data->user_unavailable_action  != "VOICEMAIL") { ?> style="display: none;" <?php }?>>
 														<label for="exten" class="col-sm-3 control-label">Voicemail</label>
 														<div class="col-sm-9 mb">
-															<input type="text" class="form-control" name="exten" id="exten" value="<?php echo $output->data->did_pattern;*/?>">
+															<select name="ru_voicemail" id="voicemail_ext" class="form-control">
+                                                                                                                                 <?php
+                                                                                            			                 for($i=0;$i<count($voicemails->voicemail_id);$i++) {
+                                                                                                                		 ?>
+                                                                                                                        		<option value="<?php echo $voicemails->voicemail_id[$i];?>" <?php if ($voicemails->voicemail_id[$i] == $output->data->voicemail_ext)echo "selected";?>>
+                                                                                                                                <?php echo $voicemails->voicemail_id[$i].' - '.$voicemails->fullname[$i];?>
+                                                                                                                        </option>                                                                    
+                                                                                                                <?php
+                                                                                                                        }
+                                                                                                                ?>
+
+                                                                                                                        </select>
+															<!-- <input type="text" class="form-control" name="exten" id="exten" value="<?php echo $output->data->did_pattern;?>"> -->
 														</div>
-													</div>-->
+													</div>
 											<div class="form-group">
 												<label for="user_route_settings_ingroup" class="col-sm-3 control-label"><?php $lh->translateText("agent_route_settings"); ?>: </label>
 												<div class="col-sm-9 mb">
 													<select name="user_route_settings_ingroup" id="user_route_settings_ingroup" class="form-control">
-														<option value=""><?php $lh->translateText("-none-"); ?></option>
+														<!--<option value="AGENTDIRECT"><?php $lh->translateText("AGENTDIRECT"); ?></option>-->
 													<?php
+														
 														for($i=0;$i<count($ingroups->group_id);$i++) {
-															if ($ingroups->group_id[$i] != "AGENTDIRECT") {
+															//if ($ingroups->group_id[$i] != "AGENTDIRECT") {
 													?>
 														<option value="<?php echo $ingroups->group_id[$i];?>" <?php if ($output->data->user_route_settings_ingroup == $ingroups->group_id[$i]) echo "selected";?> >
 															<?php echo $ingroups->group_id[$i].' - '.$ingroups->group_name[$i];?>
 														</option>
 													<?php
-															}
+															//}
 														}
 													?>
 													</select>
@@ -2037,21 +2070,30 @@ if (!isset($_POST["groupid"]) && !isset($_POST["ivr"]) && !isset($_POST["did"]))
 										
 									<!-- IF DID ROUTE = IN-GROUP-->
 										<div id="form_route_ingroup" class="form-group" <?php if ($output->data->did_route  != "IN_GROUP") { ?> style="display: none;" <?php }?> >
-										<label for="route_ingroupid" class="col-sm-3 control-label"><?php $lh->translateText("ingroup_id"); ?>: </label>
-										<div class="col-sm-9 mb">
-											<select name="route_ingroupid" id="route_ingroupid" class="form-control">
-												<?php
-													for($i=0;$i<count($ingroups->group_id);$i++) {
-												?>
-													<option value="<?php echo $ingroups->group_id[$i];?>" <?php if ($ingroups->group_id[$i] == $output->data->group_id)echo "selected";?>>
-													     <?php echo $ingroups->group_id[$i].' - '.$ingroups->group_name[$i];?>
-													</option>				
-												<?php
-													}
-												?>
-											</select>
+											<div class="form-group">
+												<label for="route_ingroupid" class="col-sm-3 control-label"><?php $lh->translateText("ingroup_id"); ?>: </label>
+												<div class="col-sm-9 mb">
+													<select name="route_ingroupid" id="route_ingroupid" class="form-control">
+														<?php
+															for($i=0;$i<count($ingroups->group_id);$i++) {
+														?>
+															<option value="<?php echo $ingroups->group_id[$i];?>" <?php if ($ingroups->group_id[$i] == $output->data->group_id)echo "selected";?>>
+																 <?php echo $ingroups->group_id[$i].' - '.$ingroups->group_name[$i];?>
+															</option>				
+														<?php
+															}
+														?>
+													</select>
+												</div>
+											</div>
+											<div class="form-group">
+												<label for="route_ingroup_listid" class="col-sm-3 control-label"><?php $lh->translateText("ingroup_id_list_id"); ?>: </label>
+												<div class="col-sm-9 mb">
+													<input type="text" class="form-control" name="list_id" id="route_ingroup_listid" value="<?php echo $output->data->list_id;?>">
+												</div>
+											</div>
 										</div>
-										</div><!-- end of ingroup div -->
+									<!-- end of ingroup div -->
 										
 									<!-- IF DID ROUTE = PHONE -->
 										<div id="form_route_phone" <?php if ($output->data->did_route  != "PHONE") { ?> style="display: none;" <?php }?> >
@@ -2064,23 +2106,6 @@ if (!isset($_POST["groupid"]) && !isset($_POST["ivr"]) && !isset($_POST["did"]))
 														?>
 															<option value="<?php echo $phone_extension->extension[$i];?>" <?php if ($phone_extension->extension[$i] == $output->data->phone)echo "selected";?>>
 																<?php echo $phone_extension->extension[$i].' - '.$phone_extension->server_ip[$i].' - '.$phone_extension->dialplan_number[$i];?>
-															</option>									
-														<?php
-															}
-														?>
-													</select>
-												</div>
-											</div>
-											<div class="form-group">
-												<label for="route_phone_server" class="col-sm-3 control-label"><?php $lh->translateText("server_ip"); ?>: </label>
-												<div class="col-sm-9 mb">
-													<select name="route_phone_server" id="route_phone_server" class="form-control">
-														<option value="" > <?php $lh->translateText("-none-"); ?> </option>
-														<?php
-															for($i=0;$i < 1;$i++) {
-														?>
-															<option value="<?php echo $phone_extension->server_ip[$i];?>" <?php if ($phone_extension->server_ip[$i] == $output->data->server_ip)echo "selected";?>>
-																<?php echo 'GOautodial - '.$phone_extension->server_ip[$i];?>
 															</option>									
 														<?php
 															}
@@ -2154,11 +2179,73 @@ if (!isset($_POST["groupid"]) && !isset($_POST["ivr"]) && !isset($_POST["did"]))
 						       		<div id="tab_2" class="tab-pane fade in">
 						       			<fieldset>
 							       			<div class="form-group mt">
-							       				<label for="cid_num" class="col-sm-2 control-label"><?php $lh->translateText("clean_cid_number"); ?></label>
-							       				<div class="col-sm-10 mb">
+							       				<label for="cid_num" class="col-sm-3 control-label"><?php $lh->translateText("clean_cid_number"); ?></label>
+							       				<div class="col-sm-9 mb">
 													<input type="text" class="form-control" name="cid_num" id="cid_num" value="<?php echo $output->data->filter_clean_cid_number;?>" maxlength="20">
 												</div>
 							       			</div>
+											
+											<div class="form-group">
+												<label for="route_phone_server" class="col-sm-3 control-label"><?php $lh->translateText("server_ip"); ?>: </label>
+												<div class="col-sm-9 mb">
+													<select name="route_phone_server" id="route_phone_server" class="form-control">
+														<option value="" > <?php $lh->translateText("-none-"); ?> </option>
+														<?php
+															for($i=0;$i < 1;$i++) {
+														?>
+															<option value="<?php echo $phone_extension->server_ip[$i];?>" <?php if ($phone_extension->server_ip[$i] == $output->data->server_ip)echo "selected";?>>
+																<?php echo 'GOautodial - '.$phone_extension->server_ip[$i];?>
+															</option>									
+														<?php
+															}
+														?>
+													</select>
+												</div>
+											</div>
+											
+											<div class="form-group">
+												<label for="call_handle_method" class="col-sm-3 control-label"><?php $lh->translateText("call_handle_method"); ?>: </label>
+												<div class="col-sm-9 mb">
+													<select size="1" name="call_handle_method" id="call_handle_method" class="form-control">
+														<option value="CID" <?php if ($output->data->call_handle_method == "CID") echo "selected"; ?>>CID</option>
+														<option value="CIDLOOKUP" <?php if ($output->data->call_handle_method == "CIDLOOKUP") echo "selected"; ?>>CIDLOOKUP</option>
+														<option value="CIDLOOKUPRL" <?php if ($output->data->call_handle_method == "CIDLOOKUPRL") echo "selected"; ?>>CIDLOOKUPRL</option>
+														<option value="CIDLOOKUPRC" <?php if ($output->data->call_handle_method == "CIDLOOKUPRC") echo "selected"; ?>>CIDLOOKUPRC</option>
+														<option value="CIDLOOKUPALT" <?php if ($output->data->call_handle_method == "CIDLOOKUPALT") echo "selected"; ?>>CIDLOOKUPALT</option>
+														<option value="CIDLOOKUPRLALT" <?php if ($output->data->call_handle_method == "CIDLOOKUPRLALT") echo "selected"; ?>>CIDLOOKUPRLALT</option>
+														<option value="CIDLOOKUPRCALT" <?php if ($output->data->call_handle_method == "CIDLOOKUPRCALT") echo "selected"; ?>>CIDLOOKUPRCALT</option>
+														<option value="CIDLOOKUPADDR3" <?php if ($output->data->call_handle_method == "CIDLOOKUPADDR3") echo "selected"; ?>>CIDLOOKUPADDR3</option>
+														<option value="CIDLOOKUPRLADDR3" <?php if ($output->data->call_handle_method == "CIDLOOKUPRLADDR3") echo "selected"; ?>>CIDLOOKUPRLADDR3</option>
+														<option value="CIDLOOKUPRCADDR3" <?php if ($output->data->call_handle_method == "CIDLOOKUPRCADDR3") echo "selected"; ?>>CIDLOOKUPRCADDR3</option>
+														<option value="CIDLOOKUPALTADDR3" <?php if ($output->data->call_handle_method == "CIDLOOKUPALTADDR3") echo "selected"; ?>>CIDLOOKUPALTADDR3</option>
+														<option value="CIDLOOKUPRLALTADDR3" <?php if ($output->data->call_handle_method == "CIDLOOKUPRLALTADDR3") echo "selected"; ?>>CIDLOOKUPRLALTADDR3</option>
+														<option value="CIDLOOKUPRCALTADDR3" <?php if ($output->data->call_handle_method == "CIDLOOKUPRCALTADDR3") echo "selected"; ?>>CIDLOOKUPRCALTADDR3</option>
+														<option value="ANI" <?php if ($output->data->call_handle_method == "ANI") echo "selected"; ?>>ANI</option>
+														<option value="ANILOOKUP" <?php if ($output->data->call_handle_method == "ANILOOKUP") echo "selected"; ?>>ANILOOKUP</option>
+														<option value="ANILOOKUPRL" <?php if ($output->data->call_handle_method == "ANILOOKUPRL") echo "selected"; ?>>ANILOOKUPRL</option>
+														<option value="VIDPROMPT" <?php if ($output->data->call_handle_method == "VIDPROMPT") echo "selected"; ?>>VIDPROMPT</option>
+														<option value="VIDPROMPTLOOKUP" <?php if ($output->data->call_handle_method == "VIDPROMPTLOOKUP") echo "selected"; ?>>VIDPROMPTLOOKUP</option>
+														<option value="VIDPROMPTLOOKUPRL" <?php if ($output->data->call_handle_method == "VIDPROMPTLOOKUPRL") echo "selected"; ?>>VIDPROMPTLOOKUPRL</option>
+														<option value="VIDPROMPTLOOKUPRC" <?php if ($output->data->call_handle_method == "VIDPROMPTLOOKUPRC") echo "selected"; ?>>VIDPROMPTLOOKUPRC</option>
+														<option value="CLOSER" <?php if ($output->data->call_handle_method == "CLOSER") echo "selected"; ?>>CLOSER</option>
+														<option value="3DIGITID" <?php if ($output->data->call_handle_method == "3DIGITID") echo "selected"; ?>>3DIGITID</option>
+														<option value="4DIGITID" <?php if ($output->data->call_handle_method == "4DIGITID") echo "selected"; ?>>4DIGITID</option>
+														<option value="5DIGITID" <?php if ($output->data->call_handle_method == "5DIGITID") echo "selected"; ?>>5DIGITID</option>
+														<option value="10DIGITID" <?php if ($output->data->call_handle_method == "10DIGITID") echo "selected"; ?>>10DIGITID</option>
+													</select>
+												</div>
+											</div>
+											
+											<div class="form-group">
+												<label for="agent_search_method" class="col-sm-3 control-label"><?php $lh->translateText("agent_search_method"); ?>: </label>
+												<div class="col-sm-9 mb">
+													<select size="1" name="agent_search_method" id="agent_search_method" class="form-control">
+														<option value="LB" <?php if ($output->data->agent_search_method == "LB") echo "selected"; ?>>LB - Load Balanced</option>
+														<option value="LO" <?php if ($output->data->agent_search_method == "LO") echo "selected"; ?>>LO - Load Balanced Overflow</option>
+														<option value="SO" <?php if ($output->data->agent_search_method == "SO") echo "selected"; ?>>SO - Server Only</option>
+													</select>
+												</div>
+											</div>
 							       		</fieldset>				       			
 						       		</div>
 							

@@ -31,6 +31,13 @@
 	$api = \creamy\APIHandler::getInstance();
 	$lh = \creamy\LanguageHandler::getInstance();
 	$user = \creamy\CreamyUser::currentUser();
+	
+	//proper user redirects
+	if($user->getUserRole() != CRM_DEFAULTS_USER_ROLE_ADMIN){
+		if($user->getUserRole() == CRM_DEFAULTS_USER_ROLE_AGENT){
+			header("location: agent.php");
+		}
+	}	
 
 	$perm = $api->goGetPermissions('user');
 	$all_users = $api->API_getAllUsers();
@@ -54,9 +61,10 @@
         <!-- CHOSEN-->
    		<link rel="stylesheet" href="js/dashboard/chosen_v1.2.0/chosen.min.css">
 		
-		<!-- Date Range Picker -->	
-        <script type="text/javascript" src="js/plugins/daterangepicker/daterangepicker.js"></script>
-		<link rel="stylesheet" href="css/daterangepicker/daterangepicker-bs3.css"></link>  		
+		<!-- Date Range Picker -->
+		<script type="text/javascript" src="js/dashboard/eonasdan-bootstrap-datetimepicker/build/js/moment.js"></script>	
+	        <script type="text/javascript" src="js/plugins/daterangepicker/daterangepickerv3.js"></script>
+		<link rel="stylesheet" href="css/daterangepicker/daterangepickerv3.css"></link>  	
     </head>
 
     <?php print $ui->creamyBody(); ?>
@@ -167,6 +175,7 @@
 <!-- MODALS -->
 <?php
 	//$output = $api->API_getAllUsers();
+	//var_dump("AUTH TOKEN:".$_SESSION['gad_authToken']);
 	$user_groups = $api->API_getAllUserGroups();
 	$phones = $api->API_getAllPhones();
 	$max = max($phones->extension);
@@ -174,6 +183,11 @@
 	$count_users = count($all_users->user);
 	$license_seats = intval($all_users->licensedSeats);
 	$avail_seats = $license_seats-$count_users;
+	$servers = $api->API_getAllServers();
+
+	if(ROCKETCHAT_ENABLE === 'y'){
+		$license_seats = 1;
+	}
 ?>
 	<!-- ADD USER MODAL -->
 	    <div class="modal fade" id="user-wizard-modal" aria-labelledby="T_User" >
@@ -247,6 +261,13 @@
 										<label id="user-duplicate-error"></label>
 									</div>
 								</div>
+								<div class="form-group">
+									<label for="email" class="col-sm-4 control-label"><?php $lh->translateText("email"); ?></label>
+									<div class="col-sm-8 mb">
+										<input type="email" class="form-control" name="email" id="email" maxlength="100" placeholder="<?php $lh->translateText("email"); ?>" <?php if(ROCKETCHAT_ENABLE === "y")echo "";?> />
+										<small><span id="email_check"></span></small>
+									</div>
+								</div>
 								<div class="form-group mt">
 									<label class="col-sm-4 control-label" for="user_group"> <?php $lh->translateText("user_group"); ?> </label>
 									<div class="col-sm-8 mb">
@@ -301,6 +322,22 @@
 										</select>
 									</div>
 								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="ip"><?php $lh->translateText("server_ip"); ?></label>
+									<div class="col-sm-8 mb">
+										<select name="ip" id="ip" class="form-control" required>
+											<?php
+												for($i=0;$i < count($servers->server_id);$i++){
+											?>
+											<option value="<?php echo $servers->server_ip[$i];?>">
+												<?php echo $servers->server_ip[$i].' - '.$servers->server_id[$i].' - '.$servers->server_description[$i];?>
+											</option>
+											<?php
+												}
+											?>
+										</select>
+									</div>
+								</div>
 	                        </fieldset>
 	                     </div>
 					</form>
@@ -313,7 +350,6 @@
 
  <?php
 	if((isset($_SESSION['use_webrtc']) && $_SESSION['use_webrtc'] == 0) || $_SESSION['show_phones'] == 1 ){
-		$servers = $api->API_getAllServers();
 ?>
 	<!-- ADD PHONE MODAL -->
 	    <div class="modal fade" id="phone-wizard-modal" aria-labelledby="T_Phones" >
@@ -504,7 +540,7 @@
 		$columns = array($lh->translationFor("event_time"), $lh->translationFor("status"), $lh->translationFor("phone_number"), $lh->translationFor("campaign_id"), $lh->translationFor("user_group"), $lh->translationFor("list_id"), $lh->translationFor("lead_id"), $lh->translationFor("term_reason"));
 		$hideOnMedium = array($lh->translationFor("user_group"), $lh->translationFor("list_id"));
 		$hideOnLow = array($lh->translationFor("campaign_id"), $lh->translationFor("user_group"), $lh->translationFor("status"));
-		$result = $ui->generateTableHeaderWithItems($columns, "table_outbound", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow);
+		$result = $ui->generateTableHeaderWithItems($columns, "table_outbound", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow, '');
 	
 		
 		echo $ui->modalFormStructureAgentLog('modal_stats_outbound', 'outbound', $lh->translationFor("outbound"), $result.'</table>', '', 'info-circle', '');
@@ -513,7 +549,7 @@
 		$columns = array($lh->translationFor("event_time"), $lh->translationFor("status"), $lh->translationFor("phone_number"), $lh->translationFor("campaign_id"), $lh->translationFor("user_group"), $lh->translationFor("list_id"), $lh->translationFor("lead_id"), $lh->translationFor("term_reason"));
 		$hideOnMedium = array($lh->translationFor("user_group"), $lh->translationFor("list_id"));
 		$hideOnLow = array($lh->translationFor("campaign_id"), $lh->translationFor("user_group"), $lh->translationFor("status"));
-		$result = $ui->generateTableHeaderWithItems($columns, "table_inbound", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow);
+		$result = $ui->generateTableHeaderWithItems($columns, "table_inbound", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow, '');
 		
 		echo $ui->modalFormStructureAgentLog('modal_stats_inbound', 'inbound', $lh->translationFor("inbound"), $result.'</table>', '', 'info-circle', '');	
 		
@@ -521,7 +557,7 @@
 		$columns = array($lh->translationFor("log_id"), $lh->translationFor("user"), $lh->translationFor("event"), $lh->translationFor("event_time"), $lh->translationFor("campaign_id"), $lh->translationFor("user_group"));
 		$hideOnMedium = array($lh->translationFor("log_id"), $lh->translationFor("list_id"));
 		$hideOnLow = array($lh->translationFor("log_id"), $lh->translationFor("user"));
-		$result = $ui->generateTableHeaderWithItems($columns, "table_userlog", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow);
+		$result = $ui->generateTableHeaderWithItems($columns, "table_userlog", "table-bordered table-striped", true, false, $hideOnMedium, $hideOnLow, '');
 		
 		echo $ui->modalFormStructureAgentLog('modal_stats_userlog', 'userlog', $lh->translationFor("userlog"), $result.'</table>', '', 'info-circle', '');			
 	?>
@@ -541,6 +577,21 @@
 
 <script type="text/javascript">
 	$(document).ready(function() {
+		// ROCKETCHAT GET X-AUTH-TOKEN AND X-USER-ID
+                        <?php if(ROCKETCHAT_ENABLE === 'y' && !isset($_SESSION['gad_authToken'])){?>
+                                var rcUser = '<?php echo $_SESSION['user']?>';
+                                var rcHandshake = '<?php echo $_SESSION['phone_this'];?>';
+                                $.ajax({
+                                        url: "./php/AdminLoginRocketChat.php",
+                                        type: 'POST',
+                                        dataType: "json",
+                                        data: {user: rcUser, pass: rcHandshake},
+                                        success: function(data) {
+                                                console.log("RC AuthToken and UserID Set!");
+                                        }
+                                });
+                        <?php } ?>
+
 		// initialize select2
 		$('.select').select2({ theme: 'bootstrap' });		
 		$.fn.select2.defaults.set( "theme", "bootstrap" );
@@ -828,7 +879,19 @@
 			var agentlog = $(this).attr('data-agentlog');
 			var userid = $(this).attr('data-user');
 			var username = $(this).attr('data-name');	
-			
+
+			$('#table_'+agentlog).empty();
+                       	$('#table_'+agentlog).DataTable().destroy();
+
+                       	var agentlogTable = $('#table_'+agentlog).DataTable({
+                       		destroy:true,
+                                stateSave:true,
+                                drawCallback:function(settings) {
+                                	var pagination = $(this).closest('.dataTables_wrapper').find('.dataTables_paginate');
+                                                pagination.toggle(this.api().page.info().pages > 1);
+                                        }
+                        });				
+
 			$(".report-loader").fadeIn("slow");
 			$("#daterange_input-"+agentlog+"").val("");
 			$("#modal_stats_"+agentlog+"").modal("toggle");
@@ -836,7 +899,10 @@
 			$('#user_container').html(userid + " - " + username);
 			
 			$("#daterange_input-"+agentlog+"").daterangepicker({
-				"opens": "left"
+				"opens": "left",
+				"autoUpdateInput": false,
+				"startDate": Date.now(),
+				"endDate": Date.now()
 			}, function(start, end, label) {
 				var userid = $("#user_agentlog").val();
 				var sdate = start.format('YYYY-MM-DD');
@@ -921,14 +987,15 @@
 							}											
 							
 						} else {
-							<?php echo $lh->translateText("no_data"); ?>
+							console.log("<?php echo $lh->translateText("no_data"); ?>");
 						}
 						
 					}
 				});
 			});
+
 		});
-			
+
 		// user emergency logout
 		$(document).on('click','.emergency-logout',function() {
 			var userid = $(this).attr('data-emergency-logout-username');
