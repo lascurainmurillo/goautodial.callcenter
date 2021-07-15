@@ -9353,8 +9353,8 @@ function getContactList() {
                 var commentTitle = '';
                 if (thisComments !== null) {
                     if (thisComments.length > 20) {
-                        commentTitle = ' title="'+thisComments+'"';
-                        thisComments = thisComments.substring(0, 20) + "...";
+                        commentTitle = "";// ' title="'+thisComments+'"';
+                        thisComments = thisComments;// .substring(0, 20) + "...";
                     }
                 }
                 
