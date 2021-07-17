@@ -35,7 +35,7 @@
     $active 											= $astDB->escape(strtoupper($_REQUEST['active']));
     $hotkeys_active 									= $astDB->escape($_REQUEST['hotkeys_active']);
     $user_level 										= $astDB->escape($_REQUEST['user_level']);
-    $modify_same_user_level 							= $astDB->escape(strtoupper(@$_REQUEST['modify_same_user_level']));
+    $modify_same_user_level 							= $astDB->escape(strtoupper($_REQUEST['modify_same_user_level']));
     $goUser 											= $astDB->escape($_REQUEST['goUser']);
     $voicemail 											= $astDB->escape($_REQUEST['voicemail_id']);
     $vdc_agent_api_access 								= $astDB->escape($_REQUEST['vdc_agent_api_access']);
@@ -47,8 +47,9 @@
     $scheduled_callbacks 								= $astDB->escape($_REQUEST['scheduled_callbacks']);
     $agentonly_callbacks 								= $astDB->escape($_REQUEST['agentonly_callbacks']);
     $agent_lead_search_override 						= $astDB->escape($_REQUEST['agent_lead_search_override']);
-    $avatar 											= $astDB->escape(@$_REQUEST['avatar']);
-    $location 											= $astDB->escape(@$_REQUEST['location_id']);
+    $avatar 											= $astDB->escape($_REQUEST['avatar']);
+    $enable_webrtc 										= $astDB->escape($_REQUEST['enable_webrtc']);
+    $location 											= $astDB->escape($_REQUEST['location_id']);
 	
     // Default Values
     $defActive 											= array( "Y", "N" );	
@@ -122,7 +123,7 @@
 			"code" 											=> "41002", 
 			"result" 										=> $err_msg
 		);
-	} elseif (@$VARSERVTYPE == "gofree" && $hotkeys_active != null) {
+	} elseif ($VARSERVTYPE == "gofree" && $hotkeys_active != null) {
 		$err_msg 										= error_handle("10004", "hotkeys_active. Hotkeys is disabled");
 		$apiresults 									= array(
 			"code" 											=> "10004", 
@@ -184,7 +185,8 @@
 				"avatar" 									=> $avatar, 
 				"user_group" 								=> $user_group, 
 				"role" 										=> $user_level, 
-				"status" 									=> $goactive
+				"status" 									=> $goactive,
+                "enable_webrtc"                             => $enable_webrtc
 			);
 			
 			$insertUserGoArray 							= array(
@@ -312,18 +314,18 @@
 						
 						$update_array 					= array_merge($update_array, array(
 							"pass_hash" 					=> $pass_hash, 
-							"pass" 							=> "", 
-							"phone_pass" 					=> ""
+							"pass" 							=> ((int)$enable_webrtc == 0) ? $pass : "", 
+							"phone_pass" 					=> ((int)$enable_webrtc == 0) ? $phone_pass : ""
 							)
 						);
 
-						$goDB->where("setting", "GO_agent_domain");
-						$fetch_value 					= $astDB->getOne("settings", "value");
+						$goDB->where("setting", "GO_agent_wss_sip");
+						$fetch_value 					= $goDB->getOne("settings", "value");
 						
 						$value 							= $fetch_value["value"];						
 						$realm 							= (!is_null ($value) || $value !== '') ? $value : 'goautodial.com';						
-						$ha1 							= md5 ("{$phone_login}:{$realm}:{$phone_pass}");
-						$ha1b 							= md5 ("{$phone_login}@{$realm}:{$realm}:{$phone_pass}");
+						$ha1 							= md5 ("{$phone_login}:{$realm}:{$pass}");
+						$ha1b 							= md5 ("{$phone_login}@{$realm}:{$realm}:{$pass}");
 
 						$subscriber_array 				= array(
 							"password" 						=> "", 
@@ -376,6 +378,10 @@
 					$astDB->update("phones", $phones_array);
                     
 					$log_id 							= log_action($goDB, 'MODIFY', $log_user, $log_ip, "Modified Phone: $phone_login", $log_group, $astDB->getLastQuery());
+                    
+                    if ($protocol != "EXTERNAL") { 
+                        $rebuild 							= rebuildconfQuery($astDB); 
+                    }
 				}
 
 				$astDB->where("user", $user);
@@ -403,7 +409,7 @@
 				$goDB->where("carrier_id", $user_group);
 				$goDB->update('justgovoip_sippy_info', $justgovoip_array);	
 				
-				$log_id 								= log_action($goDB, 'MODIFY', $log_user, $log_ip, "Modified Phone: $phone_pass", $log_group, $goDB->getLastQuery());
+				$log_id 								= log_action($goDB, 'MODIFY', $log_user, $log_ip, "Modified Phone: $phone_login", $log_group, $goDB->getLastQuery());
 					
 				if ($queryUpdateUser) {
 					$apiresults 						= array(

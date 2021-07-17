@@ -24,11 +24,11 @@
 //error_reporting(E_ALL);
 
 $webRoot = $_SERVER['DOCUMENT_ROOT'];
-$version = @file_get_contents("{$webRoot}/version.txt");
+$version = file_get_contents("{$webRoot}/version.txt");
 $goCharset = "UTF-8";
 $goVersion = "4.0";
 
-// include_once('./includes/MySQLiDB.php'); // comentado para el modo desarrollo
+include_once('./includes/MySQLiDB.php');
 @include_once('../goDBasterisk.php');
 @include_once('../goDBgoautodial.php');
 @include_once('../goDBkamailio.php');
@@ -107,7 +107,7 @@ $loginDATE = date("Ymd");
 $CIDdate = date("mdHis");
 $ENTRYdate = date("YmdHis");
 
-if (@$_REQUEST['debugX']) {
+if ($_REQUEST['debugX']) {
     var_dump($NOW_TIME, $tz);
     die();
 }
@@ -144,7 +144,6 @@ foreach ($files as $file) {
         }
     }
 }
-
 $actions = implode('|', $fileList);
 if (isset($goAction) && $goAction != "") {
     if (preg_match("/$actions/", $goAction)) {
@@ -168,10 +167,10 @@ if (isset($goAction) && $goAction != "") {
         if ($auth_message == 'ERRAGENTS')
             {$err_message = "Too many agents logged in, please contact your administrator";}
 
+
         if ($auth < 1) {
             $APIResult = array( "result" => "error", "message" => $err_message, "auth_message" => $auth_message );
         } else {
-            
             $astDB->where('user', $goUser);
             $rslt = $astDB->getOne('vicidial_users', 'vdc_agent_api_access');
             $allowedAPIAccess = $rslt['vdc_agent_api_access'];

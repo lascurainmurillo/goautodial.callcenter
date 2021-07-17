@@ -30,7 +30,7 @@
 	}	
 
 	$output 									= $api->API_getTotalSales($type);	
-    $sales 										= $output->data;
+    $sales 										= @$output->data;
     
     if ( empty($sales) || is_null($sales) ) {
         $sales 									= 0;

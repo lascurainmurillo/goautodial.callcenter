@@ -278,7 +278,6 @@ class DbHandler {
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, VERIFY_SSL); // se agregó esta linea para localhost
 
 		$data = curl_exec($ch);
-
 		$userobj = json_decode($data);
 		curl_close($ch);
 		

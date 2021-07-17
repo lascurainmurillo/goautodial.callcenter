@@ -350,7 +350,7 @@ $whatsapp_status = $ui->API_getWhatsappActivation();
                                 font-size:14px;
                                 font-weight:normal;
                         }
-			.hide_div{
+						.hide_div{
                                 display: none;
                         }
                         .btn.btn-raised {
@@ -390,7 +390,7 @@ $whatsapp_status = $ui->API_getWhatsappActivation();
                         .table > thead > tr > th {
                                 padding: 8px;
                         }
-			.modal-body {
+						.modal-body {
                                 min-height: inherit;
                                 overflow-x: inherit;
                                 overflow-y: inherit;
@@ -425,7 +425,7 @@ $whatsapp_status = $ui->API_getWhatsappActivation();
                                 color: #3f51b5;
                                 opacity: 1;
                         }
-			.form-control ~ label {
+						.form-control ~ label {
                                 position: absolute;
                                 top: 0;
                                 left: 0;
@@ -462,7 +462,7 @@ $whatsapp_status = $ui->API_getWhatsappActivation();
                                 color: #000;
                                 opacity: 0.75;
                         }
-	 		.scrollable-menu {
+						.scrollable-menu {
                                 width: 200px;
                                 height: auto;
                                 max-height: 200px;
@@ -472,9 +472,9 @@ $whatsapp_status = $ui->API_getWhatsappActivation();
                         .editableform .form-group {
                                 padding: 0 !important;
                         }
-			.editable-disabled {
-					color: #fff !important;
-			}
+						.editable-disabled {
+								color: #fff !important;
+						}
 	</style>
 
 	<!-- ECCS Customiztion -->
@@ -496,43 +496,43 @@ $whatsapp_status = $ui->API_getWhatsappActivation();
 	}
 
 		/*toggle*/
-		.switch {
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 34px;
-}
+	.switch {
+		position: relative;
+		display: inline-block;
+		width: 60px;
+		height: 34px;
+	}
 
 	/* Hide default HTML checkbox */
 	.switch input {
-	opacity: 0;
-	width: 0;
-	height: 0;
+		opacity: 0;
+		width: 0;
+		height: 0;
 	}
 
 	/* The slider */
 	.slider {
-	position: absolute;
-	cursor: pointer;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background-color: #ccc;
-	-webkit-transition: .4s;
-	transition: .4s;
+		position: absolute;
+		cursor: pointer;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-color: #ccc;
+		-webkit-transition: .4s;
+		transition: .4s;
 	}
 
 	.slider:before {
-	position: absolute;
-	content: "";
-	height: 26px;
-	width: 26px;
-	left: 4px;
-	bottom: 4px;
-	background-color: white;
-	-webkit-transition: .4s;
-	transition: .4s;
+		position: absolute;
+		content: "";
+		height: 26px;
+		width: 26px;
+		left: 4px;
+		bottom: 4px;
+		background-color: white;
+		-webkit-transition: .4s;
+		transition: .4s;
 	}
 
 	input:checked + .slider {
@@ -558,7 +558,7 @@ $whatsapp_status = $ui->API_getWhatsappActivation();
   border-radius: 50%;
 }
 
-		</style>
+</style>
 		<!-- ECCS CSS -->
 	<!--	<link href="./css/bootstrap-toggle.min.css" type="text/css" /> -->
 		<link href="./css/eccs4.css" rel="stylesheet" type="text/css"/>
@@ -598,27 +598,27 @@ $whatsapp_status = $ui->API_getWhatsappActivation();
     <!-- <li id="dialer-tab" class="active"><a href="#control-dialer-tab" data-toggle="tab">Dialer</a></li>
     <li id="whatsapp-tab" class=""><a href="#control-whatsapp-tab" data-toggle="tab">Whatsapp</a></li>-->
     <style>
-	#btn-dialer-tab, #btn-whatsapp-tab{
-		box-shadow: 0 0 black;
-		color: black;
-		margin: 5px 50px 0px 0px;
-		background: lightgrey;
-	}
-	section#contact_info_crumbs{
-		margin-bottom: 0px; /*5px;*/
-		padding-left: 40px;
-		padding-right: 40px;
-	}
-	div.tab-content, div.tab-pane section.content{
-		/*padding-top: 2.5px;*/
-		padding-top: 0px !important;
-	}
+		#btn-dialer-tab, #btn-whatsapp-tab{
+			box-shadow: 0 0 black;
+			color: black;
+			margin: 5px 50px 0px 0px;
+			background: lightgrey;
+		}
+		section#contact_info_crumbs{
+			margin-bottom: 0px; /*5px;*/
+			padding-left: 40px;
+			padding-right: 40px;
+		}
+		div.tab-content, div.tab-pane section.content{
+			/*padding-top: 2.5px;*/
+			padding-top: 0px !important;
+		}
     </style>
 <!-- WhatsApp Button
     <div class="row">
     <a href="#" class="btn col-lg-3 pull-right" id="btn-dialer-tab">Dialer</a>
     <?php if($whatsapp_status) { ?>
-    <a href="#" class="btn col-lg-3 pull-right" id="btn-whatsapp-tab" style="background-color: #009688; color: white;">Whatsapp<span id="wa-notiff-badge"></span></a>
+    	<a href="#" class="btn col-lg-3 pull-right" id="btn-whatsapp-tab" style="background-color: #009688; color: white;">Whatsapp<span id="wa-notiff-badge"></span></a>
     <?php } ?>
     </div>
 -->
@@ -656,9 +656,9 @@ $whatsapp_status = $ui->API_getWhatsappActivation();
 						</div>
 					</div>
 			<?php if(ECCS_BLIND_MODE === 'y'){ ?>
-                        <div class="row">
-				<input type="text" id="freeTestField" class="hidden">
-			</div> 
+                <div class="row">
+					<input type="text" id="freeTestField" class="hidden">
+				</div> 
 			</div>
 			
                          <div class="col-lg-9">
@@ -676,51 +676,51 @@ $whatsapp_status = $ui->API_getWhatsappActivation();
 									</div>
 								</div>
 							</div>
-						<?php /* card-header?>
-								<!-- ECCS Customization -->
-								<?php // if(ECCS_BLIND_MODE === 'y'){?>
-								<!-- <div style="background-image:;" class="card-heading bg-inverse">
-								<?php //}//end if?>
-									<div class="row">
-										<div id="cust_avatar" class="col-lg-1 col-md-1 col-sm-2 text-center hidden-xs" style="height: 64px;">
-											<avatar username="Dialed Client" src="<?php //echo CRM_DEFAULTS_USER_AVATAR;?>" :size="64"></avatar>
-										</div>
-										<div class="<?php //if (ECCS_BLIND_MODE === 'n') { echo "col-lg-9 col-md-9 col-sm-7"; } else { echo "col-lg-11 col-md-11 col-sm-10"; } ?>">
-								<!-- ECCS Customization-->
-						  <!-- <h4 id="cust_full_name" class="isDisabled">
-									<?php //if(ECCS_BLIND_MODE === 'n'){ ?>
-									<span id="first_name_label" class="hidden"><?//=$lh->translationFor('first_name')?>: </span><a href="#" id="first_name">Firstname</a> <span id="middle_initial_label" class="hidden"><?//=$lh->translationFor('middle_initial')?>: </span><a href="#" id="middle_initial">M.I.</a> <span id="last_name_label" class="hidden"><?//=$lh->translationFor('last_name')?>: </span><a href="#" id="last_name">Lastname</a>
-									<?php //} ?>
+							<?php /* card-header?>
 									<!-- ECCS Customization -->
-									<?php //if(ECCS_BLIND_MODE === 'y'){ ?>
-									<!-- <span id="cust_campaign_name"></span>
-									<span id="first_name_label" class="hidden"><?//=$lh->translationFor('first_name')?>: </span><a href="#" id="first_name"></a> <span id="middle_initial_label" class="hidden"><?//=$lh->translationFor('middle_initial')?>: </span><a href="#" id="middle_initial"></a> <span id="last_name_label" class="hidden"><?//=$lh->translationFor('last_name')?>: </span><a href="#" id="last_name"></a>
-									<span id="cust_call_type"></span>
-									<?php //}//end if ?>
-         <!-- /.ECCS Customization -->
-								<!-- </h4>
-						                <p class="ng-binding animated fadeInUpShort">
-									 <!-- ECCS Customization -->
-                                                                        <?php //if(ECCS_BLIND_MODE === 'y'){ ?> 
-										<!-- <span id="span-cust-number" class="hidden"><label for="cust_number"> Client Number[#CN]: </label> <input type="text" id="cust_number" style="background-color:; border:; color:black; margin-top: 5px; padding-left: 5px; font-size: 14pt; font-weight: 600;" onclick="this.setSelectionRange(0, this.value.length)" readonly/>"Ctrl+C" to Copy Number.</span>
-
-									<?php //} else { ?>
-                                                                        <!-- /.ECCS Customization -->
-									<!-- <span id="cust_number"></span>
-									<?php //} ?>
-								</p>
-						    </div>
-										<?php //if (ECCS_BLIND_MODE === 'n') { ?>
-										<div id="agent_stats" class="col-lg-2 col-md-2 col-sm-3 hidden-xs" style="font-size: 18px; display: none;">
-											<p style="margin: 0;">Sales: <span id="agent_sales_count" style="float: right;">0</span></p>
-											<p id="amount_container" style="margin: 0; display: none;">Amount: <span id="agent_total_amount" style="float: right;">0</span></p>
-										</div>
+									<?php // if(ECCS_BLIND_MODE === 'y'){?>
+									<!-- <div style="background-image:;" class="card-heading bg-inverse">
+									<?php //}//end if?>
+										<div class="row">
+											<div id="cust_avatar" class="col-lg-1 col-md-1 col-sm-2 text-center hidden-xs" style="height: 64px;">
+												<avatar username="Dialed Client" src="<?php //echo CRM_DEFAULTS_USER_AVATAR;?>" :size="64"></avatar>
+											</div>
+											<div class="<?php //if (ECCS_BLIND_MODE === 'n') { echo "col-lg-9 col-md-9 col-sm-7"; } else { echo "col-lg-11 col-md-11 col-sm-10"; } ?>">
+									<!-- ECCS Customization-->
+								<!-- <h4 id="cust_full_name" class="isDisabled">
+										<?php //if(ECCS_BLIND_MODE === 'n'){ ?>
+										<span id="first_name_label" class="hidden"><?//=$lh->translationFor('first_name')?>: </span><a href="#" id="first_name">Firstname</a> <span id="middle_initial_label" class="hidden"><?//=$lh->translationFor('middle_initial')?>: </span><a href="#" id="middle_initial">M.I.</a> <span id="last_name_label" class="hidden"><?//=$lh->translationFor('last_name')?>: </span><a href="#" id="last_name">Lastname</a>
 										<?php //} ?>
-									</div>
+										<!-- ECCS Customization -->
+										<?php //if(ECCS_BLIND_MODE === 'y'){ ?>
+										<!-- <span id="cust_campaign_name"></span>
+										<span id="first_name_label" class="hidden"><?//=$lh->translationFor('first_name')?>: </span><a href="#" id="first_name"></a> <span id="middle_initial_label" class="hidden"><?//=$lh->translationFor('middle_initial')?>: </span><a href="#" id="middle_initial"></a> <span id="last_name_label" class="hidden"><?//=$lh->translationFor('last_name')?>: </span><a href="#" id="last_name"></a>
+										<span id="cust_call_type"></span>
+										<?php //}//end if ?>
+								<!-- /.ECCS Customization -->
+									<!-- </h4>
+											<p class="ng-binding animated fadeInUpShort">
+										<!-- ECCS Customization -->
+																			<?php //if(ECCS_BLIND_MODE === 'y'){ ?> 
+											<!-- <span id="span-cust-number" class="hidden"><label for="cust_number"> Client Number[#CN]: </label> <input type="text" id="cust_number" style="background-color:; border:; color:black; margin-top: 5px; padding-left: 5px; font-size: 14pt; font-weight: 600;" onclick="this.setSelectionRange(0, this.value.length)" readonly/>"Ctrl+C" to Copy Number.</span>
+
+										<?php //} else { ?>
+																			<!-- /.ECCS Customization -->
+										<!-- <span id="cust_number"></span>
+										<?php //} ?>
+									</p>
 								</div>
-							<!-- /.card heading -->
-						<?php */?>				
-							<!-- Card body -->
+											<?php //if (ECCS_BLIND_MODE === 'n') { ?>
+											<div id="agent_stats" class="col-lg-2 col-md-2 col-sm-3 hidden-xs" style="font-size: 18px; display: none;">
+												<p style="margin: 0;">Sales: <span id="agent_sales_count" style="float: right;">0</span></p>
+												<p id="amount_container" style="margin: 0; display: none;">Amount: <span id="agent_total_amount" style="float: right;">0</span></p>
+											</div>
+											<?php //} ?>
+										</div>
+									</div>
+								<!-- /.card heading -->
+							<?php */?>				
+								<!-- Card body -->
 						        <div class="card-body custom-tabpanel">
 				                	<div role="tabpanel" class="panel panel-transparent">
 									  <ul id="agent_tablist" role="tablist" class="nav nav-tabs nav-justified">
@@ -747,13 +747,13 @@ $whatsapp_status = $ui->API_getWhatsappActivation();
 											</a>
 										 </li>
 										<?php if(ROCKETCHAT_ENABLE === 'y'){?>
-										 <li role="presentation">
-                                                                                        <a href="#rc" aria-controls="home" id="loginRC" role="tab" data-toggle="tab" class="bb0">
-                                                                                                <!--<span class="fa fa-rocket"></span>-->
-                                                                                                <?=$lh->translationFor('Chat')?></a>
+										 	<li role="presentation">
+												<a href="#rc" aria-controls="home" id="loginRC" role="tab" data-toggle="tab" class="bb0">
+												<!--<span class="fa fa-rocket"></span>-->
+												<?=$lh->translationFor('Chat')?></a>
 												<input type="hidden" id="rc-user-id" value="">
 												<input type="hidden" id="rc-auth-token" value="">
-                                                                                 </li>
+                                        	</li>
 										<?php }?>
 									  </ul>
 									</div>
@@ -794,25 +794,27 @@ $whatsapp_status = $ui->API_getWhatsappActivation();
 												<input type="hidden" value="<?php echo $address3;?>" name="address3">
 												
 												<div class="row">
-													<div class="col-sm-4">
+													<div class="col-sm-6">
 														<div class="mda-form-group label-floating">
 															<input id="first_name" name="first_name" type="text" maxlength="30"  value="<?php echo $first_name;?>"
 																class="mda-form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched input-disabled" disabled required>
-															<label for="first_name">First Name</label>
+															<label for="first_name"><?=$lh->translationFor('first_name')?></label>
 														</div>
 													</div>
+													<!-- 
 													<div class="col-sm-4">
 														<div class="mda-form-group label-floating">
 															<input id="middle_initial" name="middle_initial" type="text" maxlength="1" value="<?php echo $middle_initial;?>"
 																class="mda-form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched input-disabled" disabled>
 															<label for="middle_initial">Middle Initial</label>
 														</div>
-														<div class="col-sm-4">
-															<div class="mda-form-group label-floating">
-																<input id="last_name" name="last_name" type="text" maxlength="30" value="<?php echo $last_name;?>"
-																	class="mda-form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched input-disabled" disabled required>
-																<label for="last_name">Last Name</label>
-															</div>
+													</div>
+													-->
+													<div class="col-sm-6">
+														<div class="mda-form-group label-floating">
+															<input id="last_name" name="last_name" type="text" maxlength="30" value="<?php echo $last_name;?>"
+																class="mda-form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched input-disabled" disabled required>
+															<label for="last_name"><?=$lh->translationFor('last_name')?></label>
 														</div>
 													</div>
 												</div>
@@ -853,7 +855,8 @@ $whatsapp_status = $ui->API_getWhatsappActivation();
 															<em class="fa fa-home fa-lg"></em>
 														</span>-->
 														</div>
-														<div class="col-xl-12 col-lg-6">																				<div class="mda-form-group label-floating">
+														<div class="col-xl-12 col-lg-6">
+															<div class="mda-form-group label-floating">
 																<input id="address2" name="address2" type="text" maxlength="100" value="<?php echo $address2;?>" class="mda-form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched input-disabled" disabled>
 																<label for="address2"><?=$lh->translationFor('address2')?></label>
 															</div>
@@ -964,7 +967,7 @@ $whatsapp_status = $ui->API_getWhatsappActivation();
 							                </div>
 							               </fieldset>
 
-								<div id="custom_fields_content" class="card-body" style="border: 1px solid rgb(221, 230, 233); margin: 0 32px 0 22px; display: none;">
+										<div id="custom_fields_content" class="card-body" style="border: 1px solid rgb(221, 230, 233); margin: 0 32px 0 22px; display: none;">
                                                                         <h4 style="font-weight: 600;">
                                                                                 <?=$lh->translationFor('custom_forms')?>
                                                                         </h4>
@@ -1279,17 +1282,18 @@ $whatsapp_status = $ui->API_getWhatsappActivation();
 										
 										<?php if(ROCKETCHAT_ENABLE === 'y'){?>
 										<!-- Rocket Chat -->
-                                                                                <div id="rc" role="tabpanel" class="tab-pane">
-                                                                                        <div class="row" id="rc_row">
-                                                                                        	<div id="rc_div"></div>
-											</div><!-- /.row -->
-                                                                                </div>
-                                                                                <!-- End of Rocket Chat -->
+											<div id="rc" role="tabpanel" class="tab-pane">
+													<div class="row" id="rc_row">
+														<div id="rc_div"></div>
+													</div>
+											<!-- /.row -->
+                                            </div>
+                                        <!-- End of Rocket Chat -->
 										<?php } ?>
-									</div>
+									<!-- </div> -->
 								</div>
 								
-					<!-- SCRIPT MODAL -->
+							<!-- SCRIPT MODAL -->
 							<div class="modal fade" id="script" name="script" tabindex="-1" role="dialog" aria-hidden="true">
 						        <div class="modal-dialog">
 						            <div class="modal-content">
@@ -1307,8 +1311,8 @@ $whatsapp_status = $ui->API_getWhatsappActivation();
 						        </div><!-- /.modal-dialog -->
 						    </div><!-- /.modal -->
 
-										<div id="template-container">
-										</div>
+							<div id="template-container">
+							</div>
 
 
 						</div>
@@ -1942,13 +1946,13 @@ $whatsapp_status = $ui->API_getWhatsappActivation();
 						
 							<div class="card col-md-12" style="padding: 15px;">
 							<div class="row">
-							<div class="col-xs-12">
-							<div class="" style="margin: 10px;">
-								<a class="btn btn-warning" href="agent.php">
-								<i class="fa fa-chevron-circle-left" aria-hidden="true"></i> Regresar
-								</a>
-							</div>
-						</div>
+								<div class="col-xs-12">
+									<div class="" style="margin: 10px;">
+										<a class="btn btn-warning" href="agent.php">
+										<i class="fa fa-chevron-circle-left" aria-hidden="true"></i> Regresar
+										</a>
+									</div>
+								</div>
 
 
 							</div>
@@ -2044,8 +2048,8 @@ $whatsapp_status = $ui->API_getWhatsappActivation();
 						</div>
 					</div-->
 			
-			<!-- AGENT CHAT -->
-			<?php if($agent_chat_status) include("includes/chatapp.php");?>
+					<!-- AGENT CHAT -->
+					<?php if($agent_chat_status) include("includes/chatapp.php");?>
                 </section><!-- /.content -->
 	</div>
 </div>	
@@ -2064,178 +2068,174 @@ $whatsapp_status = $ui->API_getWhatsappActivation();
     </ul>
     <!-- Tab panes -->
     <div class="tab-content" style="border-width:0; overflow-y: auto;">
-      <!-- Home tab content -->
-      <div class="tab-pane active" id="control-sidebar-dialer-tab">
-        <ul class="control-sidebar-menu" id="go_agent_dialer">
-			
-        </ul>
-        <!-- /.control-sidebar-menu -->
+		<!-- Home tab content -->
+		<div class="tab-pane active" id="control-sidebar-dialer-tab">
+			<ul class="control-sidebar-menu" id="go_agent_dialer">
+				
+			</ul>
+			<!-- /.control-sidebar-menu -->
 
-        <ul class="control-sidebar-menu" id="go_agent_status" style="margin: 0 0 15px;padding: 0 0 10px;">
+			<ul class="control-sidebar-menu" id="go_agent_status" style="margin: 0 0 15px;padding: 0 0 10px;">
+				
+			</ul>
 			
-        </ul>
-		
-        <ul class="control-sidebar-menu" id="go_agent_manualdial" style="margin-top: -10px;padding: 0 15px;">
-			
-        </ul>
+			<ul class="control-sidebar-menu" id="go_agent_manualdial" style="margin-top: -10px;padding: 0 15px;">
+				
+			</ul>
 
-        <ul class="control-sidebar-menu" id="go_agent_dialpad" style="margin-top: 15px;padding: 0 15px;">
-			
-        </ul>
+			<ul class="control-sidebar-menu" id="go_agent_dialpad" style="margin-top: 15px;padding: 0 15px;">
+				
+			</ul>
 
-        <ul class="control-sidebar-menu" id="go_agent_other_buttons" style="margin-top: 15px;padding: 0 15px;">
-			<li id="toggleWebForm" style="padding: 0 5px 15px;">
-				<button type="button" name="openWebForm" id="openWebForm" class="btn btn-warning btn-block disabled"><i class="fa fa-external-link"></i> <?=$lh->translationFor('webform')?></button>
-			</li>
-			<li id="toggleWebFormTwo" style="padding: 0 5px 15px;" class="hidden">
-				<button type="button" name="openWebFormTwo" id="openWebFormTwo" class="btn btn-warning btn-block disabled"><i class="fa fa-external-link"></i> <?=$lh->translationFor('webform_two')?></button>
-			</li>
-			<li style="font-size: 5px;">
-				&nbsp;
-			</li>
-			<li style="padding: 0 5px 15px;">
-				<div class="material-switch pull-right">
-					<input id="LeadPreview" name="LeadPreview" value="0" type="checkbox"/>
-					<label for="LeadPreview" class="label-primary"></label>
-				</div>
-				<div  class="sidebar-toggle-labels" style="font-weight: bold; text-transform: uppercase;"><label for="LeadPreview"><?=$lh->translationFor('lead_preview')?></label></div>
-			</li>
-			<li id="DialALTPhoneMenu" style="padding: 0 5px 15px; display: none;">
-				<div class="material-switch pull-right">
-					<input id="DialALTPhone" name="DialALTPhone" value="0" type="checkbox"/>
-					<label for="DialALTPhone" class="label-primary"></label>
-				</div>
-				<div  class="sidebar-toggle-labels" style="font-weight: bold; text-transform: uppercase;"><label for="DialALTPhone"><?=$lh->translationFor('alt_phone_dial')?></label></div>
-			</li>
-			<li id="toggleHotkeys" style="padding: 0 5px 15px;">
-				<div class="material-switch pull-right">
-					<input id="enableHotKeys" name="enableHotKeys" type="checkbox"/>
-					<label for="enableHotKeys" class="label-primary"></label>
-				</div>
-				<div class="sidebar-toggle-labels" style="font-weight: bold; text-transform: uppercase;"><label for="enableHotKeys"><?=$lh->translationFor('enable_hotkeys')?></label></div>
-			</li>
-			<li id="toggleMute" style="padding: 0 5px 15px;">
-				<div class="material-switch pull-right">
-					<input id="muteMicrophone" name="muteMicrophone" type="checkbox" checked/>
-					<label for="muteMicrophone" class="label-primary"></label>
-				</div>
-				<!--				<div class="pull-right">
-				<label class="switch">
-				<input id="muteMicrophone" name="muteMicrophone" type="checkbox" checked>
-				<span class="slider round"></span>
-				</label>
-				</div> -->
-				<div  class="sidebar-toggle-labels" style="font-weight: bold; text-transform: uppercase;"><label for="muteMicrophone"><?=$lh->translationFor('microphone')?></label></div>
-			</li>
-			<li style="font-size: 5px;">
-				<div id="GOdebug" class="material-switch pull-right">&nbsp;</div>
-			</li>
-			<li class="hidden">
-				<button type="button" id="show-callbacks-active" class="btn btn-link btn-block btn-raised"><?=$lh->translateText('Active Callback(s)')?> <span id="callbacks-active" class='badge pull-right bg-red'>0</span></button>
-				<button type="button" id="show-callbacks-today" class="btn btn-link btn-block btn-raised"><?=$lh->translateText('Callbacks For Today')?> <span id="callbacks-today" class='badge pull-right bg-red'>0</span></button>
-			</li>
-        </ul>
-		
-        <ul class="control-sidebar-menu" id="go_agent_login" style="width: 100%; margin: 15px auto 15px; text-align: center;">
+			<ul class="control-sidebar-menu" id="go_agent_other_buttons" style="margin-top: 15px;padding: 0 15px;">
+				<li id="toggleWebForm" style="padding: 0 5px 15px;">
+					<button type="button" name="openWebForm" id="openWebForm" class="btn btn-warning btn-block disabled"><i class="fa fa-external-link"></i> <?=$lh->translationFor('webform')?></button>
+				</li>
+				<li id="toggleWebFormTwo" style="padding: 0 5px 15px;" class="hidden">
+					<button type="button" name="openWebFormTwo" id="openWebFormTwo" class="btn btn-warning btn-block disabled"><i class="fa fa-external-link"></i> <?=$lh->translationFor('webform_two')?></button>
+				</li>
+				<li style="font-size: 5px;">
+					&nbsp;
+				</li>
+				<li style="padding: 0 5px 15px;">
+					<div class="material-switch pull-right">
+						<input id="LeadPreview" name="LeadPreview" value="0" type="checkbox"/>
+						<label for="LeadPreview" class="label-primary"></label>
+					</div>
+					<div  class="sidebar-toggle-labels" style="font-weight: bold; text-transform: uppercase;"><label for="LeadPreview"><?=$lh->translationFor('lead_preview')?></label></div>
+				</li>
+				<li id="DialALTPhoneMenu" style="padding: 0 5px 15px; display: none;">
+					<div class="material-switch pull-right">
+						<input id="DialALTPhone" name="DialALTPhone" value="0" type="checkbox"/>
+						<label for="DialALTPhone" class="label-primary"></label>
+					</div>
+					<div  class="sidebar-toggle-labels" style="font-weight: bold; text-transform: uppercase;"><label for="DialALTPhone"><?=$lh->translationFor('alt_phone_dial')?></label></div>
+				</li>
+				<li id="toggleHotkeys" style="padding: 0 5px 15px;">
+					<div class="material-switch pull-right">
+						<input id="enableHotKeys" name="enableHotKeys" type="checkbox"/>
+						<label for="enableHotKeys" class="label-primary"></label>
+					</div>
+					<div class="sidebar-toggle-labels" style="font-weight: bold; text-transform: uppercase;"><label for="enableHotKeys"><?=$lh->translationFor('enable_hotkeys')?></label></div>
+				</li>
+				<li id="toggleMute" style="padding: 0 5px 15px;">
+					<div class="material-switch pull-right">
+						<input id="muteMicrophone" name="muteMicrophone" type="checkbox" checked/>
+						<label for="muteMicrophone" class="label-primary"></label>
+					</div>
+					<!--				<div class="pull-right">
+					<label class="switch">
+					<input id="muteMicrophone" name="muteMicrophone" type="checkbox" checked>
+					<span class="slider round"></span>
+					</label>
+					</div> -->
+					<div  class="sidebar-toggle-labels" style="font-weight: bold; text-transform: uppercase;"><label for="muteMicrophone"><?=$lh->translationFor('microphone')?></label></div>
+				</li>
+				<li style="font-size: 5px;">
+					<div id="GOdebug" class="material-switch pull-right">&nbsp;</div>
+				</li>
+				<li class="hidden">
+					<button type="button" id="show-callbacks-active" class="btn btn-link btn-block btn-raised"><?=$lh->translateText('Active Callback(s)')?> <span id="callbacks-active" class='badge pull-right bg-red'>0</span></button>
+					<button type="button" id="show-callbacks-today" class="btn btn-link btn-block btn-raised"><?=$lh->translateText('Callbacks For Today')?> <span id="callbacks-today" class='badge pull-right bg-red'>0</span></button>
+				</li>
+			</ul>
 			
-        </ul>
-		
-        <ul class="control-sidebar-menu" id="go_agent_logout" style="bottom: 0px; position: absolute; width: 100%; margin: 25px -15px 5px; text-align: center; max-width: 100%; padding-bottom: 5px; background-color: #222d32;">
-			<li style="margin-bottom: -5px;">
-				<p><strong><?=$lh->translateText("Call Duration")?>:</strong> <span id="SecondsDISP">0</span> <?=$lh->translationFor('second')?></p>
-				<span id="session_id" class="hidden"></span>
-				<span id="callchannel" class="hidden"></span>
-				<input type="hidden" id="callserverip" value="" />
-				<span id="custdatetime" class="hidden"></span>
-			</li>
+			<ul class="control-sidebar-menu" id="go_agent_login" style="width: 100%; margin: 15px auto 15px; text-align: center;">
+				
+			</ul>
 			
-        </ul>
-        <!-- /.control-sidebar-menu -->
+			<ul class="control-sidebar-menu" id="go_agent_logout" style="bottom: 0px; position: absolute; width: 100%; margin: 25px -15px 5px; text-align: center; max-width: 100%; padding-bottom: 5px; background-color: #222d32;">
+				<li style="margin-bottom: -5px;">
+					<p><strong><?=$lh->translateText("Call Duration")?>:</strong> <span id="SecondsDISP">0</span> <?=$lh->translationFor('second')?></p>
+					<span id="session_id" class="hidden"></span>
+					<span id="callchannel" class="hidden"></span>
+					<input type="hidden" id="callserverip" value="" />
+					<span id="custdatetime" class="hidden"></span>
+				</li>
+			</ul>
+			<!-- /.control-sidebar-menu -->
 
-      </div>
-      <!-- /.tab-pane -->
-      <!-- Agents View tab content -->
-      <div class="tab-pane" id="control-sidebar-users-tab">
-		<h4><?=$lh->translationFor('other_agent_status')?></h4>
-		<ul class="control-sidebar-menu" id="go_agent_view_list" style="padding: 0px 15px;">
-			<li><div class="text-center"><?=$lh->translationFor('loading_agents')?>...</div></li>
-		</ul>
-	  </div>
-      <!-- /.tab-pane -->
-      <!-- Settings tab content -->
-      <div class="tab-pane" id="control-sidebar-settings-tab">
-		<ul class="control-sidebar-menu" id="go_agent_profile">
-			<li>
-				<div class="center-block" style="text-align: center; background: #181f23 none repeat scroll 0 0; margin: 0 10px; padding-bottom: 1px; padding-top: 10px;">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+		</div>
+		<!-- /.tab-pane -->
+		<!-- Agents View tab content -->
+		<div class="tab-pane" id="control-sidebar-users-tab">
+			<h4><?=$lh->translationFor('other_agent_status')?></h4>
+			<ul class="control-sidebar-menu" id="go_agent_view_list" style="padding: 0px 15px;">
+				<li><div class="text-center"><?=$lh->translationFor('loading_agents')?>...</div></li>
+			</ul>
+		</div>
+		<!-- /.tab-pane -->
+		<!-- Settings tab content -->
+		<div class="tab-pane" id="control-sidebar-settings-tab">
+			<ul class="control-sidebar-menu" id="go_agent_profile">
+				<li>
+					<div class="center-block" style="text-align: center; background: #181f23 none repeat scroll 0 0; margin: 0 10px; padding-bottom: 1px; padding-top: 10px;">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+							<p><?=$ui->getVueAvatar($user->getUserName(), $user->getUserAvatar(), 96, false, true, false)?></p>
+							<p style="color:white;"><?=$user->getUserName()?><br><small><?=$lh->translationFor("nice_to_see_you_again")?></small></p>
+						</a>
+					</div>
+				</li>
+				<li>
+					<div>&nbsp;</div>
+				</li>
+				<?php
+				if ($user->userHasBasicPermission()) {
+					//echo '<li>
+					//	<div class="text-center"><a href="" data-toggle="modal" id="change-password-toggle" data-target="#change-password-dialog-modal">'.$lh->translationFor("change_password").'</a></div>
+					//	<div class="text-center"><a href="./messages.php">'.$lh->translationFor("messages").'</a></div>
+					//	<div class="text-center"><a href="./notifications.php">'.$lh->translationFor("notifications").'</a></div>
+					//	<div class="text-center"><a href="./tasks.php">'.$lh->translationFor("tasks").'</a></div>
+					//</li>';
+					//echo $ui->getSidebarItem("./agent.php", "", $lh->translationFor("Home"));
+					$numMessages = $db->getUnreadMessagesNumber($user->getUserId());
+					echo $ui->getSidebarItem("#messages", "", $lh->translationFor("messages"), $numMessages, "green");
+					echo $ui->getSidebarItem("#callbackslist", "", $lh->translationFor("callbacks"), "0", "blue");
+					if ($user_info->data->agent_lead_search_override != 'DISABLED') {
+						echo $ui->getSidebarItem("#customerslist", "", $lh->translationFor("contacts"), null, "", "agent-lead-search");
+					}
+				}
+				?>
+				<li id="pause_code_link" class="hidden">
+					<a onclick="PauseCodeSelectBox();"><i class="fa fa-"></i> <span><?=$lh->translationFor('enter_pause_code')?></span></a>
+				</li>
+			</ul>
+			
+			<ul class="control-sidebar-menu" style="bottom: 0px; position: absolute; width: 100%; margin: 25px -15px 15px; max-width: 100%; padding-bottom: 5px; background-color: #222d32;">
+				<li>
+					<div class="center-block" style="text-align: center">
+						<a href="#profile" class="btn btn-warning"><i class='fa fa-user'></i> <?=$lh->translationFor("my_profile")?></a>
+							&nbsp; 
+						<a href="./logout.php" id="cream-agent-logout" class="btn btn-warning"><i class='fa fa-sign-out'></i> <?=$lh->translationFor("exit")?></a>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<!-- /.tab-pane -->
+		<?php if($agent_chat_status){ ?>
+		<!-- tab-pane -->
+		<!-- chat tab -->
+		<div class="tab-pane" id="control-sidebar-chat-tab">
+			<ul class="contacts-list">
+				<li>
+					<div class="center-block" style="text-align: center; /*background: #181f23 none repeat scroll 0 0;*/ margin: 0 10px; padding-bottom: 1px; padding-top: 10px;">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">
 						<p><?=$ui->getVueAvatar($user->getUserName(), $user->getUserAvatar(), 96, false, true, false)?></p>
 						<p style="color:white;"><?=$user->getUserName()?><br><small><?=$lh->translationFor("nice_to_see_you_again")?></small></p>
-					</a>
-				</div>
-			</li>
-			<li>
-				<div>&nbsp;</div>
-			</li>
-			<?php
-			if ($user->userHasBasicPermission()) {
-				//echo '<li>
-				//	<div class="text-center"><a href="" data-toggle="modal" id="change-password-toggle" data-target="#change-password-dialog-modal">'.$lh->translationFor("change_password").'</a></div>
-				//	<div class="text-center"><a href="./messages.php">'.$lh->translationFor("messages").'</a></div>
-				//	<div class="text-center"><a href="./notifications.php">'.$lh->translationFor("notifications").'</a></div>
-				//	<div class="text-center"><a href="./tasks.php">'.$lh->translationFor("tasks").'</a></div>
-				//</li>';
-				//echo $ui->getSidebarItem("./agent.php", "", $lh->translationFor("Home"));
-				$numMessages = $db->getUnreadMessagesNumber($user->getUserId());
-				echo $ui->getSidebarItem("#messages", "", $lh->translationFor("messages"), $numMessages, "green");
-				echo $ui->getSidebarItem("#callbackslist", "", $lh->translationFor("callbacks"), "0", "blue");
-				if ($user_info->data->agent_lead_search_override != 'DISABLED') {
-					echo $ui->getSidebarItem("#customerslist", "", $lh->translationFor("contacts"), null, "", "agent-lead-search");
-				}
-			}
-			?>
-			<li id="pause_code_link" class="hidden">
-				<a onclick="PauseCodeSelectBox();"><i class="fa fa-"></i> <span><?=$lh->translationFor('enter_pause_code')?></span></a>
-			</li>
-		</ul>
-		
-        <ul class="control-sidebar-menu" style="bottom: 0px; position: absolute; width: 100%; margin: 25px -15px 15px; max-width: 100%; padding-bottom: 5px; background-color: #222d32;">
-			<li>
-				<div class="center-block" style="text-align: center">
-					<a href="#profile" class="btn btn-warning"><i class='fa fa-user'></i> <?=$lh->translationFor("my_profile")?></a>
-					 &nbsp; 
-					<a href="./logout.php" id="cream-agent-logout" class="btn btn-warning"><i class='fa fa-sign-out'></i> <?=$lh->translationFor("exit")?></a>
-				</div>
-			</li>
-        </ul>
-      </div>
-      <!-- /.tab-pane -->
-	<?php if($agent_chat_status){ ?>
-      <!-- tab-pane -->
-      <!-- chat tab -->
-      <div class="tab-pane" id="control-sidebar-chat-tab">
-	<ul class="contacts-list">
-	<li>
-           <div class="center-block" style="text-align: center; /*background: #181f23 none repeat scroll 0 0;*/ margin: 0 10px; padding-bottom: 1px; pa
-dding-top: 10px;">
-               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-               <p><?=$ui->getVueAvatar($user->getUserName(), $user->getUserAvatar(), 96, false, true, false)?></p>
-               <p style="color:white;"><?=$user->getUserName()?><br><small><?=$lh->translationFor("nice_to_see_you_again")?></small></p>
-               </a>
-           </div>
-       </li>
-       <li>
-	Contact List
-           <!--<div>&nbsp;</div>-->
-       </li>
-	
-	
-	<?php
-	   include('includes/chat-tab.php');
-	?>
-	</ul>	
-      </div>
-      <!-- /. tab-pane -->
-	<?php } ?>
+						</a>
+					</div>
+				</li>
+				<li>
+					Contact List
+					<!-- <div>&nbsp;</div> -->
+				</li>
+				<?php
+					include('includes/chat-tab.php');
+				?>
+			</ul>	
+		</div>
+      	<!-- /. tab-pane -->
+		<?php } ?>
     </div>
   </aside>
 

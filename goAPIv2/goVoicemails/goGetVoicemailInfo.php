@@ -26,7 +26,7 @@
 		
 	### POST or GET Variables
 	$voicemail_id 						= $astDB->escape($_REQUEST["voicemail_id"]);
-	$active								= @$astDB->escape($_REQUEST['active']);
+	$active								= $astDB->escape($_REQUEST['active']);
    
 	### Default values
     $defActive 							= array(

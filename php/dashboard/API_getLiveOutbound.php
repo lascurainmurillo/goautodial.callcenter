@@ -24,7 +24,7 @@
 	
 	$api 										= \creamy\APIHandler::getInstance();
 	$output 									= $api->API_getLiveOutbound(); 	
-    $calls 										= $output->data;
+    $calls 										= @$output->data;
 
     if ( empty($calls) || is_null($calls) ) {
         $calls 									= 0;

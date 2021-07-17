@@ -96,7 +96,8 @@ if ($is_logged_in) {
         $rslt = $astDB->get('vicidial_live_agents', null, 'calls_today');
         $vla_cc_ct = $astDB->getRowCount();
         if ($vla_cc_ct > 0) {
-            $calls_today = $vla_cc_ct;
+            $row = $rslt[0];
+            $calls_today = $row['calls_today'];
         } else {
             $calls_today = 0;
         }
@@ -129,13 +130,13 @@ if ($is_logged_in) {
 
         //$stmt = "UPDATE vicidial_campaign_agents set calls_today='$calls_today' where user='$user' and campaign_id='$campaign';";
         $astDB->where('user', $user);
-        $astDB->where('campain_id', $campaign);
+        $astDB->where('campaign_id', $campaign);
         $rslt = $astDB->update('vicidial_campaign_agents', array( 'calls_today' => $calls_today ));
 
         ##### grab the data from vicidial_list for the lead_id
         //$stmt="SELECT lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id FROM vicidial_list where lead_id='$lead_id' LIMIT 1;";
         $astDB->where('lead_id', $lead_id);
-        $rslt = $astDB->getOne('vicidial_list', 'lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_code_additional,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id,social_form_id,social_form_data');
+        $rslt = $astDB->getOne('vicidial_list', 'lead_id,entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,gmt_offset_now,called_since_last_reset,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,called_count,last_local_call_time,rank,owner,entry_list_id,social_form_id,social_form_data');
         $list_lead_ct = $astDB->getRowCount();
         
         if ($list_lead_ct > 0) {
@@ -850,7 +851,7 @@ if ($is_logged_in) {
             $rslt = $astDB->get('vicidial_users', null, 'full_name');
             $VDU_cid_ct = $astDB->getRowCount();
             if ($VDU_cid_ct > 0) {
-                $ros = $rslt[0];
+                $row = $rslt[0];
                 $fronter_full_name		= $row['full_name'];
                 //echo $fronter_full_name . '|' . $tsr . "\n";
                 $dataOutput4 = array(
@@ -1289,24 +1290,6 @@ if ($is_logged_in) {
                 }
             }
             ##### END special filtering and response for Vtiger account balance function #####
-        }
-
-        if(@$social_form_id) {
-            /*
-		    Obtener datos del formulario de facebook leads
-            $goDB->where('form_id', '1954903977993623');
-            $form_face = $goDB->getOne("go_social_webhook_change", "id, form_id");
-			
-			if(@$form_face) {
-				$goDB->where("status", 1);
-				$token_user = $goDB->getOne("go_social_token", "token");
-				
-				if($token_user) {
-					$fanpages = Facebookgo::getFormLead('1954903977993623', $token_user["token"]);
-				}
-			}
-			exit;
-			*/
         }
         
         $outputData = array_merge($dataOutput1, $dataOutput2, $dataOutput3, $dataOutput4, $LeaD_InfO);

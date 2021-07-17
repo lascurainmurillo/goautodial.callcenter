@@ -60,9 +60,10 @@
 		else if (isset($_POST['responsetype'])) { $userResponseType = $astDB->escape($_POST['responsetype']); }    
 		
 	/* Standard goAPI variables */
-    $log_user     = $session_user;
-    $log_group    = go_get_groupid($session_user, $astDB);     
-    $log_ip       = $astDB->escape($_REQUEST['log_ip']);
+	
+    $log_user     = $session_user ?? '';
+    $log_group    = go_get_groupid($session_user ?? '', $astDB);    
+    @$log_ip       = $astDB->escape(@$_REQUEST['log_ip']);
     $goUser       = $astDB->escape($_REQUEST['goUser']);
     $goPass       = (isset($_REQUEST['log_pass']) ? $astDB->escape($_REQUEST['log_pass']) : $astDB->escape($_REQUEST['goPass']));		
 		
@@ -126,6 +127,7 @@
     
     /* API OUTPUT */
     ob_start();
+    header("Access-Control-Allow-Origin: *");
     
 	if (count($apiresults)) {
 		if ($userResponseType == "json") {

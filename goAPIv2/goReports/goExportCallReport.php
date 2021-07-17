@@ -1,10 +1,11 @@
 <?php
 /**
  * @file        goExportCallReport.php
- * @brief       API for Agent Time Details Reports
- * @copyright   Copyright (c) 2018 GOautodial Inc.
+ * @brief       API for Exporting Call Reports
+ * @copyright   Copyright (c) 2020 GOautodial Inc.
  * @author		Demian Lizandro A. Biscocho
  * @author      Alexander Jim Abenoja 
+ * @author      Thom Bernarth Patacsil
  *
  * @par <b>License</b>:
  *  This program is free software: you can redistribute it AND/or modify
@@ -33,13 +34,16 @@
 	$log_group 		= go_get_groupid($session_user, $astDB);
 	$fromDate = $astDB->escape($_REQUEST['fromDate']);        
 	$toDate = $astDB->escape($_REQUEST['toDate']);
- 
-        if (empty($fromDate))
-            $fromDate = date("Y-m-d")." 00:00:00";
-        if (empty($toDate)) 
-            $toDate = date("Y-m-d")." 23:59:59";
+	
+	$limit = $astDB->escape($_REQUEST['limit']);
+	$offset = $astDB->escape($_REQUEST['offset']);
+
+	if (empty($fromDate))
+		$fromDate = date("Y-m-d")." 00:00:00";
+	if (empty($toDate)) 
+		$toDate = date("Y-m-d")." 23:59:59";
         
-	if (!empty($campaigns))
+	if (!empty($campaigns) && $campaigns != NULL)
 	    $campaigns = explode(",",$campaigns);
 	if (!empty($inbounds))
 	    $inbounds = explode(",",$inbounds);
@@ -48,17 +52,51 @@
 	if (!empty($dispo_stats))	
 	    $dispo_stats = explode(",",$dispo_stats);
 	
+	if($limit != NULL && $offset != NULL){
+		$limit_SQL = "LIMIT $offset, $limit";
+	} else {
+		$limit_SQL = "";
+	}
+
 	$campaign_SQL = "";
 	$group_SQL = "";
 	$list_SQL = "";
 	$status_SQL = "";
-	
+
 	$campaign_ct = count($campaigns);
 	$group_ct = count($inbounds);
 	$list_ct = count($lists);
 	$status_ct = count($dispo_stats);
 
-	if ($campaigns != "") {
+	$csv_row = "";
+
+	// check if MariaDB slave server available
+	$rslt								= $goDB
+	->where('setting', 'slave_db_ip')
+	->where('context', 'creamy')
+	->getOne('settings', 'value');
+	$slaveDBip 							= $rslt['value'];
+
+	if (!empty($slaveDBip)) {
+		$astDB = new MySQLiDB($slaveDBip, $VARDB_user, $VARDB_pass, $VARDB_database);
+
+		if (!$astDB) {
+			echo "Error: Unable to connect to MariaDB slave server." . PHP_EOL;
+			echo "Debugging Error: " . $astDB->getLastError() . PHP_EOL;
+			exit;
+			//die('MySQL connect ERROR: ' . mysqli_error('mysqli'));
+		}			
+	}
+
+	if (!empty($campaigns)) {
+		$fresults = $astDB
+			->where("user", $goUser)
+			->where("pass_hash", $goPass)
+			->getOne("vicidial_users", "user,user_level");
+		
+		$goapiaccess = $astDB->getRowCount();
+		$userlevel = $fresults["user_level"];
+
 		$i = 0;
 		//$array_campaign = Array();
 
@@ -70,16 +108,18 @@
 		}
 		
 		if (in_array("ALL", $campaigns)) {
-                        $campaign_SQL = "";
-                        $i = 0;
-                        $SELECTQuery = $astDB->get("vicidial_campaigns", NULL, "campaign_id");
-                        $campaign_ct = $astDB->count;
+			$campaign_SQL = "";
+			$i = 0;
+			$SELECTQuery = $astDB->get("vicidial_campaigns", NULL, "campaign_id");
+			$campaign_ct = $astDB->count;
 			foreach($SELECTQuery as $camp_val){
 				$array_camp[] = $camp_val["campaign_id"];
 			}
 			$imp_camp = implode("','", $array_camp);
 			if (strtoupper($log_group) !== 'ADMIN') {
-				$campaign_SQL = "AND vl.campaign_id IN('$imp_camp')";
+				if ($log_group !== 'SUPERVISOR') {
+					$campaign_SQL = "AND vl.campaign_id IN('$imp_camp')";
+				}
 			}
 			//die("ALEX");	
                 }else{
@@ -93,20 +133,26 @@
 		$RUNcampaign = 0;
 	}
 	
-	if ($inbounds != "") {
-		$i = 0;
-		//$array_inbound 							= Array();
+	if (!empty($inbounds)) {
+		$i=0;
+		if (in_array("ALL", $inbounds)) {
+			$group_SQL = go_getall_closer_campaigns("ALL", $astDB);
+			$i=1;
+		} else {
+			$i = 0;
+			//$array_inbound 							= Array();
 
-		while ($i < $group_ct) {
-			if (strlen($inbounds[$i]) > 0) {
-			  //$group_SQL .= "'$inbounds[$i]',";
-				$group_SQL .= "'$inbounds[$i]',";
-				//array_push($array_inbound, $inbounds[$i]);
+			while ($i < $group_ct) {
+				if (strlen($inbounds[$i]) > 0) {
+				  //$group_SQL .= "'$inbounds[$i]',";
+					$group_SQL .= "'$inbounds[$i]',";
+					//array_push($array_inbound, $inbounds[$i]);
+				}
+				$i++;
 			}
-			$i++;
-		}
 		
-		$group_SQL 								= preg_replace("/,$/i",'',$group_SQL);
+			$group_SQL 								= preg_replace("/,$/i",'',$group_SQL);
+		}
 		if ($group_ct > 0) {
 			$group_SQL 							= "AND vcl.campaign_id IN($group_SQL)";
 		}
@@ -116,44 +162,52 @@
 		$RUNgroup								= 0;
 	}
 	
-	if ($lists != "") {
-		$list_SQL 								= "";
+	if (!empty($lists)) {
+		//$list_SQL 								= "";
+		$list_SQL								= implode("','", $lists);
 		
-		$i										= 0;
+		//$i										= 0;
 		//$array_list 							= Array();
-		while ($i < $list_ct) {
-			//$list_SQL .= "'$lists[$i]',";
-			$list_SQL 							.= "'$lists[$i]',";
-			//array_push($array_list, $lists[$i]);
-			$i++;
-		}
+		//while ($i < $list_ct) {
+		//	//$list_SQL .= "'$lists[$i]',";
+		//	$list_SQL 							.= "'$lists[$i]',";
+		//	//array_push($array_list, $lists[$i]);
+		//	$i++;
+		//}
+		
 		if (in_array("ALL", $lists)) {
 			$list_SQL 							= "";
-			$i									= 0;
-			while ($i < $campaign_ct) {
-				$camp_id = $campaigns[$i];
-				$astDB->WHERE("campaign_id", $camp_id);
-				$SELECTQuery = $astDB->getValue("vicidial_lists", "list_id");
-				//$query_list = mysqli_query($astDB,"SELECT list_id FROM vicidial_lists WHERE campaign_id = '$camp_id';");
-				$array_list[] = $SELECTQuery;
-				
-				$i++;
-			}
 			
+			if (in_array("ALL", $campaigns) || in_array('ALL', $inbounds)) {
+				$SELECTQuery = $astDB->get("vicidial_lists", null, "list_id");
+				$array_list = $SELECTQuery;
+			} else {
+				$i									= 0;
+				while ($i < $campaign_ct) {
+					$camp_id = $campaigns[$i];
+					$astDB->WHERE("campaign_id", $camp_id);
+					$SELECTQuery = $astDB->get("vicidial_lists", null, "list_id");
+					//$query_list = mysqli_query($astDB,"SELECT list_id FROM vicidial_lists WHERE campaign_id = '$camp_id';");
+					$array_list = $SELECTQuery;
+					
+					$i++;
+				}
+			}
 		}
 		else{
-			$list_SQL 							= preg_replace("/,$/i",'',$list_SQL);
-			$list_SQL 							= "AND vi.list_id IN($list_SQL)";
-			$i									= 0;
-			
-			while ($i < $list_ct) {
-				$array_list[] 					= $lists[$i];
-				$i++;
-			}
+			//$list_SQL 							= preg_replace("/,$/i",'',$list_SQL);
+			$list_SQL 							= "AND vi.list_id IN('$list_SQL')";
+			$array_list							= $lists;
+			//$i									= 0;
+			//
+			//while ($i < $list_ct) {
+			//	$array_list[] 					= $lists[$i];
+			//	$i++;
+			//}
 		}
 	}
 	
-	if ($dispo_stats != "") {
+	if (!empty($dispo_stats)) {
 		$i= 0;
 		//$array_status 							= Array();
 
@@ -168,13 +222,19 @@
 			$status_SQL 						= "";
 		} else {
 			$status_SQL 						= preg_replace("/,$/i",'',$status_SQL);
-			$status_SQL 						= "AND vl.status IN ($status_SQL)";
+			$status_SQL_vl 						= "AND vl.status IN ($status_SQL)";
+			$status_SQL_vcl						= "AND vcl.status IN ($status_SQL)";
+
 		}
 	}
 	
 	if ($log_group !== "ADMIN") {
-		$stringv 								= go_getall_allowed_users($log_group);
-		$user_group_SQL 						= "AND vl.user IN ($stringv)";
+		if ($log_group !== 'SUPERVISOR') {
+			$stringv 								= go_getall_allowed_users($log_group);
+			$user_group_SQL 						= "AND vl.user IN ($stringv)";
+		} else {
+			$user_group_SQL                                                 = "";
+		}
 	}  else{
 		$user_group_SQL 						= "";
 	}
@@ -190,20 +250,22 @@
 			AND vu.user=vl.user AND vi.lead_id=vl.lead_id 
 			# AND vl.length_in_sec > 0 
 			$list_SQL $campaign_SQL 
-			$user_group_SQL $status_SQL 
-			order by vl.call_date";
+			$user_group_SQL $status_SQL_vl 
+			order by vl.call_date
+			$limit_SQL";
 	}
 	
 	if ($RUNgroup > 0 && $RUNcampaign < 1) {
-		$query	= "SELECT vcl.call_date, $duration_sql2 vcl.phone_number,vcl.status,vcl.user,vu.full_name,vcl.campaign_id,vi.vendor_lead_code,vi.source_id,vi.list_id,vi.gmt_offset_now,vi.phone_code,vi.title,	vi.first_name,vi.middle_initial,vi.last_name,vi.address1,vi.address2,vi.address3,vi.city,vi.state,vi.province,vi.postal_code,vi.country_code,vi.gender,vi.date_of_birth,vi.alt_phone,vi.email,vi.security_phrase,vi.comments,vcl.vcl.user_group,vcl.queue_seconds,vi.rank,vi.owner,vi.lead_id,vcl.closecallid, vcl.uniqueid,vi.entry_list_id 
+		$query	= "SELECT vcl.call_date, $duration_sql2 vcl.phone_number,vcl.status,vcl.user,vu.full_name,vcl.campaign_id,vi.vendor_lead_code,vi.source_id,vi.list_id,vi.gmt_offset_now,vi.phone_code,vi.title,	vi.first_name,vi.middle_initial,vi.last_name,vi.address1,vi.address2,vi.address3,vi.city,vi.state,vi.province,vi.postal_code,vi.country_code,vi.gender,vi.date_of_birth,vi.alt_phone,vi.email,vi.security_phrase,vi.comments,vcl.user_group,vcl.queue_seconds,vi.rank,vi.owner,vi.lead_id,vcl.closecallid, vcl.uniqueid,vi.entry_list_id 
 			FROM vicidial_users vu, vicidial_closer_log vcl, vicidial_list vi 
 			WHERE (date_format(vcl.call_date, '%Y-%m-%d %H:%i:%s') BETWEEN '$fromDate' AND '$toDate') 
 			AND vu.user=vcl.user AND vi.lead_id=vcl.lead_id 
 			AND vi.lead_id = vcl.lead_id 
 			#AND vcl.length_in_sec > 0
 			$list_SQL $group_SQL 
-			$user_group_SQL $status_SQL 
-			order by vcl.call_date";
+			$user_group_SQL $status_SQL_vcl
+			order by vcl.call_date
+			$limit_SQL";
 	}
 	if ($RUNcampaign > 0 && $RUNgroup > 0) {
 		$query = "(SELECT vl.call_date,
@@ -251,7 +313,7 @@
 			$list_SQL 
 			$campaign_SQL 
 			$user_group_SQL 
-			$status_SQL 
+			$status_SQL_vl 
 			order by vl.call_date
 		) UNION (
 			SELECT vcl.call_date,
@@ -299,8 +361,9 @@
 			$list_SQL 
 			$group_SQL 
 			$user_group_SQL 
-			$status_SQL 
-			order by vcl.call_date);";
+			$status_SQL_vcl
+			order by vcl.call_date) 
+			$limit_SQL;";
     }
 	$result = $astDB->rawQuery($query);
 
@@ -322,31 +385,35 @@
 		array_push($csv_header, "recording_location");
 	}
 	if ($custom_fields == "Y")	{
-	    for ($i = 0 ; $i < count($array_list); $i++) {
-			$list_id = $array_list[$i];
+	//    for ($i = 0 ; $i < count($array_list); $i++) {
+	//		$list_id = $array_list[$i];
+		foreach ($array_list as $list) {
+			$custom_list_id = "custom_" . (!empty($list['list_id']) ? $list['list_id'] : $list);
 			//$query_CF_list = "DESC custom_$list_id;");
-			$query_CF_list = $astDB->rawQuery("DESC custom_$list_id;");
+			$query_CF_list = $astDB->rawQuery("DESC {$custom_list_id};");
 			if ($query_CF_list) {
-				$n = 0;
+				//$n = 0;
 				//while ($field_list=$astDB->rawQuery($query_CF_list)) {
 				foreach ($query_CF_list as $field_list) {
 					$exec_query_CF_list = $field_list["Field"];
 
 					if ($exec_query_CF_list != "lead_id") {
-						$active_list_fields["custom_$list_id"][$n] = $exec_query_CF_list;
-						$n++;
+						$active_list_fields["$custom_list_id"][] = $exec_query_CF_list;
+						//$n++;
 					}
 				}
 			}
 		}
 
 		$header_CF 									= array();
-		$keys 										= array_keys($active_list_fields);
+		//$keys 										= array_keys($active_list_fields);
 		
-		for ($i = 0; $i < count($keys); $i++) {
-			$list_id 								= $keys[$i];
-			for ($x = 0; $x < count($active_list_fields[$list_id]);$x++) {
-				$field 								= $active_list_fields[$list_id][$x];
+		//for ($i = 0; $i < count($keys); $i++) {
+		foreach ($active_list_fields as $list_id => $fields) {
+			//$list_id 								= $keys[$i];
+			//for ($x = 0; $x < count($active_list_fields[$list_id]);$x++) {
+			foreach ($fields as $field) {
+				//$field 								= $active_list_fields[$list_id][$x];
 				if (!in_array($field,$header_CF)) {
 					$header_CF[] 					= $field;
 				}
@@ -411,19 +478,23 @@
             		$row["address2"] = preg_replace('/[,]+/', '-', trim($row["address2"]));
         	}
        		
-		if (!empty($row["address3"])) {
+			if (!empty($row["address3"])) {
             		$row["address3"] = preg_replace('/[,]+/', '-', trim($row["address3"]));
         	}
-        	if (!empty($row["comments"])) {
-            		$row["comments"] = preg_replace('/[,]+/', '-', trim($row["comments"]));
-        	}
-
+        	if (!empty($row["city"])) {
+				$row["city"] = preg_replace('/[,]+/', ' ', trim($row["city"]));
+			}
+			if (!empty($row["comments"])) {
+				$row["comments"] = preg_replace('/[,]+/', '-', trim($row["comments"]));
+			}
 		if ($custom_fields == "Y")	{
-			$keys = array_keys($active_list_fields); // list of active custom lists
+			//$keys = array_keys($active_list_fields); // list of active custom lists
 				
-			for ($i = 0 ; $i < count($keys); $i++) {
-			    $list_id = $keys[$i];
-			    $fields = implode(",", $active_list_fields[$list_id]);
+			//for ($i = 0 ; $i < count($keys); $i++) {
+			foreach ($active_list_fields as $list_id => $fields) {
+			    //$list_id = $keys[$i];
+			    //$fields = implode(",", $active_list_fields[$list_id]);
+				$fields = implode(",", $fields);
 					
 				if ("custom_".$list_id_spec === $list_id) {
 					$astDB->WHERE("lead_id", $lead_id);
@@ -433,28 +504,33 @@
 					//$query_row_sql = "SELECT $fields FROM $list_id WHERE lead_id ='$lead_id';";
 
 					if ($fetch_CF) {
-						for ($x = 0;$x < count($header_CF);$x++) {
-							if (!empty($fetch_CF[$header_CF[$x]])) {
-								$fetch_row[] 		=  str_replace(",", " | ", $fetch_CF[$header_CF[$x]]);
+						//for ($x = 0;$x < count($header_CF);$x++) {
+						foreach ($header_CF as $header) {
+							//if (!empty($fetch_CF[$header_CF[$x]])) {
+							if (!empty($fetch_CF[$header])) {
+								//$fetch_row[] 		=  str_replace(",", " | ", $fetch_CF[$header_CF[$x]]);
+								$row[$header] 		= str_replace(",", " | ", $fetch_CF[$header]);
 							} else {
-								$fetch_row[] 		=  "";
+								//$fetch_row[] 		=  "";
+								$row[$header]		= "";
 							}
 						}
 					}
 				}
 				
 
-				for ($a=0;$a < count($fetch_row);$a++) {
-					$row[$header_CF[$a]] = $fetch_row[$a];
-				}
+				//for ($a=0;$a < count($fetch_row);$a++) {
+				//	$row[$header_CF[$a]] = $fetch_row[$a];
+				//}
 				
 				//$queries[] 							= $row;
-				unset($fetch_row);
+				//unset($fetch_row);
 				unset($fetch_CF);
 		    }
 		}
-		
-		$csv_row[] = $row;
+
+		$data_row = implode(',', $row);
+		$csv_row .= $data_row . "\n";
 	}
 	//$apiresults = array ( $csv_row);
 
@@ -469,8 +545,7 @@
 		"result" => "success", 
 		"header" => $csv_header, 
 		"rows" 	=> $csv_row,
-		"query" => $query,
-		"data" => $campaign_SQL
+		"query" => $query
 	);
 ?>
 

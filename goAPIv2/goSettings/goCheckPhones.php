@@ -1,9 +1,9 @@
 <?php
-/**
- * @file        goStandardVariables.php
- * @brief       Standard variables used in the goAPI
- * @copyright   Copyright (C) GOautodial Inc.
- * @author      Thom Bernarth D. Patacsil  <thom@goautodial.com>
+ /**
+ * @file                goCheckPhones.php
+ * @brief               API to retrieve Webrtc Setting On (1) or Off (0)
+ * @copyright           Copyright (C) GOautodial Inc.
+ * @author              Chris Lomuntad  <chris@goautodial.com>
  *
  * @par <b>License</b>:
  *  This program is free software: you can redistribute it and/or modify
@@ -19,10 +19,15 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+        $goDB->where('setting', 'GO_modify_phones');
+        $rslt = $goDB->getOne('settings', 'value');
 
-    $log_user     = $session_user;
-    $log_group    = go_get_groupid($session_user, $astDB);     
-    $log_ip       = $astDB->escape($_REQUEST['log_ip']);
-    $goUser       = $astDB->escape($_REQUEST['goUser']);
-    $goPass       = (isset($_REQUEST['log_pass']) ? $astDB->escape($_REQUEST['log_pass']) : $astDB->escape($_REQUEST['goPass']));
+        if($rslt){
+                $modify_phones = $rslt['value'];
+                
+                $apiresults = array("result" => $modify_phones);
+        } else {
+                $apiresults = array("result" => "Failed to get Result.");
+        }
 ?>
+

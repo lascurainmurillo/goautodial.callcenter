@@ -67,8 +67,8 @@ if ($sipIsLoggedIn) {
         else if (isset($_POST['goAccount'])) { $account = $astDB->escape($_POST['goAccount']); }
     if (isset($_GET['goQMExtension'])) { $qm_extension = $astDB->escape($_GET['goQMExtension']); }
         else if (isset($_POST['goQMExtension'])) { $qm_extension = $astDB->escape($_POST['goQMExtension']); }
-    if (isset($_GET['goSIPserver'])) { $qm_extension = $astDB->escape($_GET['goSIPserver']); }
-        else if (isset($_POST['goSIPserver'])) { $qm_extension = $astDB->escape($_POST['goSIPserver']); }
+    if (isset($_GET['goSIPserver'])) { $SIPserver = $astDB->escape($_GET['goSIPserver']); }
+        else if (isset($_POST['goSIPserver'])) { $SIPserver = $astDB->escape($_POST['goSIPserver']); }
     if (isset($_GET['goConfExten'])) { $conf_exten = $astDB->escape($_GET['goConfExten']); }
         else if (isset($_POST['goConfExten'])) { $conf_exten = $astDB->escape($_POST['goConfExten']); }
     if (isset($_GET['goExtContext'])) { $ext_context = $astDB->escape($_GET['goExtContext']); }
@@ -1013,6 +1013,7 @@ if ($sipIsLoggedIn) {
                 $phone_code		= trim("{$row['phone_code']}");
                 if ($override_phone < 1)
                     {$phone_number	= trim("{$row['phone_number']}");}
+                $orig_phone     = trim("{$row['phone_number']}");
                 $title			= trim("{$row['title']}");
                 $first_name		= trim("{$row['first_name']}");
                 $middle_initial	= trim("{$row['middle_initial']}");
@@ -1053,15 +1054,27 @@ if ($sipIsLoggedIn) {
             $called_count++;
 
             if ( (strlen($agent_dialed_type) < 3) or (strlen($agent_dialed_number) < $manual_dial_min_digits) ) {
-                $agent_dialed_number = $phone_number;
                 if (strlen($agent_dialed_type) < 3)
                     {$agent_dialed_type = 'MAIN';}
+                    
+                if ($campaign_settings->alt_number_dialing == 'Y')
+                    {$agent_dialed_type = 'ALT';}
+                    
+                if ($phone_number !== '' && strlen($phone_number) > 3) {
+                    $agent_dialed_number = $phone_number;
+                } else if ($agent_dialed_type == 'ALT' && ((strlen($phone_number) <= 3) or (strlen($phone_number) < $manual_dial_min_digits))) {
+                    $agent_dialed_number = ($alt_phone !== '' ? $alt_phone : $address3);
+                }
             }
             if ( (strlen($callback_id) > 0) and (strlen($lead_id) > 0) ) {
                 if ($agent_dialed_type == 'ALT')
                     {$agent_dialed_number = $alt_phone;}
                 if ($agent_dialed_type == 'ADDR3')
                     {$agent_dialed_number = $address3;}
+                
+                if (strlen($agent_dialed_number) <= 3 or (strlen($agent_dialed_number) < $manual_dial_min_digits)) {
+                    $agent_dialed_number = $orig_phone;
+                }
             }
 
             ##### BEGIN check for postal_code and phone time zones if alert enabled
@@ -1732,12 +1745,10 @@ if ($sipIsLoggedIn) {
             $astDB->orderBy('notesid', 'desc');
             $CNotes = $astDB->getOne('vicidial_call_notes', 'call_notes');
             $call_notes = (!is_null($CNotes['call_notes'])) ? $CNotes['call_notes'] : '';
-
             // obtener datos de tabla de Package 
             if(isset($lead_id)){
                 $packages = getCustomFieldPackage($astDB, $lead_id);
             }
-            
             $LeaD_InfO = array(
                 'MqueryCID' => (isset($MqueryCID)) ? $MqueryCID : "",
                 'lead_id' => $lead_id,
@@ -1812,7 +1823,6 @@ if ($sipIsLoggedIn) {
     }
     $APIResult = array( "result" => "error", "message" => $message );
 }
-
 /**
  * 
  * Obtener todos los datos del paquete para custom field
@@ -1825,5 +1835,4 @@ function getCustomFieldPackage($astDB, $lead_id) {
     return $rslt = $astDB->get('field_package', null, 'hotel,days,destination,validity');
 
 }
-
 ?>

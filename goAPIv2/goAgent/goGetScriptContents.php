@@ -195,14 +195,12 @@ if (isset($_GET['goUserCustomFields'])) { $CF_uses_custom_fields = $astDB->escap
     
 if (isset($_GET['isPBP'])) { $isPBP = $astDB->escape($_GET['isPBP']); }
     else if (isset($_POST['isPBP'])) { $isPBP = $astDB->escape($_POST['isPBP']); }
-
-if (isset($_GET["social_form_id"]))			{$social_form_id=$astDB->escape(@$_GET["social_form_id"]);}
+    if (isset($_GET["social_form_id"]))			{$social_form_id=$astDB->escape(@$_GET["social_form_id"]);}
 	elseif (isset($_POST["social_form_id"]))	{$social_form_id=$astDB->escape(@$_POST["social_form_id"]);}
 if (isset($_GET["social_form_data"]))			{$social_form_data=$astDB->escape(@$_GET["social_form_data"]);}
 	elseif (isset($_POST["social_form_data"]))	{$social_form_data=$astDB->escape(@$_POST["social_form_data"]);}
 if (isset($_GET["social_form_image"]))			{$social_form_image=$astDB->escape(@$_GET["social_form_image"]);}
 	elseif (isset($_POST["social_form_image"]))	{$social_form_image=$astDB->escape(@$_POST["social_form_image"]);}
-
 
 if ($is_logged_in) {
     if (strlen($in_script) < 1) {
@@ -331,7 +329,6 @@ if ($is_logged_in) {
 	    // $social_form_data = preg_replace('/\s/i','+',@$social_form_data);
 	    $social_form_image = preg_replace('/\s/i','+',@$social_form_image);
     }
-
     /*preparar data de social form lead *****************************************************/
     $social_form_data1 = stripslashes(@$social_form_data);
     $htmls = "";
@@ -462,7 +459,6 @@ if ($is_logged_in) {
     $script_text = preg_replace('/--A--social_form_id--B--/i',"$social_form_id",$script_text);
     $script_text = preg_replace('/--A--social_form_data--B--/i',"$htmls",$script_text);
     $script_text = preg_replace('/--A--social_form_image--B--/i',"$social_form_image",$script_text);
-
     
     if ($CF_uses_custom_fields == 'Y') {
         ### find the names of all custom fields, if any
@@ -493,7 +489,6 @@ if ($is_logged_in) {
     if ($isPBP !== 'Y') {
         $script_text = preg_replace("/\n/i", "<BR style='clear: both;'>", $script_text);
     }
-    
     $script_text = stripslashes($script_text);
     
     $scriptHtml  = '';
@@ -513,7 +508,7 @@ if ($is_logged_in) {
         {$scriptHtml .= "</div>";}
     $scriptHtml .= "</TD></TR></TABLE>\n";
     
-    $APIResult = array( "result" => "success", "content" => $scriptHtml);
+    $APIResult = array( "result" => "success", "content" => $scriptHtml );
 } else {
     $APIResult = array( "result" => "error", "message" => "Agent '$goUser' is currently NOT logged in" );
 }

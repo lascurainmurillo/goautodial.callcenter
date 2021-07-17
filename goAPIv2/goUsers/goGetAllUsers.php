@@ -98,10 +98,7 @@
 					$querygo 							= $goDB
 						->where("userid", $fresults["user_id"])
 						->orderBy("userid", "desc")
-						->get("users", NULL, $cols);	
-					
-					$dataUserIDgo						= "";
-					$dataAvatar							= "";
+						->get("users", NULL, $cols);
 					
 					if ($goDB->count > 0) {
 						foreach ($querygo as $fresultsgo) {

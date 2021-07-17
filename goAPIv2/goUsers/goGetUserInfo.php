@@ -98,7 +98,7 @@
 					->where("user", $user)
 					->where("user", DEFAULT_USERS, "NOT IN")
 					->getOne("vicidial_users"); 
-					
+						
 				if ($astDB->count > 0) { // Yes, you are!
 					$check_location 					= go_check_user_location(NULL, $user_id);
 					
@@ -123,7 +123,7 @@
 					
 					$datetoday 							=  date ("Y-m-d");
 					$status								= "SALE";
-
+					
 					if ($astDB->count > 0) { // Yes, I am!							
 						$incallstoday					= $astDB
 							->where("vu.user = $user")
@@ -187,7 +187,7 @@
 							"vicidial_campaigns.campaign_name as vla_campaign_name"
 						);
 						
-						if (strstr("/READY|PAUSED|CLOSER/", $onlineako["status"])) { // I'm waiting for calls..
+						if (strstr("/READY|CLOSER/", $onlineako["status"])) { // I'm waiting for calls..
 							$table						= "
 								vicidial_live_agents,
 								vicidial_users,
@@ -200,6 +200,24 @@
 								->where("vicidial_live_agents.campaign_id = vicidial_campaigns.campaign_id")
 								->where("vicidial_live_agents.user = vicidial_users.user")
 								->where("vicidial_live_agents.lead_id = 0")
+								->where("vicidial_live_agents.user_level != 4")
+								->where("vicidial_live_agents.agent_log_id = vicidial_agent_log.agent_log_id")
+								->orderBy ("last_call_time")		
+								->get($table, null, $cols);
+						}
+						
+						if (strstr("/PAUSED/", $onlineako["status"])) { // I'm waiting for calls..
+							$table						= "
+								vicidial_live_agents,
+								vicidial_users,
+								vicidial_agent_log,
+								vicidial_campaigns
+							";	
+							
+							$yesnocalls					= $astDB
+								->where("vicidial_live_agents.user", $user)
+								->where("vicidial_live_agents.campaign_id = vicidial_campaigns.campaign_id")
+								->where("vicidial_live_agents.user = vicidial_users.user")
 								->where("vicidial_live_agents.user_level != 4")
 								->where("vicidial_live_agents.agent_log_id = vicidial_agent_log.agent_log_id")
 								->orderBy ("last_call_time")		
@@ -269,7 +287,7 @@
 							"result" 						=> "success", 
 							"data" 							=> $data,
 							"avatar"						=> $avatar
-						);
+						);					
 					}
 					
 					if ($filter == "userInfo") { // Oh.. you know me..
@@ -282,7 +300,7 @@
 						$apiresults 					= array(
 							"result" 						=> "success", 
 							"data" 							=> $data
-						);
+						);            
 					}            
 				} else { // No, you're not powerful enough!
 					$err_msg 							= error_handle("10001", "Insufficient permission.");

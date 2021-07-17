@@ -265,7 +265,7 @@ class MySQLiDB {
 	protected function calculateUnlimitedRowCount() {
 		$this->_query = "SELECT FOUND_ROWS() AS total";
 		$stmt = $this->_prepareQuery();
-		if (empty($stmt)) { $this->reset();ï¿½return; }
+		if (empty($stmt)) { $this->reset(); return; }
         $stmt->execute();
         $this->reset();
         $this->_stmtError = $stmt->error;
@@ -357,7 +357,6 @@ class MySQLiDB {
         $column = is_array($columns) ? implode(', ', $columns) : $columns; 
         $this->_query = "SELECT $calcFoundRows $column FROM " . self::$_prefix . $tableName;
         $stmt = $this->_buildQuery($numRows);
-        
         if (empty($stmt)) {
 	        $this->reset(); 
 	        return null; 
@@ -1037,14 +1036,13 @@ class MySQLiDB {
         $this->_buildLimit ($numRows);
 
         $this->_lastQuery = $this->replacePlaceHolders ($this->_query, $this->_bindParams);
-        
+
         if ($this->isSubQuery) {
             return;
         }
 
         // Prepare query
         $stmt = $this->_prepareQuery();
-        
         if (empty($stmt)) { return NULL; }
 
         // Bind parameters to statement if any

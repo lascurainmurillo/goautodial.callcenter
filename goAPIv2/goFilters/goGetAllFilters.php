@@ -48,11 +48,12 @@
 		if ($goapiaccess > 0 && $userlevel > 7) {	
 			// set tenant value to 1 if tenant - saves on calling the checkIfTenantf function
 			// every time we need to filter out requests
-			$tenant										=  (checkIfTenant ($log_group, $goDB)) ? 1 : 0;
+			//$tenant										=  (checkIfTenant ($log_group, $goDB)) ? 1 : 0;
+			$tenant                                     = ($userlevel < 9 && $log_group !== "ADMIN") ? 1 : 0;
 			
 			if ($tenant) {
 				$astDB->where("user_group", $log_group);
-				$astDB->orWhere("user_group", "---ALL---");
+				$astDB->orWhere("lead_filter_id", "FILTEMP");
 			} else {
 				if (strtoupper($log_group) != 'ADMIN') {
 					if ($userlevel > 8) {
@@ -89,7 +90,7 @@
 				}
 				
 				if ($log_group != "ADMIN") {
-					$filter_num 						= $filter_num;
+					$filter_num 						= "{$log_group}{$filter_num}";
 				}else{
 					$filter_num 						= "filter".$filter_num;
 				}
@@ -100,7 +101,7 @@
 				
 			if ($tenant) {
 				$astDB->where("user_group", $log_group);
-				$astDB->orWhere("user_group", "---ALL---");
+				$astDB->orWhere("lead_filter_id", "FILTEMP");
 			} else {
 				if (strtoupper($log_group) != 'ADMIN') {
 					if ($userlevel > 8) {

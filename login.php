@@ -82,7 +82,7 @@
 			$error = $lh->translationFor("insert_valid_login_password");
 		} else {
 			$db = new \creamy\DbHandler();
-
+			
 			// Define $username and $password
 			$username=$_POST['username'];
 			$password=$_POST['password'];
@@ -106,7 +106,7 @@
 			if ($result == NULL) { // login failed
 				$error = $lh->translationFor("invalid_login_password");
 			} else {
-
+				
 				// se crea el tokenjwt y poner en la cookie utjo;
 				$tokenjwt = Phpjwt::getToken();
 				setcookie('utjo', $tokenjwt, time() + (7 * 24 * 60 * 60));  // la cookie utjo es el token

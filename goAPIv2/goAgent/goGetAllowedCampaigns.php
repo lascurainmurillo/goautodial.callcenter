@@ -20,7 +20,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-$hasLocation = $astDB->escape(@$_REQUEST['has_location']);
+$hasLocation = $astDB->escape($_REQUEST['has_location']);
 
 $agent = get_settings('user', $astDB, $goUser);
 $camp_list = array();

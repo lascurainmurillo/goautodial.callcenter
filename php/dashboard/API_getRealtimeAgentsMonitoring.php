@@ -27,7 +27,7 @@
 
     $barracks 										= '[';   
     
-    if (is_array($output->data)) {
+    if (is_array(@$output->data)) {
 		foreach ($output->data as $key => $value) {
 	
 			$userid 								= $api->escapeJsonString($value->vu_user_id);

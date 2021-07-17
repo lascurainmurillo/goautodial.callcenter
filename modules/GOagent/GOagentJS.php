@@ -9676,7 +9676,6 @@ function getContactList(search_string) {
                 initComplete: function () {
                     $(".preloader").fadeOut('slow');
                     $("#contacts-list_wrapper:first-child div").find('[class="col-sm-6"]:not(:first-child)').html('<div id="contacts-list_filter" class="dataTables_filter"><label>Search:<input type="search" class="form-control input-sm" placeholder="" aria-controls="contacts-list" value="'+search_string+'"></label></div>');
-                }
 				},
                 "processing": true,
                 "aoColumnDefs": [{

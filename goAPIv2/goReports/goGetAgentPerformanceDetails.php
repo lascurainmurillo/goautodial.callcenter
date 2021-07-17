@@ -2,7 +2,7 @@
 /**
  * @file        goGetAgentTimeDetails.php
  * @brief       API for Agent Time Details Reports
- * @copyright   Copyright (c) 2018 GOautodial Inc.
+ * @copyright   Copyright (c) 2020 GOautodial Inc.
  * @author		Demian Lizandro A. Biscocho
  * @author      Alexander Jim Abenoja 
  *
@@ -23,66 +23,87 @@
 
     include_once("goAPI.php");
 
-	$fromDate 	= (empty($_REQUEST['fromDate']) ? date("Y-m-d")." 00:00:00" : $astDB->escape($_REQUEST['fromDate']));
-	$toDate 	= (empty($_REQUEST['toDate']) ? date("Y-m-d")." 23:59:59" : $astDB->escape($_REQUEST['toDate']));
-	$campaign_id 	= $astDB->escape($_REQUEST['campaignID']);
-	$request 	= $astDB->escape($_REQUEST['request']);
-	$limit		= 100;
+	$fromDate 										= (empty($_REQUEST['fromDate']) ? date("Y-m-d")." 00:00:00" : $astDB->escape($_REQUEST['fromDate']));
+	$toDate 										= (empty($_REQUEST['toDate']) ? date("Y-m-d")." 23:59:59" : $astDB->escape($_REQUEST['toDate']));
+	$campaign_id 									= $astDB->escape($_REQUEST['campaignID']);
+	$request 										= $astDB->escape($_REQUEST['request']);
+	$limit											= 100;
     
 	// Error Checking
 	if (empty($goUser) || is_null($goUser)) {
-		$apiresults = array(
-			"result" => "Error: goAPI User Not Defined."
+		$apiresults 								= array(
+			"result" 									=> "Error: goAPI User Not Defined."
 		);
 	} elseif (empty($goPass) || is_null($goPass)) {
-		$apiresults = array(
-			"result" => "Error: goAPI Password Not Defined."
+		$apiresults 								= array(
+			"result" 									=> "Error: goAPI Password Not Defined."
 		);
 	} elseif (empty($log_user) || is_null($log_user)) {
-		$apiresults = array(
-			"result" => "Error: Session User Not Defined."
+		$apiresults 								= array(
+			"result" 									=> "Error: Session User Not Defined."
 		);
 	} elseif (empty($campaign_id) || is_null($campaign_id)) {
-		$err_msg = error_handle("40001");
-        $apiresults = array(
-			"code" => "40001",
-			"result" => $err_msg
+		$err_msg 									= error_handle("40001");
+        $apiresults 								= array(
+			"code" 										=> "40001",
+			"result" 									=> $err_msg
 		);
 	} else {            
 		// check if goUser and goPass are valid
-		$fresults = $astDB
+		$fresults 									= $astDB
 			->where("user", $goUser)
-			->getOne("vicidial_users", "user,user_level");
+			->getOne("vicidial_users", "user,user_level,user_group");
 		
-		$goapiaccess = $astDB->getRowCount();
-		$userlevel = $fresults["user_level"];
+		$goapiaccess 								= $astDB->getRowCount();
+		$userlevel 									= $fresults["user_level"];
+		$usergroup 									= $fresults["user_group"];
 		//$apiresults = array("data" => $alex);	
 
 		if ($goapiaccess > 0 && $userlevel > 7) {
 			// set tenant value to 1 if tenant - saves on calling the checkIfTenantf function
 			// every time we need to filter out requests
-			$tenant	= (checkIfTenant($log_group, $goDB)) ? 1 : 0;
-				
+			//$tenant									= (checkIfTenant($log_group, $goDB)) ? 1 : 0;
+            $tenant                                 = ($userlevel < 9 && $usergroup !== "ADMIN") ? 1 : 0;
+			
+			// check if MariaDB slave server available
+			$rslt									= $goDB
+				->where('setting', 'slave_db_ip')
+				->where('context', 'creamy')
+				->getOne('settings', 'value');
+			$slaveDBip 								= $rslt['value'];
+			
+			if (!empty($slaveDBip)) {
+				$astDB = new MySQLiDB($slaveDBip, $VARDB_user, $VARDB_pass, $VARDB_database);
+
+				if (!$astDB) {
+					echo "Error: Unable to connect to MariaDB slave server." . PHP_EOL;
+					echo "Debugging Error: " . $astDB->getLastError() . PHP_EOL;
+					exit;
+					//die('MySQL connect ERROR: ' . mysqli_error('mysqli'));
+				}			
+			}
+			
 			if ($tenant) {
-				$astDB->where("user_group", $log_group);
+				$astDB->where("user_group", $usergroup);
 			} else {
-				if (strtoupper($log_group) != 'ADMIN') {
-					if ($userlevel > 8) {
-						$astDB->where("user_group", $log_group);
+				if (strtoupper($usergroup) != 'ADMIN') {
+					if ($userlevel < 9) {
+						$astDB->where("user_group", $usergroup);
 					}
 				}					
 			}
 			
 			if ("ALL" === strtoupper($campaign_id)) {
-				$SELECTQuery = $astDB->get("vicidial_campaigns", NULL, "campaign_id");
+				$SELECTQuery 						= $astDB->get("vicidial_campaigns", NULL, "campaign_id");
 
-                                foreach($SELECTQuery as $camp_val){
-                                        $array_camp[] = $camp_val["campaign_id"];
-                                }
-                        }else{
-                             $array_camp[] = $campaign_id;
-                        }
-                        $imploded_camp = "'".implode("','", $array_camp)."'";
+				foreach($SELECTQuery as $camp_val){
+					$array_camp[] 					= $camp_val["campaign_id"];
+				}
+			} else {
+				$array_camp[] 						= $campaign_id;
+			}
+			
+			$imploded_camp 							= "'".implode("','", $array_camp)."'";
 			/*	
 			$TOTtimeTC = array();
 				
@@ -118,7 +139,7 @@
 				$astDB->where("user_group", $log_group);
 			} else {
 				if (strtoupper($log_group) != 'ADMIN') {
-					if ($user_level > 8) {
+					if ($user_level < 9) {
 						$astDB->where("user_group", $log_group);
 					}
 				}					
@@ -168,7 +189,7 @@
 				$astDB->where("user_group", $log_group);
 			} else {
 				if (strtoupper($log_group) != 'ADMIN') {
-					if ($user_level > 8) {
+					if ($user_level < 9) {
 						$astDB->where("user_group", $log_group);
 					}
 				}					

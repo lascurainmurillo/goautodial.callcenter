@@ -2,8 +2,9 @@
 /**
  * @file        goGetDispoStats.php
  * @brief       API reports for disposition statuses
- * @copyright   Copyright (c) 2018 GOautodial Inc.
+ * @copyright   Copyright (c) 2020 GOautodial Inc.
  * @author      Alexander Jim Abenoja 
+ * @author		Demian Lizandro A. Biscocho
  *
  * @par <b>License</b>:
  *  This program is free software: you can redistribute it AND/or modify
@@ -51,36 +52,61 @@
 		$toDate 									= date("Y-m-d") . " 23:59:59";
 		//die($fromDate." - ".$toDate);									=> $err_msg
 	} else {
+		$fresults 									= $astDB
+			->where("user", $goUser)
+			->getOne("vicidial_users", "user,user_level,user_group");
+		
+		$goapiaccess 								= $astDB->getRowCount();
+		$userlevel 									= $fresults["user_level"];
+		$usergroup 									= $fresults["user_group"];
+        
 		// set tenant value to 1 if tenant - saves on calling the checkIfTenantf function
 		// every time we need to filter out requests
-		$tenant										=  (checkIfTenant ($log_group, $goDB)) ? 1 : 0;
+		//$tenant										=  (checkIfTenant ($log_group, $goDB)) ? 1 : 0;
+        $tenant                                     = ($userlevel < 9 && $usergroup !== "ADMIN") ? 1 : 0;
+			
+		// check if MariaDB slave server available
+		$rslt										= $goDB
+			->where('setting', 'slave_db_ip')
+			->where('context', 'creamy')
+			->getOne('settings', 'value');
+		$slaveDBip 									= $rslt['value'];
+		
+		if (!empty($slaveDBip)) {
+			$astDB 									= new MySQLiDB($slaveDBip, $VARDB_user, $VARDB_pass, $VARDB_database);
+
+			if (!$astDB) {
+				echo "Error: Unable to connect to MariaDB slave server." . PHP_EOL;
+				echo "Debugging Error: " . $astDB->getLastError() . PHP_EOL;
+				exit;
+				//die('MySQL connect ERROR: ' . mysqli_error('mysqli'));
+			}			
+		}
 		
 		if ($tenant) {
-			$astDB->where("user_group", $log_group);
+			$astDB->where("user_group", $usergroup);
 		} else {
-			if (strtoupper($log_group) != 'ADMIN') {
-				if ($user_level > 8) {
-					$astDB->where("user_group", $log_group);
+			if (strtoupper($usergroup) != 'ADMIN') {
+				if ($user_level < 9) {
+					$astDB->where("user_group", $usergroup);
 				}
 			}
 		}
-			
-		//Dial Statuses Summary
-		$list_ids[0] = "ALL";
-		$total_all = ($list_ids[0] == "ALL") ? 'ALL List IDs under '.$campaignID : 'List ID(s): '.implode(',',$list_ids);
 		
-			//ALL CAMPAIGNS
-			if ("ALL" === strtoupper($campaignID)) {
-                        	$SELECTQuery = $astDB->get("vicidial_campaigns", NULL, "campaign_id");
-			
-                                foreach($SELECTQuery as $camp_val){
-                                        $array_camp[] = $camp_val["campaign_id"];
-                                }
-                        }else{
-                                $array_camp[] = $campaignID;
-                        }
-                        //$imploded_camp = "'".implode("','", $array_camp)."'";
+		//ALL CAMPAIGNS
+		if ("ALL" === strtoupper($campaignID)) {
+			$SELECTQuery 							= $astDB->get("vicidial_campaigns", NULL, "campaign_id");
 
+			foreach($SELECTQuery as $camp_val){
+				$array_camp[] 						= $camp_val["campaign_id"];
+			}
+		} else {
+			$array_camp[] 							= $campaignID;
+		}
+
+		//$imploded_camp = "'".implode("','", $array_camp)."'";
+
+		$total_all 									= ($campaignID == "ALL") ? "ALL List IDs under ALL Campaigns" : "ALL List IDs under $campaignID";
 
 		//if (isset($list_ids) && $list_ids[0] == "ALL") {
 			/*$query 							= "
@@ -89,26 +115,31 @@
 				ORDER BY list_id
 			";*/
 
-			$qlistid = $astDB
-				->where("campaign_id", $array_camp, "IN")
-				->orderBy("list_id")
-				->get("vicidial_lists", NULL, "list_id");
-				
-			if ($astDB->count > 0) {
-				foreach ($qlistid as $row) {
-					$list_ids[]	= $row['list_id'];
-				}
-			}
-		//}
-		$list = "'".implode("','",$list_ids)."'";
+		$qlistid 									= $astDB
+			->where("campaign_id", $array_camp, "IN")
+			->orderBy("list_id")
+			->get("vicidial_lists", NULL, "list_id");
 		
-		$qsstatuses = $astDB
+        $list_ids = array();
+		if ($astDB->count > 0) {
+			foreach ($qlistid as $row) {
+				$list_ids[]							= $row['list_id'];
+			}
+		}
+		//}
+        if ($tenant) {
+            $list = (count($list_ids) > 0) ? "'".implode("','",$list_ids)."'" : "'-1'";
+        } else {
+            $list = "'".implode("','",$list_ids)."'";
+        }
+		
+		$qsstatuses 								= $astDB
 			->orderBy("status")
 			->get("vicidial_statuses", NULL, array("status", "status_name"));
 		
 		if ($astDB->count > 0) {
 			foreach ($qsstatuses as $row) {
-				$statuses_list[$row['status']] 	= $row['status_name'];
+				$statuses_list[$row['status']] 		= $row['status_name'];
 			}
 		}
 		
@@ -118,13 +149,13 @@
 		
 		if ($astDB->count > 0) {
 			foreach ($qcstatuses as $row) {
-				$statuses_list[$row['status']] 	= $row['status_name'];
+				$statuses_list[$row['status']] 		= $row['status_name'];
 			}
 		}
 		
-		$leads_in_list 						= 0;
-		$leads_in_list_N 					= 0;
-		$leads_in_list_Y 					= 0;
+		$leads_in_list 								= 0;
+		$leads_in_list_N 							= 0;
+		$leads_in_list_Y 							= 0;
 		
 		/*	
 		$cols = array(
@@ -183,7 +214,7 @@
 				if ($status_called_last[$sts] > $all_called_last) {
 					$all_called_last 		= $status_called_last[$sts];
 				}
-			$o++;			
+				$o++;			
 			}
 		}
 		//var_dump($queryx);
@@ -216,7 +247,8 @@
 
 		$sts						= 0;
 		$statuses_called_to_print 			= count($status);
-		
+		$statuses_count_called_to_print			= count($count_count);
+
 		while ($statuses_called_to_print > $sts) {
 			$Pstatus = $status[$sts];					
 			$TOPsorted_output .= "
@@ -225,13 +257,13 @@
 					<td nowrap> ".$statuses_list[$Pstatus]." </td>
 				";
 
-			$firsti = $all_called_first;
+			$first = $all_called_first;
 			
 			while ($first <= $all_called_last) {							
 				$called_printed	= 0;
 				$o = 0;
 				
-				while ($statuses_called_to_print > $o) {
+				while ($statuses_count_called_to_print > $o) {
 					if ( ($count_statuses[$o] == "$Pstatus") AND ($count_called[$o] == "$first") ) {
 						$called_printed++;
 						$TOPsorted_output .= "<td nowrap> ".$count_count[$o]." </td>";
@@ -260,15 +292,16 @@
 		$first = $all_called_first;
 		
 		while ($first <= $all_called_last) {
-			if ($all_called_count[$first]) {
+			//if ($all_called_count[$first] == $first) {
+				$all_called_count_data = $all_called_count[$first];
 				$TOPsorted_output 			.= "
-					<th> $all_called_count[$first] </th>
+					<th> $all_called_count_data </th>
 				";
-			} else {
-				$TOPsorted_output 			.= "
-					<td> 0 </td>
-				";
-			}
+			//} else {
+			//	$TOPsorted_output 			.= "
+			//		<th> 0 </th>
+			//	";
+			//}
 			
 			$first++;
 		}
@@ -301,7 +334,9 @@
 				$CALLEDsql 					= "
 					SELECT count(gmt_offset_now) as Clead_count FROM vicidial_list 
 					WHERE list_id IN (".$list.") 
-					AND status != 'NEW' AND gmt_offset_now = '".$timezone_now."'
+					AND status != 'NEW' 
+					AND status NOT IN ('DC','DNCC','XDROP')
+					AND gmt_offset_now = '".$timezone_now."'
 				";
 				// something in this loop doesn't work, comment mo one by one	
 				$queryCALLED 				= $astDB->rawQuery($CALLEDsql);
@@ -310,7 +345,9 @@
 				
 				$NOTCALLEDsql 				= "
 					SELECT count(gmt_offset_now) as NClead_count FROM vicidial_list 
-					WHERE list_id IN (".$list.") AND status = 'NEW'
+					WHERE list_id IN (".$list.") 
+					AND status = 'NEW'
+					AND status NOT IN ('DC','DNCC','XDROP')
 					AND gmt_offset_now = '$timezone_now'
 				";
 				
@@ -335,7 +372,8 @@
 			"result" 							=> "success", 
 			"SUMstatuses" 						=> $sts, 
 			"TOPsorted_output" 					=> $TOPsorted_output, 
-			"BOTsorted_output" 					=> $BOTsorted_output 
+			"BOTsorted_output" 					=> $BOTsorted_output,
+			"query"							=> $NOTCALLEDsql
 		);
 		return $apiresults;
 	}

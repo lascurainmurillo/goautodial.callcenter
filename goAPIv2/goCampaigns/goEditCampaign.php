@@ -47,6 +47,8 @@
 	$lead_order 										= $astDB->escape($_REQUEST['lead_order']);
 	$lead_order_secondary 								= $astDB->escape($_REQUEST['lead_order_secondary']);
 	$lead_filter 										= $astDB->escape($_REQUEST['lead_filter']);
+	$call_count_limit 									= $astDB->escape($_REQUEST['call_count_limit']);
+	$call_count_target 									= $astDB->escape($_REQUEST['call_count_target']);
 	$dial_timeout 										= $astDB->escape($_REQUEST['dial_timeout']);
 	$manual_dial_prefix 								= $astDB->escape($_REQUEST['manual_dial_prefix']);
 	$get_call_launch 									= $astDB->escape($_REQUEST['get_call_launch']);
@@ -113,6 +115,11 @@
 	$amd_send_to_vmx 									= $astDB->escape($_REQUEST['amd_send_to_vmx']);
 	$waitforsilence_options 							= $astDB->escape($_REQUEST['waitforsilence_options']);
 	$location 											= $astDB->escape($_REQUEST['location_id']);
+	$use_custom_cid 								    = $astDB->escape($_REQUEST['use_custom_cid']);
+	$survey_wait_sec 								    = $astDB->escape($_REQUEST['survey_wait_sec']);
+	$survey_no_response_action 							= $astDB->escape($_REQUEST['survey_no_response_action']);
+	$google_sheet_list_id								= $astDB->escape($_REQUEST["google_sheet_list_id"]);
+	$default_country_code								= $astDB->escape($_REQUEST["default_country_code"]);
 
     // Default values 
     $defActive 											= array( "Y", "N" );	
@@ -304,13 +311,15 @@
 						'auto_dial_level' 						=> $autoDialLevel, 
 						'dial_prefix' 							=> $dialprefix,
 						'web_form_address' 						=> (!empty($webform)) ? $webform : $resultGet['web_form_address'], 
-						'campaign_script' 						=> (!empty($campaign_script)) ? $campaign_script : $resultGet['campaign_script'], 
+						'campaign_script' 						=> $campaign_script, 
 						'campaign_cid' 							=> (!empty($campaign_cid)) ? $campaign_cid : $resultGet['campaign_cid'], 
 						'campaign_vdad_exten' 					=> (!empty($campaign_vdad_exten)) ? $campaign_vdad_exten : $resultGet['campaign_vdad_exten'], 
 						'local_call_time' 						=> (!empty($local_call_time)) ? $local_call_time : $resultGet['local_call_time'],  
 						'dial_status_a' 						=> (!empty($dial_status)) ? $dial_status : $resultGet['dial_status'], 
 						//'lead_filter_id' 						=> (!empty($lead_filter)) ? $lead_filter : $resultGet['lead_filter_id'],
 						'lead_filter_id' 						=> (!empty($lead_filter)) ? $lead_filter : '',
+						'call_count_limit' 						=> $call_count_limit,
+						'call_count_target' 					=> $call_count_target,
 						'dial_timeout' 							=> (!empty($dial_timeout)) ? $dial_timeout : $resultGet['dial_timeout'], 
 						//'manual_dial_prefix' 					=> (!empty($manual_dial_prefix)) ? $manual_dial_prefix : $resultGet['manual_dial_prefix'],
 						'manual_dial_prefix' 					=> $manual_dial_prefix,
@@ -349,9 +358,13 @@
 						'my_callback_option' 					=> (!empty($my_callback_option)) ? $my_callback_option : $resultGet['my_callback_option'],
 						'lead_order' 							=> (!empty($lead_order)) ? $lead_order : $resultGet['lead_order'],
 						'lead_order_secondary'					=> (!empty($lead_order_secondary)) ? $lead_order_secondary : $resultGet['lead_order_secondary'],
-                                                'campaign_recording'                            => (!empty($campaign_recording)) ? $campaign_recording : $resultGet['campaign_recording'],
-                                                'campaign_rec_filename'                         => (!empty($campaign_rec_filename)) ? $campaign_rec_filename : $resultGet['campaign_rec_filename'],
-						'hopper_level'                                          => (!empty($hopper_level)) ? $hopper_level : $resultGet['hopper_level']
+                        'campaign_recording'                    => (!empty($campaign_recording)) ? $campaign_recording : $resultGet['campaign_recording'],
+                        'campaign_rec_filename'                 => (!empty($campaign_rec_filename)) ? $campaign_rec_filename : $resultGet['campaign_rec_filename'],
+						'hopper_level'                          => (!empty($hopper_level)) ? $hopper_level : $resultGet['hopper_level'],
+						'use_custom_cid'					    => (!empty($use_custom_cid)) ? $use_custom_cid : $resultGet['use_custom_cid'],
+						'survey_wait_sec'					    => (!empty($survey_wait_sec)) ? $survey_wait_sec : $resultGet['survey_wait_sec'],
+						'survey_no_response_action'				=> (!empty($survey_no_response_action)) ? $survey_no_response_action : $resultGet['survey_no_response_action'],
+						'am_message_exten'					    => $amMessageExten
 					);
 					
 					if ( $campaign_type == 'SURVEY' ) {
@@ -386,7 +399,10 @@
 							'enable_callback_alert' 			=> (gettype($enable_callback_alert) != 'NULL') ? $enable_callback_alert : $resultGet['enable_callback_alert'],
 							'cb_noexpire' 						=> (gettype($cb_noexpire) != 'NULL') ? $cb_noexpire : $resultGet['cb_noexpire'],
 							'cb_sendemail' 						=> (gettype($cb_sendemail) != 'NULL') ? $cb_sendemail : $resultGet['cb_sendemail'],
-                            'manual_dial_min_digits'            => (gettype($manual_dial_min_digits) != 'NULL') ? $manual_dial_min_digits : $resultGet['manual_dial_min_digits']
+                            				'manual_dial_min_digits'            => (gettype($manual_dial_min_digits) != 'NULL') ? $manual_dial_min_digits : $resultGet['manual_dial_min_digits'],
+							'auto_dial_level'				=> $auto_dial_level,
+							'google_sheet_list_id'				=> $google_sheet_list_id,
+							'default_country_code'				=> $default_country_code
 						);
 						
 						$goDB->where( 'campaign_id', $campaign_id );
@@ -408,7 +424,10 @@
 							'enable_callback_alert' 			=> ( gettype($enable_callback_alert) != 'NULL' ) ? $enable_callback_alert : $resultGet['enable_callback_alert'],
 							'cb_noexpire' 						=> ( gettype($cb_noexpire) != 'NULL' ) ? $cb_noexpire : $resultGet['cb_noexpire'],
 							'cb_sendemail' 						=> ( gettype($cb_sendemail) != 'NULL' ) ? $cb_sendemail : $resultGet['cb_sendemail'],
-                            'manual_dial_min_digits'            => ( gettype($manual_dial_min_digits) != 'NULL' ) ? $manual_dial_min_digits : $resultGet['manual_dial_min_digits']
+                            				'manual_dial_min_digits'            => ( gettype($manual_dial_min_digits) != 'NULL' ) ? $manual_dial_min_digits : $resultGet['manual_dial_min_digits'],
+							'auto_dial_level'				=> $auto_dial_level,
+							'google_sheet_list_id'				=> $google_sheet_list_id,
+							'default_country_code'				=> $default_country_code
 						);
 
 						$goDB->insert('go_campaigns', $data_insert_go);

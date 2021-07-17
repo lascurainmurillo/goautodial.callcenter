@@ -61,12 +61,30 @@
 			$astDB->where("user_group", $log_group);
 		} else {
 			if (strtoupper($log_group) != 'ADMIN') {
-				if ($user_level > 8) {
+				if ($user_level < 9) {
 					$astDB->where("user_group", $log_group);
 				}
 			}
 		}
 			
+		// check if MariaDB slave server available
+		$rslt										= $goDB
+			->where('setting', 'slave_db_ip')
+			->where('context', 'creamy')
+			->getOne('settings', 'value');
+		$slaveDBip 									= $rslt['value'];
+		
+		if (!empty($slaveDBip)) {
+			$astDB 									= new MySQLiDB($slaveDBip, $VARDB_user, $VARDB_pass, $VARDB_database);
+
+			if (!$astDB) {
+				echo "Error: Unable to connect to MariaDB slave server." . PHP_EOL;
+				echo "Debugging Error: " . $astDB->getLastError() . PHP_EOL;
+				exit;
+				//die('MySQL connect ERROR: ' . mysqli_error('mysqli'));
+			}			
+		}
+		
 		// SALES TRACKER
 		if ($log_group !== "ADMIN") {
 			$ul = "AND us.user_group = '$log_group'";
@@ -158,7 +176,8 @@
 						vl.comments as comments,vl.lead_id 
 					FROM vicidial_log as vlo, vicidial_list as vl, vicidial_users as us 
 					WHERE us.user = vlo.user AND vl.phone_number = vlo.phone_number 
-					AND vl.lead_id = vlo.lead_id AND vlo.length_in_sec > '0'
+					AND vl.lead_id = vlo.lead_id 
+					#AND vlo.length_in_sec > '0'
 					AND vlo.status in ('$statuses') AND date_format(vlo.call_date, '%Y-%m-%d %H:%i:%s') BETWEEN '$fromDate' AND '$toDate' 
 					AND vlo.campaign_id IN ($imploded_camp) $ul 
 					order by vlo.call_date ASC 
@@ -228,7 +247,7 @@
 					WHERE us.user = vl.user 
 					AND vl.phone_number = vlo.phone_number 
 					AND vl.lead_id=vlo.lead_id 
-					AND vlo.length_in_sec > '0' 
+					#AND vlo.length_in_sec > '0' 
 					AND date_format(vlo.call_date, '%Y-%m-%d %H:%i:%s') BETWEEN '$fromDate' AND '$toDate' 
 					AND $campaign_inb_query AND vlo.status in ('$statuses') $ul 
 					order by vlo.call_date ASC 

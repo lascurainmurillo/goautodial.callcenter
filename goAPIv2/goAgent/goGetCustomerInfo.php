@@ -49,7 +49,6 @@ if (isset($lead_id) && $lead_id !== '') {
             
             $astDB->where('lead_id', $lead_id);
             $custom_info = $astDB->getOne($custom_listid, $CFields);
-
             // Obtener datos de la tabla field_package para obtener los Package
             $packages = [];
             $astDB->has('field_package');
@@ -59,7 +58,6 @@ if (isset($lead_id) && $lead_id !== '') {
                 $packages = $astDB->get('field_package', 100, 'hotel,days,destination,validity');
                 $packages = (@$packages) ? $packages : [];
             }
-
         }
     }
 
@@ -68,7 +66,7 @@ if (isset($lead_id) && $lead_id !== '') {
         $rslt = $goDB->getOne('go_customers');
         $is_customer = $goDB->getRowCount();
         
-        $APIResult = array( "result" => "success", "lead_info" => $lead_info, "custom_info" => @$custom_info, "is_customer" => $is_customer, "packages" => @$packages );
+        $APIResult = array( "result" => "success", "lead_info" => $lead_info, "custom_info" => $custom_info, "is_customer" => $is_customer, "packages" => @$packages );
     } else {
         $APIResult = array( "result" => "error", "message" => "Lead ID '$lead_id' does NOT exist on the database" );
     }

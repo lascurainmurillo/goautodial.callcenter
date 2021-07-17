@@ -70,7 +70,6 @@ if (strlen($errorMsg) < 1) {
             $CF_array['lead_id'] = $lead_id;
             $rslt = $astDB->insert("custom_{$list_id}", $CF_array);
         }
-
         // update package en tabla field_package
         if( (isset($lead_id) && count(@$_POST['packages']) > 0) || @$_POST['packages'] == "") {
             addCustomFieldPackage($lead_id, $astDB);
@@ -106,8 +105,6 @@ if (strlen($errorMsg) < 1) {
 }
 
 $APIResult = array( "result" => $result, "lead_id" => $lead_id, "message" => $message );
-
-
 /**
  * Filtrar variables
  * param String $fields
@@ -143,5 +140,4 @@ function addCustomFieldPackage($lead_id, $astDB){
 		}
 	}
 }
-
 ?>

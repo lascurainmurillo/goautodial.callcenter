@@ -55,7 +55,7 @@
 			$phone_login 								= '';
 			
 			while ($x == $y) {
-				$random_digit 							= mt_rand(1000000000, mt_getrandmax()); /*mt_rand(1000000000, 9999999999);*/
+				$random_digit 							= mt_rand(1000000000, 9999999999);
 				$astDB->where("phone_login", $random_digit);
 				$astDB->getOne("vicidial_users", "phone_login");
 				//$check_existing_phonelogins_query = "SELECT phone_login FROM vicidial_users WHERE phone_login = '$random_digit';";

@@ -31,6 +31,9 @@ if (isset($_GET['goLeadSearchMethod'])) { $agent_lead_search_method = $astDB->es
 if (isset($_GET['goIsLoggedIn'])) { $is_logged_in = $astDB->escape($_GET['goIsLoggedIn']); }
     else if (isset($_POST['goIsLoggedIn'])) { $is_logged_in = $astDB->escape($_POST['goIsLoggedIn']); }
 
+if (isset($_GET['goSearchString'])) { $search_string = $astDB->escape($_GET['goSearchString']); }
+    else if (isset($_POST['goSearchString'])) { $search_string = $astDB->escape($_POST['goSearchString']); }
+
 if (!isset($limit) || !is_numeric($limit)) {
     $limit = 10000;
 }
@@ -65,18 +68,24 @@ if (count($list_ids) > 0 ) {
     $astDB->where('vl.list_id', $list_ids, 'in');
     $astDB->where('vl.status', array('DNC', 'DNCL'), 'not in');
     $astDB->orderBy("last_local_call_time","desc");
+    if (strlen($search_string) >= 3) {
+        $astDB->where("CONCAT(first_name,' ',last_name)", "%$search_string%", 'like');
+        $astDB->orWhere('phone_number', "%$search_string%", 'like');
+        $astDB->orWhere('lead_id', "%$search_string%", 'like');
+        $astDB->orWhere('campaign_id', "%$search_string%", 'like');
+        $astDB->orWhere('comments', "%$search_string%", 'like');
+    }
     $astDB->join('vicidial_lists vls', 'vls.list_id=vl.list_id', 'left');
     $astDB->join('vicidial_statuses suses', 'suses.status=vl.status', 'left');
     $rslt = $astDB->get('vicidial_list vl', $limit, 'lead_id,first_name,middle_initial,last_name,phone_number,last_local_call_time,campaign_id,vl.status,comments,phone_code,suses.status_name,suses.color_background,suses.color_text');
-    // var_dump($rslt);
-    $leads = [];
-    if($rslt != null) {
-        foreach ($rslt as $lead) {
-            $leads[] = $lead;
-        }
+    $lastQuery = $astDB->getLastQuery();
+
+    $leads = array();
+    foreach ($rslt as $lead) {
+        $leads[] = $lead;
     }
 
-    $APIResult = array( 'result' => 'success', 'leads' => $leads );
+    $APIResult = array( 'result' => 'success', 'leads' => $leads, 'lastQuery' => $lastQuery );
 } else {
     $APIResult = array( 'result' => 'error', 'message' => 'No leads found.' );
 }

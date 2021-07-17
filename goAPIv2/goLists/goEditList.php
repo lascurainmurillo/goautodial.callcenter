@@ -178,7 +178,7 @@
 					$data_xferconf_c_number 			= $fresults['xferconf_c_number'];
 					$data_xferconf_d_number 			= $fresults['xferconf_d_number'];
 					$data_xferconf_e_number 			= $fresults['xferconf_e_number'];
-					$data_agent_script_override 		= $fresults['agent_script_override'];
+					// $data_agent_script_override 		= $fresults['agent_script_override'];
 					$data_drop_inbound_group_override 	= $fresults['drop_inbound_group_override'];
 					$data_campaign_cid_override			= $fresults['campaign_cid_override'];
 					$data_web_form_address 				= $fresults['web_form_address'];
@@ -205,14 +205,12 @@
 					$xferconf_d_number 					= $data_xferconf_d_number;
 				if (empty($xferconf_e_number))
 					$xferconf_e_number 					= $data_xferconf_e_number;
-				if (empty($agent_script_override))
-					$agent_script_override 				= $data_agent_script_override;
+				// if (empty($agent_script_override))
+				// 	$agent_script_override 				= $data_agent_script_override;
 				if (empty($drop_inbound_group_override))
 					$drop_inbound_group_override 		= $data_drop_inbound_group_override;
 				if (empty($campaign_cid_override))
 					$campaign_cid_override 				= $data_campaign_cid_override;
-				if (empty($web_form_address))
-					$web_form_address 					= $data_web_form_address;
 				if (empty($reset_list))
 					$reset_list 						= $data_reset_list;
 				

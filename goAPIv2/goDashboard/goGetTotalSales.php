@@ -52,18 +52,32 @@
 		
 		if ($goapiaccess > 0 && $userlevel > 7) {
 			if (is_array($campaigns)) {
-				$status									= "SALE";
-				$datetoday								= date("Y-m-d");
-				$datehourly	 							= date('Y-m-d H');
+				//$status									= array("SALE");
+				$default_status = array("SALE");
+				$camp_sql = $astDB->where("sale", "Y")
+					->where("campaign_id", $campaigns, "IN")
+					->get("vicidial_campaign_statuses",NULL, "status");
+				$query_camp = $astDB->getLastQuery();
+
+				foreach($camp_sql as $data){$camp_status[] = $data['status'];}
+
+				if(!empty($camp_sql)){
+					$status = array_merge($default_status, $camp_status);
+				} else {
+					$status = $default_status;
+				}
+
+				$datetoday = date("Y-m-d");
+				$datehourly = date('Y-m-d H');
 				//$datestartday							= date("Y-m-d") . " 00:00:00";
 				//$dateendday							= date("Y-m-d") . " 23:59:59";
-				
+				$alex = 1;
 				switch ($type) {
 					case "out-daily":
 
 					$data 								= $astDB
 						->join("vicidial_list vl", "vlog.lead_id = vl.lead_id", "LEFT")
-						->where("vlog.status", $status)
+						->where("vlog.status", $status, "IN")
 						->where("vlog.call_date", array("$datetoday 00:00:00", "$datetoday 23:59:59"), "BETWEEN")
 						->where("vlog.campaign_id", $campaigns, "IN")
 						->getValue("vicidial_log as vlog", "count(*)");
@@ -72,62 +86,64 @@
 					
 					case "out-hourly":
 
-					$data 								= $astDB
+					$data = $astDB
 						->join("vicidial_list vl", "vlog.lead_id = vl.lead_id", "LEFT")
-						->where("vlog.status", $status)
+						->where("vlog.status", $status, "IN")
 						->where("vlog.call_date", array("$datehourly:00:00", "$datehourly:59:59"), "BETWEEN")
 						->where("vlog.campaign_id", $campaigns, "IN")
 						->getValue("vicidial_log as vlog", "count(*)");
-						
 					break;
 					
 					case "in-daily":
 					
 					$data 								= $astDB
 						->join("vicidial_list vl", "vcl.lead_id = vl.lead_id", "LEFT")
-						->where("vcl.status", $status)
+						->where("vcl.status", $status, "IN")
 						->where("vcl.call_date", array("$datetoday 00:00:00", "$datetoday 23:59:59"), "BETWEEN")
-						->where("vcl.campaign_id", $campaigns, "IN")
+						//->where("vcl.campaign_id", $campaigns, "IN")
 						->getValue("vicidial_closer_log  vcl", "count(*)");
-							
 					break;
 					
 					case "in-hourly":
 					
 					$data 								= $astDB
 						->join("vicidial_list vl", "vcl.lead_id = vl.lead_id", "LEFT")
-						->where("vcl.status", $status)
+						->where("vcl.status", $status, "IN")
 						->where("vcl.call_date", array("$datehourly:00:00", "$datehourly:59:59"), "BETWEEN")
-						->where("vcl.campaign_id", $campaigns, "IN")
+						//->where("vcl.campaign_id", $campaigns, "IN")
 						->getValue("vicidial_closer_log  vcl", "count(*)");
-							
 					break;			
 					
 					case "all-daily":
-					
-					$outsales							= $astDB
+					$outsales = $astDB
 						->join("vicidial_list vl", "vlog.lead_id = vl.lead_id", "LEFT")
-						->where("vlog.status", $status)
+						->where("vlog.status", $status, "IN")
 						->where("vlog.call_date", array("$datetoday 00:00:00", "$datetoday 23:59:59"), "BETWEEN")
 						->where("vlog.campaign_id", $campaigns, "IN")
 						->getValue("vicidial_log as vlog", "count(*)");
 				
-					$insales 							= $astDB
+					$insales = $astDB
 						->join("vicidial_list vl", "vcl.lead_id = vl.lead_id", "LEFT")
-						->where("vcl.status", $status)
+						->where("vcl.status", $status, "IN")
 						->where("vcl.call_date", array("$datetoday 00:00:00", "$datetoday 23:59:59"), "BETWEEN")
-						->where("vcl.campaign_id", $campaigns, "IN")
+						//->where("vcl.campaign_id", $campaigns, "IN")
 						->getValue("vicidial_closer_log  vcl", "count(*)");
 					
-					$data 								= $insales + $outsales;
-					
+					$data = $insales + $outsales;
 					break;
 				}
 						
-				$apiresults 								= array(
-					"result" 									=> "success",
-					//"query"									=> $astDB->getLastQuery(),
-					"data" 										=> $data			 
+				$apiresults = array(
+					"result" => "success",
+					//"query"	=> $astDB->getLastQuery(),
+					"data" => $data,
+					//"status" => $status,
+					//"camp_status" => $camp_status,
+					//"camp_sql" => $camp_sql,
+					//"query_camp" => $query_camp,
+					//"type" => $type,
+					//"alex" => $alex
+					//"camp" => "'".implode("','",$campaigns)."'"
 				); 
 			}
 		} else {

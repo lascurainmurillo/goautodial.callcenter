@@ -190,7 +190,7 @@ if (isset($_GET["user_group"]))				{$user_group=$astDB->escape($_GET["user_group
 	elseif (isset($_POST["user_group"]))	{$user_group=$astDB->escape($_POST["user_group"]);}
 if (isset($_GET["web_vars"]))			{$web_vars=$astDB->escape($_GET["web_vars"]);}
 	elseif (isset($_POST["web_vars"]))	{$web_vars=$astDB->escape($_POST["web_vars"]);}
-if (isset($_GET["social_form_id"]))			{$social_form_id=$astDB->escape(@$_GET["social_form_id"]);}
+	if (isset($_GET["social_form_id"]))			{$social_form_id=$astDB->escape(@$_GET["social_form_id"]);}
 	elseif (isset($_POST["social_form_id"]))	{$social_form_id=$astDB->escape(@$_POST["social_form_id"]);}
 if (isset($_GET["social_form_data"]))			{$social_form_data=$astDB->escape(@$_GET["social_form_data"]);}
 	elseif (isset($_POST["social_form_data"]))	{$social_form_data=$astDB->escape(@$_POST["social_form_data"]);}
@@ -413,11 +413,9 @@ if (preg_match("/iframe\ssrc/i",$script_text)) {
 	$did_pattern = preg_replace('/\s/i','+',$did_pattern);
 	$did_description = preg_replace('/\s/i','+',$did_description);
 	$web_vars = preg_replace('/\s/i','+',$web_vars);
-	$web_vars = preg_replace('/\s/i','+',$web_vars);
 	$social_form_id = preg_replace('/\s/i','+',@$social_form_id);
 	$social_form_data = preg_replace('/\s/i','+',@$social_form_data);
 	$social_form_image = preg_replace('/\s/i','+',@$social_form_image);
-
 }
 
 $script_text = preg_replace('/--A--lead_id--B--/i',"$lead_id",$script_text);

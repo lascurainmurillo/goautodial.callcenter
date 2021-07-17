@@ -30,7 +30,7 @@
 	}
 	
 	$output 									= $api->API_getTotalCalls($type); 	
-    $calls 										= $output->data;
+    $calls 										= @$output->data;
     
     if ( empty($calls) || is_null($calls) ) {
         $calls 									= 0;

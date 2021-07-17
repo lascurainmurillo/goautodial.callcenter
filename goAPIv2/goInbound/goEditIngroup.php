@@ -55,11 +55,13 @@
 	$no_agents_voicemail 							= $astDB->escape($_REQUEST['no_agents_voicemail']);
 	$no_agents_ingroup 								= $astDB->escape($_REQUEST['no_agents_ingroup']);
 	$no_agents_callmenu 							= $astDB->escape($_REQUEST['no_agents_callmenu']);
+	$no_agents_did	 							= $astDB->escape($_REQUEST['no_agents_did']);
+	$no_agents_extension 							= $astDB->escape($_REQUEST['no_agents_extension']);
+	$no_agents_extension_context						= $astDB->escape($_REQUEST['no_agents_extension_context']);
 	$welcome_message_filename 						= $astDB->escape($_REQUEST['welcome_message_filename']);
 	$play_welcome_message 							= $astDB->escape($_REQUEST['play_welcome_message']);
 	$moh_context 									= $astDB->escape($_REQUEST['moh_context']);
 	$onhold_prompt_filename 						= $astDB->escape($_REQUEST['onhold_prompt_filename']);
-	
 
     // Default values 
     $defActive 										= array("Y","N");
@@ -163,10 +165,13 @@
 				$no_agent_action_value				=$no_agents_callmenu;
 			}
 			
-			if (!is_null($after_hours_callmenu) && $after_hours_action == "CALLMENU") {
-				$no_agent_action_value				=$after_hours_callmenu;			
+			if (!is_null($no_agents_did) && $no_agent_action == "DID") {
+				$no_agent_action_value				=$no_agents_did;
 			}
 			
+			if (!is_null($no_agents_extension) && !is_null($no_agents_extension_context) && $no_agent_action == "EXTENSION") {
+				$no_agent_action_value				="{$no_agents_extension},{$no_agents_extension_context}";
+			}
 			$data 									= array(
 				"group_id" 								=> $group_id,
 				"group_name" 							=> $group_name,
@@ -186,6 +191,7 @@
 				"after_hours_action" 					=> $after_hours_action,
 				"after_hours_voicemail" 				=> $after_hours_voicemail,
 				"after_hours_exten" 					=> $after_hours_exten,
+				"after_hours_callmenu"					=> $after_hours_callmenu,
 				"get_call_launch" 						=> $get_call_launch,
 				"no_agent_no_queue" 					=> $no_agent_no_queue,
 				"no_agent_action" 						=> $no_agent_action,
