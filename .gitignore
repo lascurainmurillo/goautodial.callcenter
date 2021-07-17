@@ -6,3 +6,4 @@ goautodial.conf
 php/dashboard/APIHandler.php
 php/APIHandler.php
 php/Session.php
+/goAPIv2
