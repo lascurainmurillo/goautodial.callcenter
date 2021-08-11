@@ -2904,7 +2904,7 @@ function toggleButton (taskname, taskaction, taskenable, taskhide, toupperfirst,
     }
 }
 
-function toggleButtons (taskaction, taskivr, taskrequeue, taskquickxfer) {
+function toggleButtons (taskaction = null, taskivr, taskrequeue, taskquickxfer) {
     if (typeof taskaction !== 'undefined' && taskaction.length > 0) {
         var btnIVR = 'hide';
         if (taskivr == 'ENABLED' || taskivr == 'ENABLED_PARK_ONLY') {
@@ -3624,7 +3624,7 @@ function CheckForIncoming () {
         }
 
         var this_VDIC_data = result.data;
-        console.log(this_VDIC_data);
+        //console.log(this_VDIC_data);
         has_inbound_call = this_VDIC_data.has_call;
         if (this_VDIC_data.has_call == '1') {
             AutoDialWaiting = 0;

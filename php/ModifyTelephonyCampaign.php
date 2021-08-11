@@ -401,7 +401,7 @@
 		
 		$enable_callback_alert 						= 0; 
 		if (isset($_POST["enable_callback_alert"])) { 
-			$enable_callback_alert 					= $_POST["enable_callback_alert"]; 
+			$enable_callback_alert 					= @$_POST["enable_callback_alert"]; 
 			$enable_callback_alert 					= stripslashes($enable_callback_alert);
 		}
 		

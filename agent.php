@@ -2253,8 +2253,8 @@ $whatsapp_status = $ui->API_getWhatsappActivation();
 
 
 
-<button onclick="socketcus.initCallWhatsapp('+5215585353729', 'Moises lascu', '1004')" class="">iniciar simular Moises</button>
-<button onclick="socketcus.initCallWhatsapp('+51955794343', 'Lili bon ifacio', '1004')" class="">iniciar simular Lily</button>
+<button onclick="socketcus.initCallWhatsapp('+5215585353729', 'Moises lascu', '1004')" class="hidden">iniciar simular Moises</button>
+<button onclick="socketcus.initCallWhatsapp('+51955794343', 'Lili bon ifacio', '1004')" class="hidden">iniciar simular Lily</button>
 
 		<?php print $ui->standardizedThemeJS();?>
 		<script type="text/javascript">	
