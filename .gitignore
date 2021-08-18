@@ -3,7 +3,7 @@ php/Config.php
 php/goCRMAPISettings.php
 astguiclient.conf
 goautodial.conf
-php/dashboard/APIHandler.php
-php/APIHandler.php
-php/Session.php
+#php/dashboard/APIHandler.php
+#php/APIHandler.php
+#php/Session.php
 /goAPIv2
