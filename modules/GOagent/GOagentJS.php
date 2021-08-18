@@ -8734,7 +8734,7 @@ function GetCustomFields(listid, show, getData, viewFields) {
                                         }
                                         
                                         customHTML += '<div class="mda-form-group" style="padding-left: 5px;">';
-                                        customHTML += '<span id="' + field_prefix + thisField.field_label + '" data-type="' + field_type.toLowerCase() + '" class="' + field_prefix + field_type.toLowerCase() + '">' + display_content.replace(/(?:\r\n|\r|\n)/g, '<br>') + '</span>';
+                                        customHTML += '<span id="' + field_prefix + thisField.field_label + '" data-type="' + field_type.toLowerCase() + '" class="' + field_prefix + field_type.toLowerCase() + '">' + display_content.replace(/(?:\r\n|\r|\n)/g, '') /* display_content.replace(/(?:\r\n|\r|\n)/g, '<br>')*/ + '</span>';
                                         if (field_type != 'SCRIPT') {
                                             customHTML += '<div class="customform-label">' + thisField.field_name + '</div>';
                                         }

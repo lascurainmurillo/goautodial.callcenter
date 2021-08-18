@@ -278,6 +278,7 @@ class DbHandler {
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, VERIFY_SSL); // se agregó esta linea para localhost
 
 		$data = curl_exec($ch);
+
 		$userobj = json_decode($data);
 		curl_close($ch);
 		
@@ -371,7 +372,6 @@ class DbHandler {
         //$userobj = $this->dbConnector->getOne(CRM_USERS_TABLE_NAME);
 		// $this->dbConnectorAsterisk->where("email", $email);
   //       $userobj = $this->dbConnectorAsterisk->getOne(CRM_USERS_TABLE_NAME_ASTERISK);
-
     	$postfields["goUser"] = goUser; #Username goes here. (required)
 		$postfields["goPass"] = goPass; #Password goes here. (required)
 		$postfields["goAction"] = "goUserLogin"; #action performed by the [[API:Functions]]. (required)
@@ -389,7 +389,7 @@ class DbHandler {
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 		$data = curl_exec($ch);
-
+		
 		curl_close($ch);
 		$userobj = json_decode($data);
 

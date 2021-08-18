@@ -28,7 +28,12 @@ require_once(CRM_MODULE_INCLUDE_DIRECTORY.'LanguageHandler.php');
 include(CRM_MODULE_INCLUDE_DIRECTORY.'Session.php');
 require_once(CRM_MODULE_INCLUDE_DIRECTORY.'goCRMAPISettings.php');
 
-$baseURL = (!empty($_SERVER['HTTPS'])) ? "https://".$_SERVER['SERVER_NAME'] : "http://".$_SERVER['SERVER_NAME'];
+
+if($_SERVER['SERVER_NAME'] == "localhost") {
+	$baseURL = (!empty($_SERVER['HTTPS'])) ? "https://".$_SERVER['SERVER_NAME'].":".$_SERVER['SERVER_PORT'] : "http://".$_SERVER['SERVER_NAME'].":".$_SERVER['SERVER_PORT'];
+} else {
+	$baseURL = (!empty($_SERVER['HTTPS'])) ? "https://".$_SERVER['SERVER_NAME'] : "http://".$_SERVER['SERVER_NAME'];
+}
 $getSlashes = preg_match_all("/\//", $_SERVER['REQUEST_URI']);
 $baseDIR = (!empty($_SERVER['REQUEST_URI']) && $getSlashes > 1) ? dirname($_SERVER['REQUEST_URI'])."/" : "/";
 define(__NAMESPACE__ . '\GO_MODULE_DIR', $baseURL.$baseDIR.'modules'.DIRECTORY_SEPARATOR.'GOagent'.DIRECTORY_SEPARATOR);

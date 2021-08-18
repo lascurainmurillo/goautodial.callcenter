@@ -92,14 +92,14 @@
 			$password = stripslashes($password);
 			$username = $db->escape_string($username);
 			$password = $db->escape_string($password);
-
+			
 			// Check password and redirect accordingly
 			$result = null;
+			
 			if(filter_var($username, FILTER_VALIDATE_EMAIL)) {
 		        // valid email address
 				$result = $db->checkLoginByEmail($username, $password, $_SERVER['REMOTE_ADDR']);
-		    }
-		    else {
+		    } else {
 		        // not an email. User name?
 				$result = $db->checkLoginByName($username, $password, $_SERVER['REMOTE_ADDR']);
 		    }

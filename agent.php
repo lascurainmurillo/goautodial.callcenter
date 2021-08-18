@@ -967,7 +967,7 @@ $whatsapp_status = $ui->API_getWhatsappActivation();
 							                </div>
 							               </fieldset>
 
-										<div id="custom_fields_content" class="card-body" style="border: 1px solid rgb(221, 230, 233); margin: 0 32px 0 22px; display: none;">
+										<div id="custom_fields_content" class="card-body" style="border: 1px solid rgb(221, 230, 233); display: none;">
                                                                         <h4 style="font-weight: 600;">
                                                                                 <?=$lh->translationFor('custom_forms')?>
                                                                         </h4>
