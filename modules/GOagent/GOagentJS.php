@@ -3919,6 +3919,9 @@ console.log("Run number on Whatsapp");
                         if (custom_fields_launch == 'ONCALL') {
                             GetCustomFields(null, true);
                         }
+
+                        // render html para tablas package
+                        agentinfo.renderrow(packages);
                     }
                 }, 1000);
             }
