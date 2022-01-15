@@ -3,3 +3,11 @@ php/goCRMAPISettings.php
 .gitignore
 astguiclient.conf
 goautodial.conf
+goAPIv2
+astguiclient.conf.bak
+error.log
+php/Config.php.bak
+php/goCRMAPISettings.php.bak
+recordings
+requests.log
+RECORDINGS
