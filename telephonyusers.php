@@ -143,7 +143,8 @@
 					}
 				?>
                 </section><!-- /.content -->
-            </aside><!-- /.right-side -->
+            </aside>
+			<!-- /.right-side -->
 			<?php print $ui->getRightSidebar($user->getUserId(), $user->getUserName(), $user->getUserAvatar()); ?>
         </div><!-- ./wrapper -->
 <?php
@@ -572,7 +573,7 @@
 		<script src="js/plugins/datatables/buttons/buttons.print.min.js" type="text/javascript"></script>
 		<script src="js/plugins/datatables/buttons/buttons.flash.min.js" type="text/javascript"></script>
 		<script src="js/plugins/datatables/buttons/dataTables.buttons.min.js" type="text/javascript"></script>
-		<script src="js/plugins/datatables/jszip.min.js" type="text/javascript"></script>        
+		<script src="js/plugins/datatables/jszip.min.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 	$(document).ready(function() {

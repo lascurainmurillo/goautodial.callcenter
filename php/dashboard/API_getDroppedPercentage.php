@@ -32,8 +32,8 @@
 
 	//$output 										= $output->data;
     
-	$dropped = $dropped->data;
-	$totalCalls = $totalOut->data + $totalIn->data;
+	$dropped = @$dropped->data;
+	$totalCalls = @$totalOut->data + @$totalIn->data;
 	$output = 0;
 
 	if( $totalCalls > 0 ) {

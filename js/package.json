@@ -1,0 +1,16 @@
+{
+  "name": "js",
+  "version": "1.0.0",
+  "description": "Libray",
+  "main": "app_goautodial.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mark",
+  "license": "MIT",
+  "dependencies": {
+    "emojionearea": "^3.4.2",
+    "jquery": "2.1.3",
+    "jquery.maskedinput": "^1.4.1"
+  }
+}

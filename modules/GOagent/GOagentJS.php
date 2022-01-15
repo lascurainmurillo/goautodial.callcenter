@@ -81,7 +81,7 @@ if (!isset($_REQUEST['action']) && !isset($_REQUEST['module_name'])) {
         }
     }
     echo "// {$sess_vars}\n";
-?>
+    ?>
 
 // Settings
 var phone;
@@ -920,6 +920,7 @@ $("#cb-datepicker").on("dp.change", function (e) {
     $("#date-selected").html(moment(e.date).format('dddd, MMMM Do YYYY, h:mm a'));
     $("#callback-date").val(selectedDate);
 });
+
 <?php if(ECCS_BLIND_MODE === 'y') { ?>
 
 $('#callback-datepicker').on('shown.bs.modal', function(){
@@ -991,7 +992,7 @@ $('#callback-datepicker').on('shown.bs.modal', function(){
 	}
 
 <?php } ?>
-        
+
         $("#show-cb-calendar").click(function() {
             $("#cb-container").slideToggle('slow');
         });
@@ -1088,7 +1089,7 @@ $('#callback-datepicker').on('shown.bs.modal', function(){
             });
         }
     });
-   
+
    /*$(document).bind('keydown', '16', function(){
 	 $("#cream-agent-logout").click();
    });*/
@@ -2033,7 +2034,7 @@ $('#callback-datepicker').on('shown.bs.modal', function(){
         if ($("#custom-field-content").is(':visible')) {
             submitCFData = $("[id^='viewCustom_']").serializeArray();
         }
-        
+
         swal({
             title: "<?=$lh->translationFor('saving_customer_info')?>",
             type: "warning",
@@ -2050,6 +2051,11 @@ $('#callback-datepicker').on('shown.bs.modal', function(){
                 goSaveAsCustomer: saveAsCustomer,
                 responsetype: 'json'
             };
+
+            //#body-packages id tbody de la una tabla html SCRIPT de custom field
+            if($("#custom-field-content").find("#body-packages").length > 0) {
+                postData.packages = agentinfo.getDataPackagesInputs();
+            }
         
             $.ajax({
                 type: 'POST',
@@ -2063,6 +2069,7 @@ $('#callback-datepicker').on('shown.bs.modal', function(){
             })
             .done(function (data) {
                 if (data.result == 'success') {
+                    console.log('update info history');
                     swal({
                         title: '<?=$lh->translationFor('success')?>',
                         text: data.message,
@@ -2916,7 +2923,7 @@ function toggleButton (taskname, taskaction, taskenable, taskhide, toupperfirst,
     }
 }
 
-function toggleButtons (taskaction, taskivr, taskrequeue, taskquickxfer) {
+function toggleButtons (taskaction = null, taskivr, taskrequeue, taskquickxfer) {
     if (typeof taskaction !== 'undefined' && taskaction.length > 0) {
         var btnIVR = 'hide';
         if (taskivr == 'ENABLED' || taskivr == 'ENABLED_PARK_ONLY') {
@@ -3588,6 +3595,14 @@ function CheckForConfCalls (confnum, force) {
     });
 }
 
+
+/* Variables globales para form lead de facebook*/
+var social_form_id = "";
+var social_form_data = "";
+var social_form_image = "";
+
+var list_id_main = '<?=LIST_ID?>'; // iniciar list
+
 function CheckForIncoming () {
     if (has_outbound_call > 0) {
         return false;
@@ -3595,6 +3610,10 @@ function CheckForIncoming () {
     
     all_record = 'NO';
     all_record_count = 0;
+    
+    social_form_id = "";
+    social_form_data = "";
+    social_form_image = "";
 
     var postData = {
         goAction: 'goVDADCheckIncoming',
@@ -3624,6 +3643,7 @@ function CheckForIncoming () {
         }
 
         var this_VDIC_data = result.data;
+        //console.log(this_VDIC_data);
         has_inbound_call = this_VDIC_data.has_call;
         if (this_VDIC_data.has_call == '1') {
             AutoDialWaiting = 0;
@@ -3746,6 +3766,10 @@ function CheckForIncoming () {
 
             custchannellive = 1;
 
+            social_form_id = this_VDIC_data.social_form_id;
+            social_form_data = this_VDIC_data.social_form_data;
+            social_form_image = this_VDIC_data.social_form_image;
+
             LastCID                                     = this_VDIC_data.MqueryCID;
             LeadPrevDispo                               = this_VDIC_data.dispo;
             fronter                                     = this_VDIC_data.tsr;
@@ -3823,6 +3847,11 @@ function CheckForIncoming () {
             custom_field_names                          = this_VDIC_data.custom_field_names;
             custom_field_values                         = this_VDIC_data.custom_field_values;
             custom_field_types                          = this_VDIC_data.custom_field_types;
+
+var socket_phone_number = (this_VDIC_data.country_code == "52") ? "+" + this_VDIC_data.phone_code + "1" + this_VDIC_data.phone_number : "+" + this_VDIC_data.phone_code + this_VDIC_data.phone_number;
+// socket obtener cliente llamada, dispara chat Whatsapp
+console.log("Run number on Whatsapp");
+            socketcus.chatwhatsapp(socket_phone_number, this_VDIC_data.first_name + " " + this_VDIC_data.last_name, list_id_main); 
             //Added By Poundteam for Audited Comments (Manual Dial Section Only)
             //if (qc_enabled > 0)
             //{
@@ -3909,6 +3938,9 @@ function CheckForIncoming () {
                         if (custom_fields_launch == 'ONCALL') {
                             GetCustomFields(null, true);
                         }
+
+                        // render html para tablas package
+                        agentinfo.renderrow(packages);
                     }
                 }, 1000);
             }
@@ -3924,6 +3956,7 @@ function CheckForIncoming () {
             $("#cust_number").html(phone_number_format(dispnum));
     	    <?php if(ECCS_BLIND_MODE === 'y'){ ?> $("span#span-cust-number").removeClass("hidden");  $("#cust_number").val(cust_phone_number); <?php } ?>
             $("#cust_avatar").html(goGetAvatar(this_VDIC_data.first_name+" "+this_VDIC_data.last_name));
+            $(".cust_avatar_chats").html(goGetAvatar(this_VDIC_data.first_name+" "+this_VDIC_data.last_name), '45');
             //goAvatar._init(goOptions);
 
             var status_display_content = '';
@@ -6450,6 +6483,7 @@ function DispoSelectSubmit() {
             $("#cust_number").empty().html('');
 	    <?php if(ECCS_BLIND_MODE === 'y'){ ?> $("span#span-cust-number").addClass("hidden");  $("#cust_number").val(''); <?php } ?>
             $("#cust_avatar").html(goGetAvatar());
+            $(".cust_avatar_chats").html(goGetAvatar(), '45');
             //goAvatar._init(goOptions);
             //console.log(goGetAvatar());
     
@@ -6628,6 +6662,7 @@ function ManualDialSkip() {
                     $("#cust_number").empty().html('');
 		    <?php if(ECCS_BLIND_MODE === 'y'){ ?> $("span#span-cust-number").addClass("hidden");  $("#cust_number").val(''); <?php } ?>
                     $("#cust_avatar").html(goGetAvatar());
+                    $(".cust_avatar_chats").html(goGetAvatar(), '45');
                     //goAvatar._init(goOptions);
 
                     if (post_phone_time_diff_alert_message.length > 10) {
@@ -6709,6 +6744,11 @@ function CustomerData_update() {
         goCustomFields: '',
         responsetype: 'json'
     };
+
+    //#body-packages id tbody de la una tabla html SCRIPT de custom field
+    if($(".formMain").find("#body-packages").length > 0) {
+        postData.packages = agentinfo.getDataPackagesInputs();
+    }
     
     if (custom_fields_enabled > 0) {
         var defaultFieldsArray = defaultFields.split(',');
@@ -6753,7 +6793,7 @@ function CustomerData_update() {
         });
         postData['goCustomFields'] = custom_fields.slice(0,-1);
     }
-
+    
     $.ajax({
         type: 'POST',
         url: '<?=$goAPI?>/goAgent/goAPI.php',
@@ -6915,6 +6955,7 @@ function ManualDialOnly(taskaltnum) {
         }
     })
     .done(function (result) {
+        
         if (result.result == 'error') {
             if (!!$.prototype.snackbar) {
                 $.snackbar({content: "<i class='fa fa-exclamation-circle fa-lg text-warning' aria-hidden='true'></i>&nbsp; "+result.message+".", timeout: 5000, htmlAllowed: true});
@@ -7289,6 +7330,7 @@ function ManualDialNext(mdnCBid, mdnBDleadid, mdnDiaLCodE, mdnPhonENumbeR, mdnSt
             }
         })
         .done(function (result) {
+            console.log('getting data ManualDialNext...');
             //dialingINprogress = 0;
             //console.log(result);
 
@@ -7461,6 +7503,7 @@ function ManualDialNext(mdnCBid, mdnBDleadid, mdnDiaLCodE, mdnPhonENumbeR, mdnSt
                     list_webform                            = thisVdata.web_form_address;
                     list_webform_two                        = thisVdata.web_form_address_two;
                     post_phone_time_diff_alert_message      = thisVdata.post_phone_time_diff_alert_message;
+                    packages     = thisVdata.packages;
 
                     timer_action = campaign_timer_action;
                     timer_action_message = campaign_timer_action_message;
@@ -7541,15 +7584,18 @@ function ManualDialNext(mdnCBid, mdnBDleadid, mdnDiaLCodE, mdnPhonENumbeR, mdnSt
                                 if (custom_fields_launch == 'ONCALL') {
                                     GetCustomFields(null, true);
                                 }
+
+                                // render html para tablas package
+                                agentinfo.renderrow(packages);
                             }
                         }, 1000);
                     }
-            
                     //$("#cust_full_name").html(cust_first_name+" "+cust_middle_initial+" "+cust_last_name);
                     $("#cust_full_name").removeClass('hidden');
                     $("#cust_number").html(phone_number_format(dispnum));
 	            <?php if(ECCS_BLIND_MODE === 'y'){ ?> $("span#span-cust-number").removeClass("hidden"); $("#cust_number").val(cust_phone_number); <?php } ?>
                     $("#cust_avatar").html(goGetAvatar(cust_first_name+" "+cust_last_name));
+                    $(".cust_avatar_chats").html(goGetAvatar(cust_first_name+" "+cust_last_name), '45');
                     //goAvatar._init(goOptions);
                     //console.log(goGetAvatar(dispnum));
                     
@@ -8566,7 +8612,7 @@ function GetCustomFields(listid, show, getData, viewFields) {
         }
         getFields = false;
     }
-    
+
     if (getData) {
         var postData = {
             module_name: 'GOagent',
@@ -8616,7 +8662,6 @@ function GetCustomFields(listid, show, getData, viewFields) {
                         while (order < field_cnt) {
                             order++;
                             var thisField = data[order];
-                            
                             if (typeof thisField !== 'undefined') {
                                 if (typeof viewFields !== 'undefined' && (defaultFieldsArray.indexOf(thisField.field_label) > -1 || thisField.field_label == 'lead_id')) {
                                     skipMe = true;
@@ -8711,7 +8756,7 @@ function GetCustomFields(listid, show, getData, viewFields) {
                                         }
                                         
                                         customHTML += '<div class="mda-form-group" style="padding-left: 5px;">';
-                                        customHTML += '<span id="' + field_prefix + thisField.field_label + '" data-type="' + field_type.toLowerCase() + '" class="' + field_prefix + field_type.toLowerCase() + '">' + display_content.replace(/(?:\r\n|\r|\n)/g, '<br>') + '</span>';
+                                        customHTML += '<span id="' + field_prefix + thisField.field_label + '" data-type="' + field_type.toLowerCase() + '" class="' + field_prefix + field_type.toLowerCase() + '">' + display_content.replace(/(?:\r\n|\r|\n)/g, '') /* display_content.replace(/(?:\r\n|\r|\n)/g, '<br>')*/ + '</span>';
                                         if (field_type != 'SCRIPT') {
                                             customHTML += '<div class="customform-label">' + thisField.field_name + '</div>';
                                         }
@@ -8730,6 +8775,7 @@ function GetCustomFields(listid, show, getData, viewFields) {
                         if (show) {
                             $("#custom_fields_content, #custom_br").slideDown();
                         }
+                        agentinfo.execinput_formcustom(); // ejecutar algunos plugin sobre los inputs
                     } else {
                         $("#custom-field-content").html(customHTML);
                         if (show) {
@@ -8986,8 +9032,10 @@ function ViewCustInfo(leadid) {
     })
     .done(function (result) {
         if (result.result == 'success') {
+            console.log('Getting goGetCustomerInfo');
             var lead_info = result.lead_info;
             var custom_info = result.custom_info;
+            var packages = result.packages;
             var infoHtml = '';
             var infoTitle = '';
             var colNum = 12;
@@ -9152,6 +9200,10 @@ function ViewCustInfo(leadid) {
                         replaceCustomFields(true);
                         $(".cust-preloader").hide();
                         GetCustomFields(null, true, false, true);
+
+                        // render html para tablas package para historial de llamadas
+                        agentinfo.renderrow(packages);
+
                     } else {
                         unloadPreloader = true;
                         $(".cust-preloader").hide();
@@ -9164,6 +9216,9 @@ function ViewCustInfo(leadid) {
                     $(".cust-preloader").hide();
                 }
                 $("#customer-info-content").html(infoHtml).slideDown();
+                
+                agentinfo.execinput_formcustom('update_history'); // ejecutar algunos plugin sobre los inputs
+
                 $("#cust-info-submit").prop('disabled', false);
                 if (result.is_customer > 0) {
                     $("#convert-customer").prop('checked', true);
@@ -9392,6 +9447,10 @@ function LoadScriptContents() {
     });
     
     postData = $.extend(postData, new_vars);
+    postData.social_form_id = social_form_id;
+    postData.social_form_data = social_form_data;
+    postData.social_form_image = social_form_image;
+// console.log(postData);
     $.ajax({
         type: 'POST',
         url: '<?=$goAPI?>/goAgent/goAPI.php',
@@ -9617,33 +9676,37 @@ function getContactList(search_string) {
             var leadsList = result.leads;
             if (leadsList != null) {
                 $.each(leadsList, function(key, value) {
-                    var thisComments = value.comments;
-                    var commentTitle = '';
-                    if (thisComments !== null) {
-                        if (thisComments.length > 20) {
-                            commentTitle = ' title="'+thisComments+'"';
-                            thisComments = thisComments.substring(0, 20) + "...";
-                        }
+                var thisComments = value.comments;
+                var commentTitle = '';
+                if (thisComments !== null) {
+                    if (thisComments.length > 20) {
+                        commentTitle = "";// ' title="'+thisComments+'"';
+                        thisComments = thisComments;// .substring(0, 20) + "...";
                     }
-                    
-                    var customer_name = (value.first_name || '') + ' ' + (value.middle_initial || '') + ' ' + (value.last_name || '');
-                    var last_call_time = (value.last_local_call_time || '0000-00-00 00:00:00');
-                    var appendThis = '<tr data-id="'+value.lead_id+'"><td>'+value.lead_id+'</td><td>'+customer_name+'</td><td>'+value.phone_number+'</td><td>'+last_call_time+'</td><td>'+value.campaign_id+'</td><td>'+value.status+'</td><td'+commentTitle+'>'+thisComments+'</td><td class="text-center" style="white-space: nowrap;"><button id="lead-info-'+value.lead_id+'" data-leadid="'+value.lead_id+'" onclick="ViewCustInfo('+value.lead_id+');" class="btn btn-info btn-sm" style="margin: 2px;" title="<?=$lh->translationFor('view_contact_info')?>"><i class="fa fa-file-text-o"></i></button><button id="dial-lead-'+value.lead_id+'" data-leadid="'+value.lead_id+'" onclick="ManualDialNext(\'\','+value.lead_id+','+value.phone_code+','+value.phone_number+',\'\',\'0\');" class="btn btn-primary btn-sm disabled" style="margin: 2px;" title="<?=$lh->translationFor('call_contact_number')?>"><i class="fa fa-phone"></i></button></td></tr>';
-                    $("#contacts-list tbody").append(appendThis);
-                });
+                }
+                
+                var customer_name = (value.first_name || '') + ' ' + (value.middle_initial || '') + ' ' + (value.last_name || '');
+                var last_call_time = (value.last_local_call_time || '0000-00-00 00:00:00');
+                var appendThis = '<tr data-id="'+value.lead_id+'"><td>'+value.lead_id+'</td><td>'+customer_name+'</td><td>'+value.phone_number+'</td><td>'+last_call_time+'</td><td>'+value.campaign_id+'</td><td style="color: '+value.color_text+'; background-color:'+value.color_background+'; text-align: center; padding: 7px;">'+value.status_name+'</td><td'+commentTitle+'>'+thisComments+'</td><td class="text-center" style="white-space: nowrap;"><button id="lead-info-'+value.lead_id+'" data-leadid="'+value.lead_id+'" onclick="ViewCustInfo('+value.lead_id+');" class="btn btn-info btn-sm" style="margin: 2px;" title="<?=$lh->translationFor('view_contact_info')?>"><i class="fa fa-file-text-o"></i></button><button id="dial-lead-'+value.lead_id+'" data-leadid="'+value.lead_id+'" onclick="ManualDialNext(\'\','+value.lead_id+','+value.phone_code+','+value.phone_number+',\'\',\'0\');" class="btn btn-primary btn-sm disabled" style="margin: 2px;" title="<?=$lh->translationFor('call_contact_number')?>"><i class="fa fa-phone"></i></button></td></tr>';
+                $("#contacts-list tbody").append(appendThis);
+            });
             }
+
             $("#contacts-list").css('width', '100%');
-            $("#contacts-list").DataTable({
+            var tableContacts = $("#contacts-list").DataTable({
                 "bDestroy": true,
-                "searching": false,
+                initComplete: function () {
+                    $(".preloader").fadeOut('slow');
+                    $("#contacts-list_wrapper:first-child div").find('[class="col-sm-6"]:not(:first-child)').html('<div id="contacts-list_filter" class="dataTables_filter"><label>Search:<input type="search" class="form-control input-sm" placeholder="" aria-controls="contacts-list" value="'+search_string+'"></label></div>');
+				},
                 "processing": true,
                 "aoColumnDefs": [{
                     "bSortable": false,
                     "aTargets": [ 7 ],
-                }, {
-                    "bSearchable": false,
+                }, /*{
+                    "bSearchable": true,
                     "aTargets": [ 3, 5, 7 ]
-                }, {
+                },*/ {
                     "sClass": "hidden-xs",
                     "aTargets": [ 0 ]
                 }, {
@@ -9656,10 +9719,9 @@ function getContactList(search_string) {
                     "sClass": "visible-lg",
                     "aTargets": [ 3, 6 ]
                 }],
-                "fnInitComplete": function() {
-                    $(".preloader").fadeOut('slow');
-                    $("#contacts-list_wrapper:first-child div").find('[class="col-sm-6"]:not(:first-child)').html('<div id="contacts-list_filter" class="dataTables_filter"><label>Search:<input type="search" class="form-control input-sm" placeholder="" aria-controls="contacts-list" value="'+search_string+'"></label></div>');
-                }
+                "bLengthChange": false,
+                "order": [[ 3, 'desc' ]],
+                "pageLength": 50,
             });
             $("#contacts-list_filter").parent('div').attr('class', 'col-sm-6 hidden-xs');
             $("#contacts-list_length").parent('div').attr('class', 'col-xs-12 col-sm-6');
@@ -9678,6 +9740,25 @@ function getContactList(search_string) {
                     $("button[id^='dial-lead-']").removeClass('disabled');
                 }
             });
+
+			
+			// crear selected para filtrar columnas
+            $(".filterhead").each( function ( i ) {
+                if(i === 5) { // sólo columna status
+					var select = $('<select><option value="">Seleccionar</option></select>')
+						.appendTo( $(this).empty() )
+						.on( 'change', function () {
+						   var term = $(this).val();
+							tableContacts.column( i ).search(term, false, false ).draw();
+						});
+					tableContacts.column( i ).data().unique().sort().each( function ( d, j ) {
+							select.append( '<option value="'+d+'">'+d+'</option>' )
+					});
+                } else {
+                    $('').appendTo($(this).empty());
+                }
+			});
+
             
             var typingTimer;
             var autoSearch = true;
@@ -9716,9 +9797,12 @@ function getContactList(search_string) {
                     }
                 }
             });
+
         } else {
             $(".preloader").fadeOut('slow');
-            $("#contacts-list").DataTable();
+            $("#contacts-list").DataTable({
+                "order": [[ 3, 'desc' ]]
+            });
             
             swal({
                 title: '<?=$lh->translationFor('error')?>',
@@ -10699,6 +10783,17 @@ Number.prototype.between = function (a, b, inclusive) {
 
 <?php
 } else {
+
+    /**
+     * 
+     * 
+     * @request AJAX POST /modules/GOagent/GOagentJS.php 
+     * param module_name: GOagent
+     * param action: ejemplo 'CustoMFielD'
+     * param list_id: list_id
+     * return Json
+     * 
+     */
     if ($_REQUEST['module_name'] == 'GOagent') {
         switch ($_REQUEST['action']) {
             case "CheckWebRTC":
@@ -10723,7 +10818,7 @@ Number.prototype.between = function (a, b, inclusive) {
                 $_SESSION['is_logged_in'] = (strlen($is_logged_in) > 0) ? $is_logged_in : $sess_logged_in;
                 $result = $_SESSION['is_logged_in'];
                 break;
-            case "CustoMFielD":
+            case "CustoMFielD": // obtener campos y data desde vicidial_lists_fields
                 $list_id = $_REQUEST['list_id'];
                 $result = $ui->API_goGetAllCustomFields($list_id);
                 $result = json_encode($result);

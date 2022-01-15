@@ -22,6 +22,13 @@
 		OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 		THE SOFTWARE.
 	*/
+
+	// se llama a la librerias
+	require __DIR__ . '/vendor/autoload.php';
+	
+	use App\Lib\Phpjwt;
+
+
 	require_once('./php/goCRMAPISettings.php');
 	require_once('./php/CRMDefaults.php');
 
@@ -147,6 +154,15 @@
 		$data = curl_exec($ch);
 		curl_close($ch);
 		
+		// borrar token jwt
+		// code ... ...
+
+		// borrar cookie token - utjo
+		if (isset($_COOKIE['utjo'])) {
+			unset($_COOKIE['utjo']); 
+			setcookie('utjo', null, -1, '/'); 
+		}
+
 		$output = json_decode($data);
 	
 		if(ROCKETCHAT_ENABLE !== 'y' || !isset($_SESSION['gad_authToken']))	

@@ -1,16 +1,27 @@
 <?php
 // database configuration
 define('DB_USERNAME', 'goautodialu');
-define('DB_PASSWORD', 'goautodialu1234');
+define('DB_PASSWORD', '');
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'goautodial'); 
 define('DB_PORT', '3306');
 define('DB_NAME_ASTERISK', 'asterisk');
+define('VERIFY_SSL', false);
+define('DOMAIN_SOCKET', 'http://localhost:3001');
+define('LIST_ID', 1004);
+define('KEY_JWT', 'xxxx');
+
 define('DB_USERNAME_KAMAILIO', 'kamailiou');
 define('DB_PASSWORD_KAMAILIO', 'kamailiou1234');
 define('DB_HOST_KAMAILIO', 'localhost');
 define('DB_NAME_KAMAILIO', 'kamailio');
 define('DB_PORT_KAMAILIO', '3306');
+
 // other configuration parameters
 define('CRM_ADMIN_EMAIL', 'admin@localhost.com');
+
+//Config Facebook
+define('APP_ID_FACEBOOK', '');
+define('APP_SECRET_FACEBOOK', '');
+define('APP_VERSION_FACEBOOK', '');
 ?>

@@ -26,7 +26,7 @@
 	
 	$api 										= \creamy\APIHandler::getInstance();
 	$output 									= $api->API_getTotalAgentsWaitCalls();        
-    $agent 										= $output->data;
+    $agent 										= @$output->data;
         
     if (empty($agent) || is_null($agent)){
         $agent									= 0;

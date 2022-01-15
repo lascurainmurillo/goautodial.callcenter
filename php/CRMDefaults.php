@@ -32,7 +32,6 @@
  * @link URL http://digitalleaves.com
  */
 
-
 // global constants
 define ('BASE_URL', 'https://vaglxc01.goautodial.com');
 
@@ -153,6 +152,10 @@ define('CRM_HELPDESK_TICKETS_TABLE_NAME', "ost_ticket");
 define('CRM_HELPDESK_TICKETS_CONTENT_TABLE_NAME', "ost_thread_entry");
 define('CRM_HELPDESK_USERS_TABLE_NAME', "ost_staff");
 
+// Custom Table names
+define('CRM_SOCIAL_TOKEN', "go_social_token");
+define('CRM_SOCIAL_PAGE', "go_social_page");
+
 // Session constants
 define('CRM_SESSION_DRIVER', 'database');              // The storage driver to use: files, database
 define('CRM_SESSION_COOKIE_NAME', 'go_sessions');   // The session cookie/table name, must contain only [0-9a-z_] characters
@@ -230,7 +233,7 @@ define ('CRM_GO_VERSION', "v4.0");
 define ('ECCS_BLIND_MODE', "n"); //Customizations requested by ECCS. Accessibility mode for blind users
 define ('LEADUPLOAD_LEAD_MAPPING', "n"); // Customization requested by Yoothit. Lead Mapping
 define ('LEADUPLOAD_CUSTOM_DELIMITER', ""); //put special characters here, for multiple separate by [space]
-define ('LEADUPLOAD_CHECK_PHONES_IN_SYSTEM', 'y'); //enable or disable Lead Upload Feature: check duplicates in entire system
+define ('LEADUPLOAD_CHECK_PHONES_IN_SYSTEM', 'n'); //enable or disable Lead Upload Feature: check duplicates in entire system
 define ('STATEWIDE_SALES_REPORT', 'n'); //Customization Requested by Statewide. 
 
 define ('EXPORTCALLREPORT_ALLCAMPAIGNS', 'y');

@@ -24,7 +24,7 @@
 	
 	$api 										= \creamy\APIHandler::getInstance();
 	$output 									= $api->API_getTotalRingingCalls();    
-    $calls 										= $output->data;
+    $calls 										= @$output->data;
     
     if($calls == NULL || $calls == 0){
         $calls 									= 0;

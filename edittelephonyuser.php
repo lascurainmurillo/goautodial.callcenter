@@ -21,7 +21,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
-
+	
 	require_once('./php/UIHandler.php');
 	require_once('./php/APIHandler.php');
 	require_once('./php/CRMDefaults.php');

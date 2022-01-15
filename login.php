@@ -1,4 +1,33 @@
 <?php
+	/**
+		The MIT License (MIT)
+		
+		Copyright (c) 2015 Ignacio Nieto Carvajal
+		
+		Permission is hereby granted, free of charge, to any person obtaining a copy
+		of this software and associated documentation files (the "Software"), to deal
+		in the Software without restriction, including without limitation the rights
+		to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+		copies of the Software, and to permit persons to whom the Software is
+		furnished to do so, subject to the following conditions:
+		
+		The above copyright notice and this permission notice shall be included in
+		all copies or substantial portions of the Software.
+		
+		THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+		IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+		FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+		AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+		LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+		OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+		THE SOFTWARE.
+	*/
+
+	// se llama a la librerias
+	require __DIR__ . '/vendor/autoload.php';
+	
+	use App\Lib\Phpjwt;
+	use App\Service\NodeService;
 /**
  * @file 		login.php
  * @brief 		login application
@@ -37,6 +66,7 @@
 		exit();
 	}
 
+	//var_dump();
 	/*if (CRM_SESSION_DRIVER == 'database') {
 		require_once('./php/SessionHandler.php');
 		$session_class = new \creamy\SessionHandler();
@@ -52,7 +82,7 @@
 			$error = $lh->translationFor("insert_valid_login_password");
 		} else {
 			$db = new \creamy\DbHandler();
-
+			
 			// Define $username and $password
 			$username=$_POST['username'];
 			$password=$_POST['password'];
@@ -62,20 +92,25 @@
 			$password = stripslashes($password);
 			$username = $db->escape_string($username);
 			$password = $db->escape_string($password);
-
+			
 			// Check password and redirect accordingly
 			$result = null;
+			
 			if(filter_var($username, FILTER_VALIDATE_EMAIL)) {
 		        // valid email address
 				$result = $db->checkLoginByEmail($username, $password, $_SERVER['REMOTE_ADDR']);
-		    }
-		    else {
+		    } else {
 		        // not an email. User name?
 				$result = $db->checkLoginByName($username, $password, $_SERVER['REMOTE_ADDR']);
 		    }
 			if ($result == NULL) { // login failed
 				$error = $lh->translationFor("invalid_login_password");
 			} else {
+				
+				// se crea el tokenjwt y poner en la cookie utjo;
+				$tokenjwt = Phpjwt::getToken();
+				setcookie('utjo', $tokenjwt, time() + (7 * 24 * 60 * 60));  // la cookie utjo es el token
+
 				$_SESSION["user"] = $username;
 				$_SESSION["userid"] = $result["id"];
 				$_SESSION["username"] = $result["name"];

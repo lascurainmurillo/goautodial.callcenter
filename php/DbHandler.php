@@ -75,7 +75,7 @@ class DbHandler {
 	    if (isset($this->dbConnector)) { unset($this->dbConnector); }
 	    if (isset($this->dbConnectorAsterisk)) { unset($this->dbConnectorAsterisk); }
 	    if (isset($this->api)) { unset($this->api); }
-    }    
+    }
     
     /** Administration of users */
     
@@ -87,7 +87,7 @@ class DbHandler {
     public function createUser($name, $password, $email, $phone, $role, $avatarURL) {
         // First check if user already existed in db
         //if ($this->userExistsIdentifiedByName($name) || $this->userExistsIdentifiedByEmail($email)) {
-	if ($this->userExistsIdentifiedByName($name)) {
+		if ($this->userExistsIdentifiedByName($name)) {
             // User with same email already existed in the db
             return USER_ALREADY_EXISTED;
         } else {
@@ -259,8 +259,6 @@ class DbHandler {
 			'ip_address' => $ip_address
 		);
 
-
-
 		foreach($postfields as $key=>$value) { $postfields_string .= $key.'='.$value.'&'; }
 		$postfields_string = rtrim($postfields_string, '&');
 
@@ -277,10 +275,13 @@ class DbHandler {
 		curl_setopt($ch,CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch,CURLOPT_POSTFIELDS, $postfields_string);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, VERIFY_SSL); // se agregó esta linea para localhost
+
 		$data = curl_exec($ch);
+
 		$userobj = json_decode($data);
 		curl_close($ch);
-
+		
 		if ($userobj->result === "success") { // first match valid?
 			//$password_hash = $userobj["password_hash"];
 			//$status = $userobj["status"];
@@ -371,7 +372,6 @@ class DbHandler {
         //$userobj = $this->dbConnector->getOne(CRM_USERS_TABLE_NAME);
 		// $this->dbConnectorAsterisk->where("email", $email);
   //       $userobj = $this->dbConnectorAsterisk->getOne(CRM_USERS_TABLE_NAME_ASTERISK);
-
     	$postfields["goUser"] = goUser; #Username goes here. (required)
 		$postfields["goPass"] = goPass; #Password goes here. (required)
 		$postfields["goAction"] = "goUserLogin"; #action performed by the [[API:Functions]]. (required)
@@ -389,7 +389,7 @@ class DbHandler {
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 		$data = curl_exec($ch);
-
+		
 		curl_close($ch);
 		$userobj = json_decode($data);
 
@@ -2315,6 +2315,34 @@ class DbHandler {
 		$return = ($this->dbConnector->getRowCount() > 0) ? $result : false;
 		return $return;
 	}
+
+
+	/** ------------------------------- Query custom - Mark Cornejo Bonifacio ------------------------------------------- */
+
+	/* Social Network */	
+	/**
+	 * Obtener el registro de un token habilitado. field. status=1
+	 *
+	 * @return void
+	 */
+	public function getTokenUser() {
+		$this->dbConnector->where("status", 1);
+		$result = $this->dbConnector->getOne(CRM_SOCIAL_TOKEN, "token,user_id,expiration_time");
+		return $result;
+	}
+
+
+	/**
+	 * getCountViewStatus
+	 * obtener count view_status
+	 * @return int
+	 */
+	public function getCountViewStatus() {
+		$this->dbConnector->where('view_status', 0);
+		$this->dbConnector->get('go_social_webhook_data', null, 'view_status');
+		return $this->dbConnector->count;
+	}
+
     
     private function encrypt_passwd($password, $cost, $salt) {
         $pass_options = [

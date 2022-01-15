@@ -29,19 +29,21 @@ $lh = \creamy\LanguageHandler::getInstance();
 
 // check required fields
 $validated = 1;
+
 if (!isset($_POST["module_name"])) {
 	$validated = 0;
 }
 
 if ($validated == 1) {
 	$mh = \creamy\ModuleHandler::getInstance();
-
+	
 	// get mandatory module name
 	foreach ($_POST as $key => $value) {
 		error_log("Setting: $key => $value");
 	}
 	
 	$result = $mh->configureModule($_POST["module_name"], $_POST);
+	
 	if ($result === true) { ob_clean(); print CRM_DEFAULT_SUCCESS_RESPONSE; }
 	else { // failure.
 		if ($enabled == "1") { ob_clean(); $lh->translateText("unable_enable_module"); }

@@ -1561,8 +1561,11 @@ error_reporting(E_ERROR | E_PARSE);
 									//'.$this->getTopbarMessagesMenu($user).'
 									//'.$this->getTopbarNotificationsMenu($user).'
 									//'.$this->getTopbarTasksMenu($user).'
+		
+		$countView = $this->db->getCountViewStatus();
 
 		$avatarElement = $this->getVueAvatar($user->getUserName(), $user->getUserAvatar(), 22, true);
+
 		return '<header class="main-header">
 				<a href="./index.php" class="logo"><img src="'.$logo.'" width="auto" height="45" style="padding-top:10px;"></a>
 	            <nav class="navbar navbar-static-top" role="navigation">
@@ -1572,6 +1575,15 @@ error_reporting(E_ERROR | E_PARSE);
 	                </a>
 	                <div class="navbar-custom-menu">
 	                    <ul class="nav navbar-nav">
+						        <li style="margin-top: 7px;">
+								    <div>
+									<!--
+						            <a class="btn btn-warning" onclick="openModalCientLeads();">Clientes potenciales
+										<span id="viewcount" class="label label-danger">'.$countView.'</span>
+									</a>
+									-->
+								    </div>
+							    </li>
 	                    		'.$moduleTopbarElements.'
 	                    		'.$this->getTopbarMessagesMenu($user).'
 		                    	<li>
@@ -1784,7 +1796,39 @@ error_reporting(E_ERROR | E_PARSE);
 			</div>
 			<!-- End of View Agent -->
 			<!-- End of modal -->
-                ';
+
+			<!-- SDK FACEBOOK -->
+			<div id="fb-root"></div>
+			<script async defer crossorigin="anonymous" src="https://connect.facebook.net/es_ES/sdk.js#xfbml=1&version=v10.0&appId=146655680685042&autoLogAppEvents=1" nonce="TwZDjBs8"></script>
+
+			<script>
+				window.fbAsyncInit = function() {
+					FB.init({
+					appId      : \''.APP_ID_FACEBOOK.'\',
+					cookie     : true,
+					xfbml      : true,
+					version    : \''.APP_VERSION_FACEBOOK.'\'
+					});
+					
+					FB.AppEvents.logPageView();   
+					
+				};
+
+				(function(d, s, id){
+					var js, fjs = d.getElementsByTagName(s)[0];
+					if (d.getElementById(id)) {return;}
+					js = d.createElement(s); js.id = id;
+					js.src = "https://connect.facebook.net/en_US/sdk.js";
+					fjs.parentNode.insertBefore(js, fjs);
+				}(document, \'script\', \'facebook-jssdk\'));
+
+			</script>
+
+			<!-- CUSTOM JS -->
+			<script src="js/custom/global.js" type="text/javascript"></script>
+			<script src="js/custom/app-footer.js" type="text/javascript"></script>  
+			  
+								';
 		return $footer;
 	}
 
@@ -2015,6 +2059,7 @@ error_reporting(E_ERROR | E_PARSE);
 		$loadleads = "";
 		$crm = "";
 		$eventsArea = "";
+		
 		if ($userrole != CRM_DEFAULTS_USER_ROLE_AGENT) {
 
 			$modulesWithSettings = $mh->modulesWithSettings();
@@ -2189,9 +2234,9 @@ error_reporting(E_ERROR | E_PARSE);
 			}
         }
  
-  if($userrole != CRM_DEFAULTS_USER_ROLE_AGENT){
-        $result .= $this->getSidebarItem("credits.php", "list-alt", $this->lh->translationFor("Credits"));
-  }
+		if($userrole != CRM_DEFAULTS_USER_ROLE_AGENT){
+				$result .= $this->getSidebarItem("credits.php", "list-alt", $this->lh->translationFor("Credits"));
+		}
 
 		$result .= '</ul></section></aside>';
 
@@ -2256,7 +2301,8 @@ error_reporting(E_ERROR | E_PARSE);
 	}
 
 	protected function getRightTabPane($user, $tab, $active = false) {
-		$avatarElement = $this->getVueAvatar($user->getUserName(), $user->getUserAvatar(), 96, false, true, true);
+		
+		$avatarElement = $this->getVueAvatar($user->getUserName(), $user->getUserAvatar(), 96, false, true, false);
 
 		$isActive = ($active) ? ' active' : '';
 		$tabpanes = '<div class="tab-pane'.$isActive.'" id="control-sidebar-'.$tab.'-tab">'."\n";
@@ -2297,16 +2343,25 @@ error_reporting(E_ERROR | E_PARSE);
 			}
 
 			$tabpanes .= '</ul>
-				<ul class="control-sidebar-menu" style="bottom: 0px; position: absolute; width: 100%; margin: 25px -15px 15px;">
-					<li>
-						<div class="center-block" style="text-align: center">
-							<a href="./profile.php" class="btn btn-warning"><i class="fa fa-user"></i> '.$this->lh->translationFor("my_profile").'</a>
+			  <!-- <ul class="control-sidebar-menu" style="bottom: 0px; position: absolute; width: 100%; margin: 25px -15px 15px;"> -->
+			  <ul class="control-sidebar-menu" style="margin: 25px -15px 15px;">
+				<li>
+				<div class="center-block" style="text-align: center">';
+			
+			if ($user->userHasBasicPermission() && !($this->db->getTokenUser())) {
+				$tabpanes .= '<fb:login-button class="fb-login-button" data-width="" data-size="large" data-button-type="login_with" data-layout="default" data-auto-logout-link="false" data-use-continue-as="false" style="margin: 10px 0px" scope="public_profile,email,pages_show_list,pages_manage_ads,pages_manage_metadata,pages_read_engagement,leads_retrieval,ads_management" onlogin="checkLoginState(\''.$_SESSION['user'].'\', \''.$_SESSION['usergroup'].'\');"></fb:login-button>
+				';
+			} else {
+				// colocar un boton de "VER TODAS LAS PAGINAS FAN"
+				$tabpanes .= '<a href="./socialpages.php" class="btn btn-primary" style="margin-bottom: 20px"><i class="fa fa-thumbs-up"></i> VER FANPAGE VINCULADAS</a>';
+			}
+			
+			$tabpanes .= '<a href="./profile.php" class="btn btn-warning" style="margin-bottom: 20px"><i class="fa fa-user"></i> '.$this->lh->translationFor("my_profile").'</a>
 							&nbsp;
-							<a href="./logout.php" id="cream-admin-logout" class="btn btn-warning"><i class="fa fa-sign-out"></i> '.$this->lh->translationFor("exit").'</a>
+						  <a href="./logout.php" id="cream-agent-logout" class="btn btn-warning" style="margin-bottom: 20px"><i class="fa fa-sign-out"></i> '.$this->lh->translationFor("exit").'</a>
 						</div>
 					</li>
-				</ul>
-				';
+				</ul>'."\n";
 		}
 
 		$tabpanes .= "</div>";
@@ -5813,7 +5868,7 @@ error_reporting(E_ERROR | E_PARSE);
 
 	// get script
 	public function getAgentScript($lead_id, $fullname, $first_name, $last_name, $middle_initial, $email, $phone_number, $alt_phone,
-		$address1, $address2, $address3, $city, $province, $state, $postal_code, $country_code) {
+		$address1, $address2, $address3, $city, $province, $state, $postal_code, $country_code, $social_form_id, $social_form_data, $social_form_image) {
 		$url = gourl."/goViewScripts/goAPI.php"; # URL to GoAutoDial API filem (required)
          $postfields["goUser"] = goUser; #Username goes here. (required)
          $postfields["goPass"] = goPass; #Password goes here. (required)
@@ -5837,6 +5892,9 @@ error_reporting(E_ERROR | E_PARSE);
          $postfields["state"] = $state; #Lead state (required)
          $postfields["postal_code"] = $postal_code; #Lead postal_code (required)
          $postfields["country_code"] = $country_code; #Lead country_code(required)
+		 $postfields["social_form_id"] = @$social_form_id; #Lead form id de facebook(required)
+		 $postfields["social_form_data"] = @$social_form_data; #Lead form data de facebook: questions, image, titulo del formulario(required)
+		 $postfields["social_form_image"] = @$social_form_image; #Lead form image. imagen del formulario(required)
 
          $ch = curl_init();
          curl_setopt($ch, CURLOPT_URL, $url);
@@ -6577,8 +6635,6 @@ error_reporting(E_ERROR | E_PARSE);
 		
 	}
 	
-
-	
 	public function escapeJsonString($value) { # list from www.json.org: (\b backspace, \f formfeed)
 		$escapers = array("\\", "/", "\"", "\n", "\r", "\t", "\x08", "\x0c", "	");
 		$replacements = array("\\\\", "\\/", "\\\"", "\\n", "\\r", "\\t", "\\f", "\\b", " ");
@@ -6598,6 +6654,14 @@ error_reporting(E_ERROR | E_PARSE);
 		
 		return $return;
 	}
+
+	public function getChats() {
+		$chatting = '';
+
+		return $chatting;
+	}
+
+
 }
 
 ?>

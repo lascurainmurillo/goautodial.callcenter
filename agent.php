@@ -56,6 +56,7 @@ if ($list_id_ct > 0) {
 		$middle_initial = $output->middle_initial[$i];
 		$last_name 		= $output->last_name[$i];
 		
+		$photo			= $output->photo[$i];
 		$email 			= $output->email[$i];
 		$phone_number 	= $output->phone_number[$i];
 		$alt_phone 		= $output->alt_phone[$i];
@@ -71,13 +72,16 @@ if ($list_id_ct > 0) {
 		$title 			= $output->title[$i];
 		$call_count 	= $output->call_count[$i];
 		$last_local_call_time = $output->last_local_call_time[$i];
+		$social_form_id = $output->social_form_id[$i];
+		$social_form_data = $output->social_form_data[$i];
+		$social_form_image = $output->social_form_image[$i];
 	}
 }
 $fullname = $title.' '.$first_name.' '.$middle_initial.' '.$last_name;
 $date_of_birth = date('Y-m-d', strtotime($date_of_birth));
 //var_dump($output);
  $output_script = $ui->getAgentScript($lead_id, $fullname, $first_name, $last_name, $middle_initial, $email, 
- 									  $phone_number, $alt_phone, $address1, $address2, $address3, $city, $province, $state, $postal_code, $country);
+ 									  $phone_number, $alt_phone, $address1, $address2, $address3, $city, $province, $state, $postal_code, $country, $social_form_id, $social_form_data, $social_form_image);
 
 
 if (isset($_GET["folder"])) {
@@ -192,7 +196,10 @@ $whatsapp_status = $ui->API_getWhatsappActivation();
 		<script src="js/jquery.md5.js" type="text/javascript"></script>
         <!-- Date Picker -->
         <script type="text/javascript" src="js/dashboard/eonasdan-bootstrap-datetimepicker/build/js/moment.js"></script>
-        <script type="text/javascript" src="js/dashboard/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>		
+        <script type="text/javascript" src="js/dashboard/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>	
+		<!-- Notify -->
+		<script type="text/javascript" src="js/notify.min.js"></script>
+		
         <!-- X-Editable -->
         <!--<link rel="stylesheet" src="js/dashboard/x-editable/dist/css/bootstrap-editable.css">-->
         <!--<script type="text/javascript" src="js/dashboard/x-editable/dist/js/bootstrap-editable.min.js"></script>-->
@@ -343,7 +350,7 @@ $whatsapp_status = $ui->API_getWhatsappActivation();
                                 font-size:14px;
                                 font-weight:normal;
                         }
-			.hide_div{
+						.hide_div{
                                 display: none;
                         }
                         .btn.btn-raised {
@@ -383,7 +390,7 @@ $whatsapp_status = $ui->API_getWhatsappActivation();
                         .table > thead > tr > th {
                                 padding: 8px;
                         }
-			.modal-body {
+						.modal-body {
                                 min-height: inherit;
                                 overflow-x: inherit;
                                 overflow-y: inherit;
@@ -418,7 +425,7 @@ $whatsapp_status = $ui->API_getWhatsappActivation();
                                 color: #3f51b5;
                                 opacity: 1;
                         }
-			.form-control ~ label {
+						.form-control ~ label {
                                 position: absolute;
                                 top: 0;
                                 left: 0;
@@ -455,7 +462,7 @@ $whatsapp_status = $ui->API_getWhatsappActivation();
                                 color: #000;
                                 opacity: 0.75;
                         }
-	 		.scrollable-menu {
+						.scrollable-menu {
                                 width: 200px;
                                 height: auto;
                                 max-height: 200px;
@@ -465,93 +472,93 @@ $whatsapp_status = $ui->API_getWhatsappActivation();
                         .editableform .form-group {
                                 padding: 0 !important;
                         }
-			.editable-disabled {
-					color: #fff !important;
-			}
+						.editable-disabled {
+								color: #fff !important;
+						}
 	</style>
 
 	<!-- ECCS Customiztion -->
 	<?php 
 		if(ECCS_BLIND_MODE === 'y'){
 	?>
-		<style>
-		.content{
-			padding: 0px;
-			margin-top: 30px;
-		}
+<style>
+	.content{
+		padding: 0px;
+		margin-top: 30px;
+	}
 
-		.nav a.dropdown-toggle{
-		        height: 65px;
-		}
+	.nav a.dropdown-toggle{
+			height: 65px;
+	}
 
-		.main-header .logo{
-		        height: 60px;
-		}
+	.main-header .logo{
+			height: 60px;
+	}
 
 		/*toggle*/
-		.switch {
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 34px;
-}
+	.switch {
+		position: relative;
+		display: inline-block;
+		width: 60px;
+		height: 34px;
+	}
 
-/* Hide default HTML checkbox */
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
+	/* Hide default HTML checkbox */
+	.switch input {
+		opacity: 0;
+		width: 0;
+		height: 0;
+	}
 
-/* The slider */
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  -webkit-transition: .4s;
-  transition: .4s;
-}
+	/* The slider */
+	.slider {
+		position: absolute;
+		cursor: pointer;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-color: #ccc;
+		-webkit-transition: .4s;
+		transition: .4s;
+	}
 
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  -webkit-transition: .4s;
-  transition: .4s;
-}
+	.slider:before {
+		position: absolute;
+		content: "";
+		height: 26px;
+		width: 26px;
+		left: 4px;
+		bottom: 4px;
+		background-color: white;
+		-webkit-transition: .4s;
+		transition: .4s;
+	}
 
-input:checked + .slider {
-  background-color: #2196F3;
-}
+	input:checked + .slider {
+	background-color: #2196F3;
+	}
 
-input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
-}
+	input:focus + .slider {
+	box-shadow: 0 0 1px #2196F3;
+	}
 
-input:checked + .slider:before {
-  -webkit-transform: translateX(26px);
-  -ms-transform: translateX(26px);
-  transform: translateX(26px);
-}
+	input:checked + .slider:before {
+	-webkit-transform: translateX(26px);
+	-ms-transform: translateX(26px);
+	transform: translateX(26px);
+	}
 
-/* Rounded sliders */
-.slider.round {
-  border-radius: 34px;
-}
+	/* Rounded sliders */
+	.slider.round {
+	border-radius: 34px;
+	}
 
 .slider.round:before {
   border-radius: 50%;
 }
 
-		</style>
+</style>
 		<!-- ECCS CSS -->
 	<!--	<link href="./css/bootstrap-toggle.min.css" type="text/css" /> -->
 		<link href="./css/eccs4.css" rel="stylesheet" type="text/css"/>
@@ -573,9 +580,8 @@ input:checked + .slider:before {
             <!-- Right side column. Contains the navbar and content of the page -->
             <aside class="content-wrapper" style="padding-left: 0 !important; padding-right: 0 !important;" >
                 <!-- Content Header (Page header) -->
-  			<!-- ECCS Customization -->
-                	<?php if(ECCS_BLIND_MODE !== 'y')
-			{ ?> 
+  				<!-- ECCS Customization -->
+                <?php if(ECCS_BLIND_MODE !== 'y'){ ?> 
 				
                 <!-- Content Header (Page header) 
                 <section id="contact_info_crumbs" class="content-heading">
@@ -592,27 +598,27 @@ input:checked + .slider:before {
     <!-- <li id="dialer-tab" class="active"><a href="#control-dialer-tab" data-toggle="tab">Dialer</a></li>
     <li id="whatsapp-tab" class=""><a href="#control-whatsapp-tab" data-toggle="tab">Whatsapp</a></li>-->
     <style>
-	#btn-dialer-tab, #btn-whatsapp-tab{
-		box-shadow: 0 0 black;
-		color: black;
-		margin: 5px 50px 0px 0px;
-		background: lightgrey;
-	}
-	section#contact_info_crumbs{
-		margin-bottom: 0px; /*5px;*/
-		padding-left: 40px;
-		padding-right: 40px;
-	}
-	div.tab-content, div.tab-pane section.content{
-		/*padding-top: 2.5px;*/
-		padding-top: 0px !important;
-	}
+		#btn-dialer-tab, #btn-whatsapp-tab{
+			box-shadow: 0 0 black;
+			color: black;
+			margin: 5px 50px 0px 0px;
+			background: lightgrey;
+		}
+		section#contact_info_crumbs{
+			margin-bottom: 0px; /*5px;*/
+			padding-left: 40px;
+			padding-right: 40px;
+		}
+		div.tab-content, div.tab-pane section.content{
+			/*padding-top: 2.5px;*/
+			padding-top: 0px !important;
+		}
     </style>
 <!-- WhatsApp Button
     <div class="row">
     <a href="#" class="btn col-lg-3 pull-right" id="btn-dialer-tab">Dialer</a>
     <?php if($whatsapp_status) { ?>
-    <a href="#" class="btn col-lg-3 pull-right" id="btn-whatsapp-tab" style="background-color: #009688; color: white;">Whatsapp<span id="wa-notiff-badge"></span></a>
+    	<a href="#" class="btn col-lg-3 pull-right" id="btn-whatsapp-tab" style="background-color: #009688; color: white;">Whatsapp<span id="wa-notiff-badge"></span></a>
     <?php } ?>
     </div>
 -->
@@ -650,9 +656,9 @@ input:checked + .slider:before {
 						</div>
 					</div>
 			<?php if(ECCS_BLIND_MODE === 'y'){ ?>
-                        <div class="row">
-				<input type="text" id="freeTestField" class="hidden">
-			</div> 
+                <div class="row">
+					<input type="text" id="freeTestField" class="hidden">
+				</div> 
 			</div>
 			
                          <div class="col-lg-9">
@@ -660,78 +666,94 @@ input:checked + .slider:before {
 					<!-- standard custom edition form -->
 					<div class="container-custom ng-scope">
 						<div id="cust_info" class="card">
-						<?php /* card-header?>
-								<!-- ECCS Customization -->
-								<?php // if(ECCS_BLIND_MODE === 'y'){?>
-								<!-- <div style="background-image:;" class="card-heading bg-inverse">
-								<?php //}//end if?>
-									<div class="row">
-										<div id="cust_avatar" class="col-lg-1 col-md-1 col-sm-2 text-center hidden-xs" style="height: 64px;">
-											<avatar username="Dialed Client" src="<?php //echo CRM_DEFAULTS_USER_AVATAR;?>" :size="64"></avatar>
-										</div>
-										<div class="<?php //if (ECCS_BLIND_MODE === 'n') { echo "col-lg-9 col-md-9 col-sm-7"; } else { echo "col-lg-11 col-md-11 col-sm-10"; } ?>">
-								<!-- ECCS Customization-->
-						  <!-- <h4 id="cust_full_name" class="isDisabled">
-									<?php //if(ECCS_BLIND_MODE === 'n'){ ?>
-									<span id="first_name_label" class="hidden"><?//=$lh->translationFor('first_name')?>: </span><a href="#" id="first_name">Firstname</a> <span id="middle_initial_label" class="hidden"><?//=$lh->translationFor('middle_initial')?>: </span><a href="#" id="middle_initial">M.I.</a> <span id="last_name_label" class="hidden"><?//=$lh->translationFor('last_name')?>: </span><a href="#" id="last_name">Lastname</a>
-									<?php //} ?>
-									<!-- ECCS Customization -->
-									<?php //if(ECCS_BLIND_MODE === 'y'){ ?>
-									<!-- <span id="cust_campaign_name"></span>
-									<span id="first_name_label" class="hidden"><?//=$lh->translationFor('first_name')?>: </span><a href="#" id="first_name"></a> <span id="middle_initial_label" class="hidden"><?//=$lh->translationFor('middle_initial')?>: </span><a href="#" id="middle_initial"></a> <span id="last_name_label" class="hidden"><?//=$lh->translationFor('last_name')?>: </span><a href="#" id="last_name"></a>
-									<span id="cust_call_type"></span>
-									<?php //}//end if ?>
-         <!-- /.ECCS Customization -->
-								<!-- </h4>
-						                <p class="ng-binding animated fadeInUpShort">
-									 <!-- ECCS Customization -->
-                                                                        <?php //if(ECCS_BLIND_MODE === 'y'){ ?> 
-										<!-- <span id="span-cust-number" class="hidden"><label for="cust_number"> Client Number[#CN]: </label> <input type="text" id="cust_number" style="background-color:; border:; color:black; margin-top: 5px; padding-left: 5px; font-size: 14pt; font-weight: 600;" onclick="this.setSelectionRange(0, this.value.length)" readonly/>"Ctrl+C" to Copy Number.</span>
 
-									<?php //} else { ?>
-                                                                        <!-- /.ECCS Customization -->
-									<!-- <span id="cust_number"></span>
-									<?php //} ?>
-								</p>
-						    </div>
-										<?php //if (ECCS_BLIND_MODE === 'n') { ?>
-										<div id="agent_stats" class="col-lg-2 col-md-2 col-sm-3 hidden-xs" style="font-size: 18px; display: none;">
-											<p style="margin: 0;">Sales: <span id="agent_sales_count" style="float: right;">0</span></p>
-											<p id="amount_container" style="margin: 0; display: none;">Amount: <span id="agent_total_amount" style="float: right;">0</span></p>
-										</div>
-										<?php //} ?>
+							<div class="row">
+								<div class="col-xs-12">
+									<div class="" style="margin: 10px;">
+										<a class="btn btn-warning" href="#customerslist">
+											<i class="fa fa-list-alt" aria-hidden="true"></i> Ver historial de llamadas
+										</a>
 									</div>
 								</div>
-							<!-- /.card heading -->
-						<?php */?>				
-							<!-- Card body -->
+							</div>
+							<?php /* card-header?>
+									<!-- ECCS Customization -->
+									<?php // if(ECCS_BLIND_MODE === 'y'){?>
+									<!-- <div style="background-image:;" class="card-heading bg-inverse">
+									<?php //}//end if?>
+										<div class="row">
+											<div id="cust_avatar" class="col-lg-1 col-md-1 col-sm-2 text-center hidden-xs" style="height: 64px;">
+												<avatar username="Dialed Client" src="<?php //echo CRM_DEFAULTS_USER_AVATAR;?>" :size="64"></avatar>
+											</div>
+											<div class="<?php //if (ECCS_BLIND_MODE === 'n') { echo "col-lg-9 col-md-9 col-sm-7"; } else { echo "col-lg-11 col-md-11 col-sm-10"; } ?>">
+									<!-- ECCS Customization-->
+								<!-- <h4 id="cust_full_name" class="isDisabled">
+										<?php //if(ECCS_BLIND_MODE === 'n'){ ?>
+										<span id="first_name_label" class="hidden"><?//=$lh->translationFor('first_name')?>: </span><a href="#" id="first_name">Firstname</a> <span id="middle_initial_label" class="hidden"><?//=$lh->translationFor('middle_initial')?>: </span><a href="#" id="middle_initial">M.I.</a> <span id="last_name_label" class="hidden"><?//=$lh->translationFor('last_name')?>: </span><a href="#" id="last_name">Lastname</a>
+										<?php //} ?>
+										<!-- ECCS Customization -->
+										<?php //if(ECCS_BLIND_MODE === 'y'){ ?>
+										<!-- <span id="cust_campaign_name"></span>
+										<span id="first_name_label" class="hidden"><?//=$lh->translationFor('first_name')?>: </span><a href="#" id="first_name"></a> <span id="middle_initial_label" class="hidden"><?//=$lh->translationFor('middle_initial')?>: </span><a href="#" id="middle_initial"></a> <span id="last_name_label" class="hidden"><?//=$lh->translationFor('last_name')?>: </span><a href="#" id="last_name"></a>
+										<span id="cust_call_type"></span>
+										<?php //}//end if ?>
+								<!-- /.ECCS Customization -->
+									<!-- </h4>
+											<p class="ng-binding animated fadeInUpShort">
+										<!-- ECCS Customization -->
+																			<?php //if(ECCS_BLIND_MODE === 'y'){ ?> 
+											<!-- <span id="span-cust-number" class="hidden"><label for="cust_number"> Client Number[#CN]: </label> <input type="text" id="cust_number" style="background-color:; border:; color:black; margin-top: 5px; padding-left: 5px; font-size: 14pt; font-weight: 600;" onclick="this.setSelectionRange(0, this.value.length)" readonly/>"Ctrl+C" to Copy Number.</span>
+
+										<?php //} else { ?>
+																			<!-- /.ECCS Customization -->
+										<!-- <span id="cust_number"></span>
+										<?php //} ?>
+									</p>
+								</div>
+											<?php //if (ECCS_BLIND_MODE === 'n') { ?>
+											<div id="agent_stats" class="col-lg-2 col-md-2 col-sm-3 hidden-xs" style="font-size: 18px; display: none;">
+												<p style="margin: 0;">Sales: <span id="agent_sales_count" style="float: right;">0</span></p>
+												<p id="amount_container" style="margin: 0; display: none;">Amount: <span id="agent_total_amount" style="float: right;">0</span></p>
+											</div>
+											<?php //} ?>
+										</div>
+									</div>
+								<!-- /.card heading -->
+							<?php */?>				
+								<!-- Card body -->
 						        <div class="card-body custom-tabpanel">
 				                	<div role="tabpanel" class="panel panel-transparent">
 									  <ul id="agent_tablist" role="tablist" class="nav nav-tabs nav-justified">
 									  <!-- Nav task panel tabs-->
 										 <li role="presentation" class="active">
 											<a href="#contact_info" aria-controls="home" role="tab" data-toggle="tab" class="bb0">
-												<span style="font-family:Arial; font-style:Bold;" class="fa fa-user hidden"></span>
+												<span style="font-style:Bold;" class="glyphicon glyphicon-user"></span>
 												<?=$lh->translationFor('contact_information')?></a>
 										 </li>
 										 <li role="presentation">
 											<a href="#comments_tab" aria-controls="home" role="tab" data-toggle="tab" class="bb0">
-												<span class="fa fa-comments-o hidden"></span>
+												<span class="glyphicon glyphicon-bullhorn"></span>
 											    <?=$lh->translationFor('comments')?></a>
 										 </li>
 										 <li role="presentation">
 											<a href="#scripts" aria-controls="home" role="tab" data-toggle="tab" class="bb0">
-												<span class="fa fa-file-text-o hidden"></span>
+												<span class="glyphicon glyphicon-list-alt"></span>
 												<?=$lh->translationFor('script')?></a>
 										 </li>
-										<?php if(ROCKETCHAT_ENABLE === 'y'){?>
 										 <li role="presentation">
-                                                                                        <a href="#rc" aria-controls="home" id="loginRC" role="tab" data-toggle="tab" class="bb0">
-                                                                                                <!--<span class="fa fa-rocket"></span>-->
-                                                                                                <?=$lh->translationFor('Chat')?></a>
+										 	<a href="#chats" aria-controls="home" role="tab" data-toggle="tab" class="bb0" onclick="socketcus.scrollend(300);">
+											 	<span class="fa fa-comments-o"></span>
+											 	Chat
+											</a>
+										 </li>
+										<?php if(ROCKETCHAT_ENABLE === 'y'){?>
+										 	<li role="presentation">
+												<a href="#rc" aria-controls="home" id="loginRC" role="tab" data-toggle="tab" class="bb0">
+												<!--<span class="fa fa-rocket"></span>-->
+												<?=$lh->translationFor('Chat')?></a>
 												<input type="hidden" id="rc-user-id" value="">
 												<input type="hidden" id="rc-auth-token" value="">
-                                                                                 </li>
+                                        	</li>
 										<?php }?>
 									  </ul>
 									</div>
@@ -772,13 +794,14 @@ input:checked + .slider:before {
 												<input type="hidden" value="<?php echo $address3;?>" name="address3">
 												
 												<div class="row">
-													<div class="col-sm-4">
+													<div class="col-sm-6">
 														<div class="mda-form-group label-floating">
 															<input id="first_name" name="first_name" type="text" maxlength="30"  value="<?php echo $first_name;?>"
 																class="mda-form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched input-disabled" disabled required>
-															<label for="first_name">First Name</label>
+															<label for="first_name"><?=$lh->translationFor('first_name')?></label>
 														</div>
 													</div>
+													<!-- 
 													<div class="col-sm-4">
 														<div class="mda-form-group label-floating">
 															<input id="middle_initial" name="middle_initial" type="text" maxlength="1" value="<?php echo $middle_initial;?>"
@@ -786,11 +809,12 @@ input:checked + .slider:before {
 															<label for="middle_initial">Middle Initial</label>
 														</div>
 													</div>
-													<div class="col-sm-4">
+													-->
+													<div class="col-sm-6">
 														<div class="mda-form-group label-floating">
 															<input id="last_name" name="last_name" type="text" maxlength="30" value="<?php echo $last_name;?>"
 																class="mda-form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched input-disabled" disabled required>
-															<label for="last_name">Last Name</label>
+															<label for="last_name"><?=$lh->translationFor('last_name')?></label>
 														</div>
 													</div>
 												</div>
@@ -831,7 +855,8 @@ input:checked + .slider:before {
 															<em class="fa fa-home fa-lg"></em>
 														</span>-->
 														</div>
-														<div class="col-xl-12 col-lg-6">																				<div class="mda-form-group label-floating">
+														<div class="col-xl-12 col-lg-6">
+															<div class="mda-form-group label-floating">
 																<input id="address2" name="address2" type="text" maxlength="100" value="<?php echo $address2;?>" class="mda-form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched input-disabled" disabled>
 																<label for="address2"><?=$lh->translationFor('address2')?></label>
 															</div>
@@ -861,22 +886,22 @@ input:checked + .slider:before {
 													<!-- /.city,state,postalcode -->
 												
 	 												<!-- country_code & email -->
-                                                                                                        <div class="row">
-                                                                                                                <div class="col-xl-12 col-lg-6">
+                                                    <div class="row">
+                                                        <div class="col-xl-12 col-lg-6">
 															<div class="mda-form-group label-floating">
 																<select id="country_code" name="country_code" type="text" maxlength="3"	class="mda-form-control select2 ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched select input-disabled" title="<?=$lh->translationFor('select_country_code')?>" disabled>
 																	<option value="">- - - <?=$lh->translationFor('select_country_code')?> - - -</option>
 																</select>
 																<label for="country_code"><?=$lh->translationFor('country_code')?></label>
 															</div>
-						                						</div>
-                                        	                                                                <div class="col-xl-12 col-lg-6">
+						                				</div>
+                                        	            <div class="col-xl-12 col-lg-6">
 															<div class="mda-form-group label-floating"><!-- add "mda-input-group" if with image -->
 																<input id="email" name="email" type="text" width="auto" value="<?php echo $email;?>" class="mda-form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched input-disabled" disabled>
 																<label for="email"><?=$lh->translationFor('email_add')?></label>
-														<!--<span class="mda-input-group-addon">
-															<em class="fa fa-at fa-lg"></em>
-														</span>-->
+																<!--<span class="mda-input-group-addon">
+																	<em class="fa fa-at fa-lg"></em>
+																</span>-->
 															</div>
 														</div>
 													</div>
@@ -942,7 +967,7 @@ input:checked + .slider:before {
 							                </div>
 							               </fieldset>
 
-								<div id="custom_fields_content" class="card-body" style="border: 1px solid rgb(221, 230, 233); margin: 0 32px 0 22px; display: none;">
+										<div id="custom_fields_content" class="card-body" style="border: 1px solid rgb(221, 230, 233); display: none;">
                                                                         <h4 style="font-weight: 600;">
                                                                                 <?=$lh->translationFor('custom_forms')?>
                                                                         </h4>
@@ -962,7 +987,6 @@ input:checked + .slider:before {
 													<h4><!--Comments-->
 														<!--<a href="#" data-role="button" class="pull-right edit-profile-button hidden" id="edit-profile">Edit Information</a>-->
 													</h4>
-												
 													<form role="form" id="comment_form" class="formMain form-inline" >
 														<div class="mda-form-group hidden">
 															<p style="padding-right:0px;padding-top: 20px;"><?=$lh->translationFor('comments')?>:</p> 
@@ -993,20 +1017,283 @@ input:checked + .slider:before {
 											</div><!-- /.row -->
 										</div>
 										<!-- End of Scripts -->
+
+										<!-- Chats  -------------------------------------------------------------------------------------------------------------------------->
+										<div id="chats" role="tabpanel" class="tab-pane">
+											
+											<div class="row">
+												<div class="col-xs-12 col-md-offset-3 col-md-6">
+													<div class="row">
+														<div class="col-xs-12">
+															<div class="header-whatsapp">
+																<p><i class="fa fa-whatsapp" aria-hidden="true"></i>
+																<span>Whatsapp</span></p>
+															</div>
+														</div>
+													</div>
+													<div class="row">
+														<div class="col-xs-12">
+															<div id="backtransparent" class=""></div>
+															<div id="alert-socket" class="alert-socket">
+																<div class="alert-form">
+																	<div style="margin: 0px 10px 10px 15px">
+																		Hay problemas de conexión con el servidor chat. Intente recargar la página.
+																	</div>
+																	<div class="text-center">
+																	<!-- 
+																	<button class="btn btn-warning" onclick="executeSocket()">
+																	Reestablecer
+																	</button>
+																	-->
+																	</div>
+																</div>
+															</div>
+															<div class="chats-whatsapp app">
+																<div class="row app-one">
+															
+																	<div class="col-sm-4 side">
+																		<div class="side-one">
+																			<!-- Heading -->
+																			<div class="row heading">
+																				<div class="col-sm-3 col-xs-3 heading-avatar">
+																					<div class="heading-avatar-icon">
+																						<?=$ui->getVueAvatar($user->getUserName(), $user->getUserAvatar(), 40, false, true, true)?>
+																					</div>
+																				</div>
+																				<!-- 
+																				<div class="col-sm-1 col-xs-1  heading-dot  pull-right">
+																					<i class="fa fa-ellipsis-v fa-2x  pull-right" aria-hidden="true"></i>
+																				</div>
+																				-->
+																				<div class="col-sm-2 col-xs-2 heading-compose  pull-right">
+																					<i class="fa fa-comments fa-2x  pull-right" aria-hidden="true"></i>
+																				</div>
+																			</div>
+																			<!-- Heading End -->
+																	
+																			<!-- SearchBox -->
+																			<!--
+																			<div class="row searchBox">
+																				<div class="col-sm-12 searchBox-inner">
+																					<div class="input-group">
+																						<span class="input-group-addon" id="basic-addon1"><i class="glyphicon glyphicon-search"></i></span>
+																						<input id="searchText" name="searchText" type="text" class="form-control" placeholder="Buscar" aria-describedby="basic-addon1">
+																					</div>
+																				</div>
+																			</div>
+																			-->
+																			<!-- Search Box End -->
+
+																			<!-- sideBar -->
+																			<div id="list-clients" class="row sideBar">
+
+																			</div>
+																			<!-- Sidebar End -->
+																		</div>
+																	</div>
+															
+																	<!-- New Message Sidebar End -->
+																
+																	<!-- Conversation Start -->
+																	<div class="col-sm-8 conversation">
+																		<!-- Heading -->
+																		<div class="row heading">
+																			<div class="col-lg-1 col-sm-2 col-md-2 col-xs-3 heading-avatar">
+																				<div class="heading-avatar-icon">
+																					<div id="avatat_chats" class="cust_avatar_chats">
+																					</div>
+																				</div>
+																			</div>
+																			<div id="fullname_chats" class="col-sm-8 col-xs-7 heading-name"></div>
+																			<!--
+																			<div class="col-sm-1 col-xs-1  heading-dot pull-right">
+																				<i class="fa fa-ellipsis-v fa-2x  pull-right" aria-hidden="true"></i>
+																			</div>
+																			-->
+																		</div>
+																		<!-- Heading End -->
+																
+																		<!-- Message Box -->
+																		<div class="row message" id="conversation-whats">
+																		</div>
+																		<!-- Message Box End -->
+
+																		<div class="row" id="previous-whats">
+																			<!--
+																			<div id="whats-previous-file">
+																				<div class="col-xs-12">
+																					<button type="button" class="close" onclick="socketcus.clearfiles();"><span aria-hidden="true">×</span><span class="sr-only">Cerrar</span></button>
+																					<div id="file-previous">
+																					</div>
+																				</div>
+																			</div>
+																			-->
+																		</div>
+
+																		<!-- Reply Box -->
+																		<div class="row reply" id="reply-whats">
+																		</div>
+																		<!-- Reply Box End -->
+																	</div>
+																	<!-- Conversation End -->
+																</div>
+																<!-- App One End -->
+															</div>
+														</div>
+													</div>
+													<?php // print $ui->getChats(); ?>
+												</div>
+												<div class="col-xs-12 col-md-6">
+												</div>
+											</div>
+										</div>
+										<!-- End chats---------------------------------------------------------------------------------------------------------------------------->
+
+										
+										<!-- MODAL GALERIA CHAT ---------------------------------->
+											<!-- Se agregó style="overflow: hidden auto;" porque cuando hay un modal sobre otro y este ultimo agrega html ocurre un error de scroll -->
+											<div id="chat-galery" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" style="overflow: hidden auto;">
+												<div class="modal-dialog modal-lg" role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+															<h4 class="modal-title" id="myModalLabel">Mi Galeria</h4>
+														</div>
+														<div class="modal-body">
+
+															<ul class="nav nav-tabs" role="tablist">
+																<li role="presentation" class="active"><a href="#galery-imagenes" aria-controls="imagenes" role="tab" data-toggle="tab">Imagenes</a></li>
+																<li role="presentation"><a href="#galery-videos" aria-controls="galery-videos" role="tab" data-toggle="tab">Videos</a></li>
+																<li role="presentation"><a href="#galery-documents" aria-controls="galery-documents" role="tab" data-toggle="tab">Archivos</a></li>
+															</ul>
+
+															<!-- Tab panes -->
+															<div class="tab-content">
+																<div role="tabpanel" class="tab-pane active" id="galery-imagenes">
+																	<div class="row">
+																		<div class="col-xs-12">
+																			<div class="text-right" style="margin-bottom: 10px;">
+																				<button class="btn btn-primary" onclick="agent.modaluploadimage('image');">
+																					<i class="fa fa-cloud-upload" aria-hidden="true"></i> Subir imagen
+																				</button>
+																			</div>
+																		</div>
+																	</div>
+																	<div class="row" id="content-images">
+																		
+																	</div>
+																</div>
+																<div role="tabpanel" class="tab-pane" id="galery-videos">
+																	<div class="row">
+																		<div class="col-xs-12">
+																			<div class="text-right" style="margin-bottom: 10px;">
+																				<button class="btn btn-primary" onclick="agent.modaluploadimage('video');">
+																					<i class="fa fa-cloud-upload" aria-hidden="true"></i> Subir video
+																				</button>
+																			</div>
+																		</div>
+																	</div>
+																	<div class="row" id="content-videos">
+																		
+																	</div>
+																</div>
+																<div role="tabpanel" class="tab-pane" id="galery-documents">
+																	<div class="row">
+																		<div class="col-xs-12">
+																			<div class="text-right" style="margin-bottom: 10px;">
+																				<button class="btn btn-primary" onclick="agent.modaluploadimage('document');">
+																					<i class="fa fa-cloud-upload" aria-hidden="true"></i> Subir document
+																				</button>
+																			</div>
+																		</div>
+																	</div>
+																	<div class="row" id="content-documents">
+																		
+																	</div>
+																</div>
+															</div>
+
+														</div>
+													</div>
+												</div>
+											</div>
+
+											<!-- subir archivo -->
+											<div id="upload-galery" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+												<div class="modal-dialog modal-sm" role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+															<h4 class="modal-title" id="myModalLabel">Subir archivo</h4>
+														</div>
+														<div class="modal-body">
+															<div>
+																<form id="form-upload-galery" method="post" action="" enctype="multipart/form-data" class="">
+																</form>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+
+											<!--  eliminar archivo -->
+											<div id="delete-galery" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+												<div class="modal-dialog modal-sm" role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+															<h4 class="modal-title" id="myModalLabel">Eliminar</h4>
+														</div>
+														<div class="modal-body">
+															<div class="text-center">
+																<h3>
+																¿Está seguro que desea eliminar este archivo?
+																</h3>
+															</div>
+															<div class="text-center" style="margin-top: 10px">
+																<button class="btn btn-primary">No</button>
+																<button class="btn btn-danger" onClick="agent.deleteGalery()">Si</button>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+
+										<!-- END MODAL -->
+
+									</div>
+								</div>
+
+										
+		
+						        <div id="custom_fields_content" class="card-body" style="border: 1px solid rgb(221, 230, 233); margin: 0 32px 0 22px; display: none;">
+									<h4 style="font-weight: 600;">
+										<?=$lh->translationFor('custom_forms')?>
+									</h4>
+									<br>
+									<form role="form" id="custom_form" class="formMain">
+										<div id="custom_fields">
+											
+										</div>
+									</form>
+								</div>
+								<br id="custom_br" style="display: none;">
+
 										
 										<?php if(ROCKETCHAT_ENABLE === 'y'){?>
 										<!-- Rocket Chat -->
-                                                                                <div id="rc" role="tabpanel" class="tab-pane">
-                                                                                        <div class="row" id="rc_row">
-                                                                                        	<div id="rc_div"></div>
-											</div><!-- /.row -->
-                                                                                </div>
-                                                                                <!-- End of Rocket Chat -->
+											<div id="rc" role="tabpanel" class="tab-pane">
+													<div class="row" id="rc_row">
+														<div id="rc_div"></div>
+													</div>
+											<!-- /.row -->
+                                            </div>
+                                        <!-- End of Rocket Chat -->
 										<?php } ?>
-									</div>
+									<!-- </div> -->
 								</div>
 								
-					<!-- SCRIPT MODAL -->
+							<!-- SCRIPT MODAL -->
 							<div class="modal fade" id="script" name="script" tabindex="-1" role="dialog" aria-hidden="true">
 						        <div class="modal-dialog">
 						            <div class="modal-content">
@@ -1023,6 +1310,10 @@ input:checked + .slider:before {
 						            </div><!-- /.modal-content -->
 						        </div><!-- /.modal-dialog -->
 						    </div><!-- /.modal -->
+
+							<div id="template-container">
+							</div>
+
 
 						</div>
 					<?php if(ECCS_BLIND_MODE === 'y'){ ?>
@@ -1652,9 +1943,48 @@ input:checked + .slider:before {
 						
 						<!-- Contacts -->
 						<div id="contents-contacts" class="row" style="display: none;">
+						
 							<div class="card col-md-12" style="padding: 15px;">
+							<div class="row">
+								<div class="col-xs-12">
+									<div class="" style="margin: 10px;">
+										<a class="btn btn-warning" href="agent.php">
+										<i class="fa fa-chevron-circle-left" aria-hidden="true"></i> Regresar
+										</a>
+									</div>
+								</div>
+
+
+							</div>
+							
 								<table id="contacts-list" class="display" style="border: 1px solid #f4f4f4; width: 100%;">
 									<thead>
+										<tr>
+											<th class="filterhead">
+												<?=$lh->translationFor('lead_id')?>
+											</th>
+											<th class="filterhead">
+												<?=$lh->translationFor('customer_name')?>
+											</th>
+											<th class="filterhead">
+												<?=$lh->translationFor('phone_number')?>
+											</th>
+											<th class="filterhead">
+												<?=$lh->translationFor('last_call_time')?>
+											</th>
+											<th class="filterhead">
+												<?=$lh->translationFor('campaign')?>
+											</th>
+											<th class="filterhead">
+												<?=$lh->translationFor('status')?>
+											</th>
+											<th class="filterhead">
+												<?=$lh->translationFor('comments')?>
+											</th>
+											<th class="filterhead">
+												<?=$lh->translationFor('action')?>
+											</th>
+										</tr>
 										<tr>
 											<th>
 												<?=$lh->translationFor('lead_id')?>
@@ -1685,6 +2015,20 @@ input:checked + .slider:before {
 									<tbody>
 										
 									</tbody>
+									<!-- 
+									<tfoot>
+										<tr>
+											<th><?=$lh->translationFor('lead_id')?></th>
+											<th><?=$lh->translationFor('customer_name')?></th>
+											<th><?=$lh->translationFor('phone_number')?></th>
+											<th><?=$lh->translationFor('last_call_time')?></th>
+											<th><?=$lh->translationFor('campaign')?></th>
+											<th><?=$lh->translationFor('status')?></th>
+											<th><?=$lh->translationFor('comments')?></th>
+											<th><?=$lh->translationFor('action')?></th>
+										</tr>
+									</tfoot>
+								-->
 								</table>
 							</div>
 							<?php
@@ -1704,8 +2048,8 @@ input:checked + .slider:before {
 						</div>
 					</div-->
 			
-			<!-- AGENT CHAT -->
-			<?php if($agent_chat_status) include("includes/chatapp.php");?>
+					<!-- AGENT CHAT -->
+					<?php if($agent_chat_status) include("includes/chatapp.php");?>
                 </section><!-- /.content -->
 	</div>
 </div>	
@@ -1724,190 +2068,193 @@ input:checked + .slider:before {
     </ul>
     <!-- Tab panes -->
     <div class="tab-content" style="border-width:0; overflow-y: auto;">
-      <!-- Home tab content -->
-      <div class="tab-pane active" id="control-sidebar-dialer-tab">
-        <ul class="control-sidebar-menu" id="go_agent_dialer">
-			
-        </ul>
-        <!-- /.control-sidebar-menu -->
+		<!-- Home tab content -->
+		<div class="tab-pane active" id="control-sidebar-dialer-tab">
+			<ul class="control-sidebar-menu" id="go_agent_dialer">
+				
+			</ul>
+			<!-- /.control-sidebar-menu -->
 
-        <ul class="control-sidebar-menu" id="go_agent_status" style="margin: 0 0 15px;padding: 0 0 10px;">
+			<ul class="control-sidebar-menu" id="go_agent_status" style="margin: 0 0 15px;padding: 0 0 10px;">
+				
+			</ul>
 			
-        </ul>
-		
-        <ul class="control-sidebar-menu" id="go_agent_manualdial" style="margin-top: -10px;padding: 0 15px;">
-			
-        </ul>
+			<ul class="control-sidebar-menu" id="go_agent_manualdial" style="margin-top: -10px;padding: 0 15px;">
+				
+			</ul>
 
-        <ul class="control-sidebar-menu" id="go_agent_dialpad" style="margin-top: 15px;padding: 0 15px;">
-			
-        </ul>
+			<ul class="control-sidebar-menu" id="go_agent_dialpad" style="margin-top: 15px;padding: 0 15px;">
+				
+			</ul>
 
-        <ul class="control-sidebar-menu" id="go_agent_other_buttons" style="margin-top: 15px;padding: 0 15px;">
-			<li id="toggleWebForm" style="padding: 0 5px 15px;">
-				<button type="button" name="openWebForm" id="openWebForm" class="btn btn-warning btn-block disabled"><i class="fa fa-external-link"></i> <?=$lh->translationFor('webform')?></button>
-			</li>
-			<li id="toggleWebFormTwo" style="padding: 0 5px 15px;" class="hidden">
-				<button type="button" name="openWebFormTwo" id="openWebFormTwo" class="btn btn-warning btn-block disabled"><i class="fa fa-external-link"></i> <?=$lh->translationFor('webform_two')?></button>
-			</li>
-			<li style="font-size: 5px;">
-				&nbsp;
-			</li>
-			<li style="padding: 0 5px 15px;">
-				<div class="material-switch pull-right">
-					<input id="LeadPreview" name="LeadPreview" value="0" type="checkbox"/>
-					<label for="LeadPreview" class="label-primary"></label>
-				</div>
-				<div  class="sidebar-toggle-labels" style="font-weight: bold; text-transform: uppercase;"><label for="LeadPreview"><?=$lh->translationFor('lead_preview')?></label></div>
-			</li>
-			<li id="DialALTPhoneMenu" style="padding: 0 5px 15px; display: none;">
-				<div class="material-switch pull-right">
-					<input id="DialALTPhone" name="DialALTPhone" value="0" type="checkbox"/>
-					<label for="DialALTPhone" class="label-primary"></label>
-				</div>
-				<div  class="sidebar-toggle-labels" style="font-weight: bold; text-transform: uppercase;"><label for="DialALTPhone"><?=$lh->translationFor('alt_phone_dial')?></label></div>
-			</li>
-			<li id="toggleHotkeys" style="padding: 0 5px 15px;">
-				<div class="material-switch pull-right">
-					<input id="enableHotKeys" name="enableHotKeys" type="checkbox"/>
-					<label for="enableHotKeys" class="label-primary"></label>
-				</div>
-				<div class="sidebar-toggle-labels" style="font-weight: bold; text-transform: uppercase;"><label for="enableHotKeys"><?=$lh->translationFor('enable_hotkeys')?></label></div>
-			</li>
-			<li id="toggleMute" style="padding: 0 5px 15px;">
-				<div class="material-switch pull-right">
-					<input id="muteMicrophone" name="muteMicrophone" type="checkbox" checked/>
-					<label for="muteMicrophone" class="label-primary"></label>
-				</div>
-<!--				<div class="pull-right">
-<label class="switch">
-  <input id="muteMicrophone" name="muteMicrophone" type="checkbox" checked>
-  <span class="slider round"></span>
-</label>
-				</div> -->
-				<div  class="sidebar-toggle-labels" style="font-weight: bold; text-transform: uppercase;"><label for="muteMicrophone"><?=$lh->translationFor('microphone')?></label></div>
-			</li>
-			<li style="font-size: 5px;">
-				<div id="GOdebug" class="material-switch pull-right">&nbsp;</div>
-			</li>
-			<li class="hidden">
-				<button type="button" id="show-callbacks-active" class="btn btn-link btn-block btn-raised"><?=$lh->translateText('Active Callback(s)')?> <span id="callbacks-active" class='badge pull-right bg-red'>0</span></button>
-				<button type="button" id="show-callbacks-today" class="btn btn-link btn-block btn-raised"><?=$lh->translateText('Callbacks For Today')?> <span id="callbacks-today" class='badge pull-right bg-red'>0</span></button>
-			</li>
-        </ul>
-		
-        <ul class="control-sidebar-menu" id="go_agent_login" style="width: 100%; margin: 15px auto 15px; text-align: center;">
+			<ul class="control-sidebar-menu" id="go_agent_other_buttons" style="margin-top: 15px;padding: 0 15px;">
+				<li id="toggleWebForm" style="padding: 0 5px 15px;">
+					<button type="button" name="openWebForm" id="openWebForm" class="btn btn-warning btn-block disabled"><i class="fa fa-external-link"></i> <?=$lh->translationFor('webform')?></button>
+				</li>
+				<li id="toggleWebFormTwo" style="padding: 0 5px 15px;" class="hidden">
+					<button type="button" name="openWebFormTwo" id="openWebFormTwo" class="btn btn-warning btn-block disabled"><i class="fa fa-external-link"></i> <?=$lh->translationFor('webform_two')?></button>
+				</li>
+				<li style="font-size: 5px;">
+					&nbsp;
+				</li>
+				<li style="padding: 0 5px 15px;">
+					<div class="material-switch pull-right">
+						<input id="LeadPreview" name="LeadPreview" value="0" type="checkbox"/>
+						<label for="LeadPreview" class="label-primary"></label>
+					</div>
+					<div  class="sidebar-toggle-labels" style="font-weight: bold; text-transform: uppercase;"><label for="LeadPreview"><?=$lh->translationFor('lead_preview')?></label></div>
+				</li>
+				<li id="DialALTPhoneMenu" style="padding: 0 5px 15px; display: none;">
+					<div class="material-switch pull-right">
+						<input id="DialALTPhone" name="DialALTPhone" value="0" type="checkbox"/>
+						<label for="DialALTPhone" class="label-primary"></label>
+					</div>
+					<div  class="sidebar-toggle-labels" style="font-weight: bold; text-transform: uppercase;"><label for="DialALTPhone"><?=$lh->translationFor('alt_phone_dial')?></label></div>
+				</li>
+				<li id="toggleHotkeys" style="padding: 0 5px 15px;">
+					<div class="material-switch pull-right">
+						<input id="enableHotKeys" name="enableHotKeys" type="checkbox"/>
+						<label for="enableHotKeys" class="label-primary"></label>
+					</div>
+					<div class="sidebar-toggle-labels" style="font-weight: bold; text-transform: uppercase;"><label for="enableHotKeys"><?=$lh->translationFor('enable_hotkeys')?></label></div>
+				</li>
+				<li id="toggleMute" style="padding: 0 5px 15px;">
+					<div class="material-switch pull-right">
+						<input id="muteMicrophone" name="muteMicrophone" type="checkbox" checked/>
+						<label for="muteMicrophone" class="label-primary"></label>
+					</div>
+					<!--				<div class="pull-right">
+					<label class="switch">
+					<input id="muteMicrophone" name="muteMicrophone" type="checkbox" checked>
+					<span class="slider round"></span>
+					</label>
+					</div> -->
+					<div  class="sidebar-toggle-labels" style="font-weight: bold; text-transform: uppercase;"><label for="muteMicrophone"><?=$lh->translationFor('microphone')?></label></div>
+				</li>
+				<li style="font-size: 5px;">
+					<div id="GOdebug" class="material-switch pull-right">&nbsp;</div>
+				</li>
+				<li class="hidden">
+					<button type="button" id="show-callbacks-active" class="btn btn-link btn-block btn-raised"><?=$lh->translateText('Active Callback(s)')?> <span id="callbacks-active" class='badge pull-right bg-red'>0</span></button>
+					<button type="button" id="show-callbacks-today" class="btn btn-link btn-block btn-raised"><?=$lh->translateText('Callbacks For Today')?> <span id="callbacks-today" class='badge pull-right bg-red'>0</span></button>
+				</li>
+			</ul>
 			
-        </ul>
-		
-        <ul class="control-sidebar-menu" id="go_agent_logout" style="bottom: 0px; position: absolute; width: 100%; margin: 25px -15px 5px; text-align: center; max-width: 100%; padding-bottom: 5px; background-color: #222d32;">
-			<li style="margin-bottom: -5px;">
-				<p><strong><?=$lh->translateText("Call Duration")?>:</strong> <span id="SecondsDISP">0</span> <?=$lh->translationFor('second')?></p>
-				<span id="session_id" class="hidden"></span>
-				<span id="callchannel" class="hidden"></span>
-				<input type="hidden" id="callserverip" value="" />
-				<span id="custdatetime" class="hidden"></span>
-			</li>
+			<ul class="control-sidebar-menu" id="go_agent_login" style="width: 100%; margin: 15px auto 15px; text-align: center;">
+				
+			</ul>
 			
-        </ul>
-        <!-- /.control-sidebar-menu -->
+			<ul class="control-sidebar-menu" id="go_agent_logout" style="bottom: 0px; position: absolute; width: 100%; margin: 25px -15px 5px; text-align: center; max-width: 100%; padding-bottom: 5px; background-color: #222d32;">
+				<li style="margin-bottom: -5px;">
+					<p><strong><?=$lh->translateText("Call Duration")?>:</strong> <span id="SecondsDISP">0</span> <?=$lh->translationFor('second')?></p>
+					<span id="session_id" class="hidden"></span>
+					<span id="callchannel" class="hidden"></span>
+					<input type="hidden" id="callserverip" value="" />
+					<span id="custdatetime" class="hidden"></span>
+				</li>
+			</ul>
+			<!-- /.control-sidebar-menu -->
 
-      </div>
-      <!-- /.tab-pane -->
-      <!-- Agents View tab content -->
-      <div class="tab-pane" id="control-sidebar-users-tab">
-		<h4><?=$lh->translationFor('other_agent_status')?></h4>
-		<ul class="control-sidebar-menu" id="go_agent_view_list" style="padding: 0px 15px;">
-			<li><div class="text-center"><?=$lh->translationFor('loading_agents')?>...</div></li>
-		</ul>
-	  </div>
-      <!-- /.tab-pane -->
-      <!-- Settings tab content -->
-      <div class="tab-pane" id="control-sidebar-settings-tab">
-		<ul class="control-sidebar-menu" id="go_agent_profile">
-			<li>
-				<div class="center-block" style="text-align: center; background: #181f23 none repeat scroll 0 0; margin: 0 10px; padding-bottom: 1px; padding-top: 10px;">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+		</div>
+		<!-- /.tab-pane -->
+		<!-- Agents View tab content -->
+		<div class="tab-pane" id="control-sidebar-users-tab">
+			<h4><?=$lh->translationFor('other_agent_status')?></h4>
+			<ul class="control-sidebar-menu" id="go_agent_view_list" style="padding: 0px 15px;">
+				<li><div class="text-center"><?=$lh->translationFor('loading_agents')?>...</div></li>
+			</ul>
+		</div>
+		<!-- /.tab-pane -->
+		<!-- Settings tab content -->
+		<div class="tab-pane" id="control-sidebar-settings-tab">
+			<ul class="control-sidebar-menu" id="go_agent_profile">
+				<li>
+					<div class="center-block" style="text-align: center; background: #181f23 none repeat scroll 0 0; margin: 0 10px; padding-bottom: 1px; padding-top: 10px;">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+							<p><?=$ui->getVueAvatar($user->getUserName(), $user->getUserAvatar(), 96, false, true, false)?></p>
+							<p style="color:white;"><?=$user->getUserName()?><br><small><?=$lh->translationFor("nice_to_see_you_again")?></small></p>
+						</a>
+					</div>
+				</li>
+				<li>
+					<div>&nbsp;</div>
+				</li>
+				<?php
+				if ($user->userHasBasicPermission()) {
+					//echo '<li>
+					//	<div class="text-center"><a href="" data-toggle="modal" id="change-password-toggle" data-target="#change-password-dialog-modal">'.$lh->translationFor("change_password").'</a></div>
+					//	<div class="text-center"><a href="./messages.php">'.$lh->translationFor("messages").'</a></div>
+					//	<div class="text-center"><a href="./notifications.php">'.$lh->translationFor("notifications").'</a></div>
+					//	<div class="text-center"><a href="./tasks.php">'.$lh->translationFor("tasks").'</a></div>
+					//</li>';
+					//echo $ui->getSidebarItem("./agent.php", "", $lh->translationFor("Home"));
+					$numMessages = $db->getUnreadMessagesNumber($user->getUserId());
+					echo $ui->getSidebarItem("#messages", "", $lh->translationFor("messages"), $numMessages, "green");
+					echo $ui->getSidebarItem("#callbackslist", "", $lh->translationFor("callbacks"), "0", "blue");
+					if ($user_info->data->agent_lead_search_override != 'DISABLED') {
+						echo $ui->getSidebarItem("#customerslist", "", $lh->translationFor("contacts"), null, "", "agent-lead-search");
+					}
+				}
+				?>
+				<li id="pause_code_link" class="hidden">
+					<a onclick="PauseCodeSelectBox();"><i class="fa fa-"></i> <span><?=$lh->translationFor('enter_pause_code')?></span></a>
+				</li>
+			</ul>
+			
+			<ul class="control-sidebar-menu" style="bottom: 0px; position: absolute; width: 100%; margin: 25px -15px 15px; max-width: 100%; padding-bottom: 5px; background-color: #222d32;">
+				<li>
+					<div class="center-block" style="text-align: center">
+						<a href="#profile" class="btn btn-warning"><i class='fa fa-user'></i> <?=$lh->translationFor("my_profile")?></a>
+							&nbsp; 
+						<a href="./logout.php" id="cream-agent-logout" class="btn btn-warning"><i class='fa fa-sign-out'></i> <?=$lh->translationFor("exit")?></a>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<!-- /.tab-pane -->
+		<?php if($agent_chat_status){ ?>
+		<!-- tab-pane -->
+		<!-- chat tab -->
+		<div class="tab-pane" id="control-sidebar-chat-tab">
+			<ul class="contacts-list">
+				<li>
+					<div class="center-block" style="text-align: center; /*background: #181f23 none repeat scroll 0 0;*/ margin: 0 10px; padding-bottom: 1px; padding-top: 10px;">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">
 						<p><?=$ui->getVueAvatar($user->getUserName(), $user->getUserAvatar(), 96, false, true, false)?></p>
 						<p style="color:white;"><?=$user->getUserName()?><br><small><?=$lh->translationFor("nice_to_see_you_again")?></small></p>
-					</a>
-				</div>
-			</li>
-			<li>
-				<div>&nbsp;</div>
-			</li>
-			<?php
-			if ($user->userHasBasicPermission()) {
-				//echo '<li>
-				//	<div class="text-center"><a href="" data-toggle="modal" id="change-password-toggle" data-target="#change-password-dialog-modal">'.$lh->translationFor("change_password").'</a></div>
-				//	<div class="text-center"><a href="./messages.php">'.$lh->translationFor("messages").'</a></div>
-				//	<div class="text-center"><a href="./notifications.php">'.$lh->translationFor("notifications").'</a></div>
-				//	<div class="text-center"><a href="./tasks.php">'.$lh->translationFor("tasks").'</a></div>
-				//</li>';
-				//echo $ui->getSidebarItem("./agent.php", "", $lh->translationFor("Home"));
-				$numMessages = $db->getUnreadMessagesNumber($user->getUserId());
-				echo $ui->getSidebarItem("#messages", "", $lh->translationFor("messages"), $numMessages, "green");
-				echo $ui->getSidebarItem("#callbackslist", "", $lh->translationFor("callbacks"), "0", "blue");
-				if ($user_info->data->agent_lead_search_override != 'DISABLED') {
-					echo $ui->getSidebarItem("#customerslist", "", $lh->translationFor("contacts"), null, "", "agent-lead-search");
-				}
-			}
-			?>
-			<li id="pause_code_link" class="hidden">
-				<a onclick="PauseCodeSelectBox();"><i class="fa fa-"></i> <span><?=$lh->translationFor('enter_pause_code')?></span></a>
-			</li>
-		</ul>
-		
-        <ul class="control-sidebar-menu" style="bottom: 0px; position: absolute; width: 100%; margin: 25px -15px 15px; max-width: 100%; padding-bottom: 5px; background-color: #222d32;">
-			<li>
-				<div class="center-block" style="text-align: center">
-					<a href="#profile" class="btn btn-warning"><i class='fa fa-user'></i> <?=$lh->translationFor("my_profile")?></a>
-					 &nbsp; 
-					<a href="./logout.php" id="cream-agent-logout" class="btn btn-warning"><i class='fa fa-sign-out'></i> <?=$lh->translationFor("exit")?></a>
-				</div>
-			</li>
-        </ul>
-      </div>
-      <!-- /.tab-pane -->
-	<?php if($agent_chat_status){ ?>
-      <!-- tab-pane -->
-      <!-- chat tab -->
-      <div class="tab-pane" id="control-sidebar-chat-tab">
-	<ul class="contacts-list">
-	<li>
-           <div class="center-block" style="text-align: center; /*background: #181f23 none repeat scroll 0 0;*/ margin: 0 10px; padding-bottom: 1px; pa
-dding-top: 10px;">
-               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-               <p><?=$ui->getVueAvatar($user->getUserName(), $user->getUserAvatar(), 96, false, true, false)?></p>
-               <p style="color:white;"><?=$user->getUserName()?><br><small><?=$lh->translationFor("nice_to_see_you_again")?></small></p>
-               </a>
-           </div>
-       </li>
-       <li>
-	Contact List
-           <!--<div>&nbsp;</div>-->
-       </li>
-	
-	
-	<?php
-	   include('includes/chat-tab.php');
-	?>
-	</ul>	
-      </div>
-      <!-- /. tab-pane -->
-	<?php } ?>
+						</a>
+					</div>
+				</li>
+				<li>
+					Contact List
+					<!-- <div>&nbsp;</div> -->
+				</li>
+				<?php
+					include('includes/chat-tab.php');
+				?>
+			</ul>	
+		</div>
+      	<!-- /. tab-pane -->
+		<?php } ?>
     </div>
   </aside>
 
   <!-- /.control-sidebar -->
   <!-- Add the sidebar's background. This div must be placed
        immediately after the control sidebar -->
-  <div class="control-sidebar-bg" style="position: fixed; height: auto;"></div>
+  <div class="control-sidebar-bg control-sidebar-agent" style="position: fixed; height: auto;"></div>
 
         </div><!-- ./wrapper -->
 
 		<!-- Modal Dialogs -->
 		<?php include_once "./php/ModalPasswordDialogs.php" ?>
+
+		
+
+
+
+<button onclick="socketcus.initCallWhatsapp('+5215585353729', 'Moises lascu', '1004')" class="hidden">iniciar simular Moises</button>
+<button onclick="socketcus.initCallWhatsapp('+51955794343', 'Lili bon ifacio', '1004')" class="hidden">iniciar simular Lily</button>
 
 		<?php print $ui->standardizedThemeJS();?>
 		<script type="text/javascript">	
@@ -1989,7 +2336,12 @@ dding-top: 10px;">
 				var selectedAll = false;
 				var selectedMessages = [];
 				
-				$("#contacts-list").DataTable();
+				/*
+				$("#contacts-list").DataTable({
+					// "order": [[ 0, 'asc' ]]
+					// "columnDefs": [{"width": "10%", "targets":1}],
+				});
+				*/
 				
 				$("#compose-textarea").wysihtml5();
 				
@@ -2157,7 +2509,7 @@ dding-top: 10px;">
 								txtBox.focus();
 				    //$("#submit_div").focus(function() { $(this).select(); } );
 				    //$('input[name="first_name"]').focus();
-								editProfileEnabled = true;
+					editProfileEnabled = true;
 				});
 				//$('#cust_full_name .editable').editable('disable');
 
@@ -2447,6 +2799,7 @@ dding-top: 10px;">
 					}
 				})
 				.done(function (result) {
+					// console.log(result);
 					if (result.result == 'success') {
 						selectedMessages = [];
 						selectedAll = false;
@@ -2727,41 +3080,41 @@ dding-top: 10px;">
 			$(document).ready(function(){
 				
 				$('[data-tooltip="tooltip"]').tooltip();
-			//	$('#muteMicrophone').bootstrapToggle();
+				//	$('#muteMicrophone').bootstrapToggle();
 
 				$('header.main-header a.logo').attr("title", "<?=$lh->translationFor('home')?>");
 				
 				$('#edit-profile').attr("title", "Enable Edit Contact Information");
-                                $('label[for="phone_number"]').attr("title", "<?=$lh->translationFor('phone_number')?>");
-                                $('label[for="alt_phone"]').attr("title", "<?=$lh->translationFor('alternative_phone_number')?>");
-                                $('label[for="address1"]').attr("title", "<?=$lh->translationFor('address')?>");
-                                $('label[for="address2"]').attr("title", "<?=$lh->translationFor('address2')?>");
-                                $('label[for="city"]').attr("title", "<?=$lh->translationFor('city')?>");
-                                $('label[for="state"]').attr("title", "<?=$lh->translationFor('state')?>");
-                                $('label[for="postal_code"]').attr("title", "<?=$lh->translationFor('postal_code')?>");
+				$('label[for="phone_number"]').attr("title", "<?=$lh->translationFor('phone_number')?>");
+				$('label[for="alt_phone"]').attr("title", "<?=$lh->translationFor('alternative_phone_number')?>");
+				$('label[for="address1"]').attr("title", "<?=$lh->translationFor('address')?>");
+				$('label[for="address2"]').attr("title", "<?=$lh->translationFor('address2')?>");
+				$('label[for="city"]').attr("title", "<?=$lh->translationFor('city')?>");
+				$('label[for="state"]').attr("title", "<?=$lh->translationFor('state')?>");
+				$('label[for="postal_code"]').attr("title", "<?=$lh->translationFor('postal_code')?>");
 				$('label[for="country_code"]').attr("title", "<?=$lh->translationFor('country_code')?>");
-                                $('label[for="email"]').attr("title", "<?=$lh->translationFor('email')?>");
-                                $('label[for="title"]').attr("title", "<?=$lh->translationFor('title')?>");
-                                $('label[for="gender"]').attr("title", "<?=$lh->translationFor('gender')?>");
-                                $('label[for="date_of_birth"]').attr("title", "<?=$lh->translationFor('date_of_birth')?>");
+				$('label[for="email"]').attr("title", "<?=$lh->translationFor('email')?>");
+				$('label[for="title"]').attr("title", "<?=$lh->translationFor('title')?>");
+				$('label[for="gender"]').attr("title", "<?=$lh->translationFor('gender')?>");
+				$('label[for="date_of_birth"]').attr("title", "<?=$lh->translationFor('date_of_birth')?>");
 
-                                $('input#phone_number').attr("title", "<?=$lh->translationFor('phone_number')?>");
+                $('input#phone_number').attr("title", "<?=$lh->translationFor('phone_number')?>");
 				$('input#alt_phone').attr("title", "<?=$lh->translationFor('alternative_phone_number')?>");
-                                $('input#address1').attr("title", "<?=$lh->translationFor('address')?>");
-                                $('input#address2').attr("title", "<?=$lh->translationFor('address2')?>");
-                                $('input#city').attr("title", "<?=$lh->translationFor('city')?>");
-                                $('input#state').attr("title", "<?=$lh->translationFor('state')?>");
-                                $('input#postal_code').attr("title", "<?=$lh->translationFor('postal_code')?>");
-                                $('input#email').attr("title", "<?=$lh->translationFor('email')?>");
-                                $('input#title').attr("title", "<?=$lh->translationFor('title')?>");
-                                $('select#gender').attr("title", "<?=$lh->translationFor('gender')?>");
-                                $('input#date_of_birth').attr("title", "<?=$lh->translationFor('date_of_birth')?>");
+				$('input#address1').attr("title", "<?=$lh->translationFor('address')?>");
+				$('input#address2').attr("title", "<?=$lh->translationFor('address2')?>");
+				$('input#city').attr("title", "<?=$lh->translationFor('city')?>");
+				$('input#state').attr("title", "<?=$lh->translationFor('state')?>");
+				$('input#postal_code').attr("title", "<?=$lh->translationFor('postal_code')?>");
+				$('input#email').attr("title", "<?=$lh->translationFor('email')?>");
+				$('input#title').attr("title", "<?=$lh->translationFor('title')?>");
+				$('select#gender').attr("title", "<?=$lh->translationFor('gender')?>");
+				$('input#date_of_birth').attr("title", "<?=$lh->translationFor('date_of_birth')?>");
 				
 				$('button#btnLogMeIn').attr("data-tooltip", "tooltip");
-                                $('button#btnLogMeIn').attr("title", "<?=$lh->translationFor('Login to Dialer')?>");
+				$('button#btnLogMeIn').attr("title", "<?=$lh->translationFor('Login to Dialer')?>");
 
-                                $('button#btnLogMeOut').attr("data-tooltip", "tooltip");
-                                $('button#btnLogMeOut').attr("title", "<?=$lh->translationFor('Logout from Phone')?>");
+				$('button#btnLogMeOut').attr("data-tooltip", "tooltip");
+				$('button#btnLogMeOut').attr("title", "<?=$lh->translationFor('Logout from Phone')?>");
 
 				$('#topbar-callbacks a.dropdown-toggle').attr("data-tooltip", "tooltip");
 				$('#topbar-callbacks a.dropdown-toggle').attr("title", "<?=$lh->translationFor('callbacks')?>");
@@ -2771,91 +3124,91 @@ dding-top: 10px;">
 
 				$('li#dialer-tab a').append("<span class='eccs-icon-lock'>Phone Tab</span>");
 				$('li#dialer-tab').attr("data-tooltip", "tooltip");
-                                $('li#dialer-tab').attr("title", "<?=$lh->translationFor('Phone Tab')?>");
+                $('li#dialer-tab').attr("title", "<?=$lh->translationFor('Phone Tab')?>");
 
 				$('li#settings-tab a').append("<span class='eccs-icon-lock'>Profile Tab</span>");
 				$('li#settings-tab').attr("data-tooltip", "tooltip");
-                                $('li#settings-tab').attr("title", "<?=$lh->translationFor('Profile Tab')?>");
+                $('li#settings-tab').attr("title", "<?=$lh->translationFor('Profile Tab')?>");
 
 				$('button#btnLogMeIn').attr("data-tooltip", "tooltip");
-                                $('button#btnLogMeIn').attr("title", "<?=$lh->translationFor('Login To Dialer')?>");
+                $('button#btnLogMeIn').attr("title", "<?=$lh->translationFor('Login To Dialer')?>");
 
-                                $('ul.control-sidebar-menu:nth-of-type(2) a:nth-of-type(1)').attr("data-tooltip", "tooltip");
-                                $('ul.control-sidebar-menu:nth-of-type(2) a:nth-of-type(1)').attr("title", "<?=$lh->translationFor('Profile')?>");
+				$('ul.control-sidebar-menu:nth-of-type(2) a:nth-of-type(1)').attr("data-tooltip", "tooltip");
+				$('ul.control-sidebar-menu:nth-of-type(2) a:nth-of-type(1)').attr("title", "<?=$lh->translationFor('Profile')?>");
 
-                                $('ul.control-sidebar-menu:nth-of-type(2) a:nth-of-type(2)').attr("data-tooltip", "tooltip");
-                                $('ul.control-sidebar-menu:nth-of-type(2) a:nth-of-type(2)').attr("title", "<?=$lh->translationFor('exit')?>");
+				$('ul.control-sidebar-menu:nth-of-type(2) a:nth-of-type(2)').attr("data-tooltip", "tooltip");
+				$('ul.control-sidebar-menu:nth-of-type(2) a:nth-of-type(2)').attr("title", "<?=$lh->translationFor('exit')?>");
 
 				$('ul.control-sidebar-menu#go_agent_profile li:nth-of-type(3)').attr("data-tooltip", "tooltip");
-                                $('ul.control-sidebar-menu#go_agent_profile li:nth-of-type(3)').attr("title", "<?=$lh->translationFor('messages')?>");
+				$('ul.control-sidebar-menu#go_agent_profile li:nth-of-type(3)').attr("title", "<?=$lh->translationFor('messages')?>");
 
-                                $('ul.control-sidebar-menu#go_agent_profile li:nth-of-type(4)').attr("data-tooltip", "tooltip");
-                                $('ul.control-sidebar-menu#go_agent_profile li:nth-of-type(4)').attr("title", "<?=$lh->translationFor('callbacks')?>");
+				$('ul.control-sidebar-menu#go_agent_profile li:nth-of-type(4)').attr("data-tooltip", "tooltip");
+				$('ul.control-sidebar-menu#go_agent_profile li:nth-of-type(4)').attr("title", "<?=$lh->translationFor('callbacks')?>");
 
-                                $('ul.control-sidebar-menu#go_agent_profile li:nth-of-type(5)').attr("data-tooltip", "tooltip");
-                                $('ul.control-sidebar-menu#go_agent_profile li:nth-of-type(5)').attr("title", "<?=$lh->translationFor('contacts')?>");
+				$('ul.control-sidebar-menu#go_agent_profile li:nth-of-type(5)').attr("data-tooltip", "tooltip");
+				$('ul.control-sidebar-menu#go_agent_profile li:nth-of-type(5)').attr("title", "<?=$lh->translationFor('contacts')?>");
 
-                                $('ul.control-sidebar-menu#go_agent_profile li:nth-of-type(6)').attr("data-tooltip", "tooltip");
-                                $('ul.control-sidebar-menu#go_agent_profile li:nth-of-type(6)').attr("title", "<?=$lh->translationFor('Enter Pause Codes')?>");
+				$('ul.control-sidebar-menu#go_agent_profile li:nth-of-type(6)').attr("data-tooltip", "tooltip");
+				$('ul.control-sidebar-menu#go_agent_profile li:nth-of-type(6)').attr("title", "<?=$lh->translationFor('Enter Pause Codes')?>");
 
-				 $('div#MainStatusSpan a:nth-of-type(1)').attr("title", "<?=$lh->translationFor('dial_lead')?>");
-                                 $('div#MainStatusSpan a:nth-of-type(2)').attr("title", "<?=$lh->translationFor('skip_lead')?>");
+				$('div#MainStatusSpan a:nth-of-type(1)').attr("title", "<?=$lh->translationFor('dial_lead')?>");
+                $('div#MainStatusSpan a:nth-of-type(2)').attr("title", "<?=$lh->translationFor('skip_lead')?>");
 
 				$('#callback-list th:nth-of-type(1)').attr("title", "<?=$lh->translationFor('customer_name')?>");
-                                $('#callback-list th:nth-of-type(2)').attr("title", "<?=$lh->translationFor('phone_number')?>");
-                                $('#callback-list th:nth-of-type(3)').attr("title", "<?=$lh->translationFor('last_call_time')?>");
-                                $('#callback-list th:nth-of-type(4)').attr("title", "<?=$lh->translationFor('callback_time')?>");
-                                $('#callback-list th:nth-of-type(5)').attr("title", "<?=$lh->translationFor('campaign')?>");
-                                $('#callback-list th:nth-of-type(6)').attr("title", "<?=$lh->translationFor('comments')?>");
-                                $('#callback-list th:nth-of-type(7)').attr("title", "<?=$lh->translationFor('action')?>");
+				$('#callback-list th:nth-of-type(2)').attr("title", "<?=$lh->translationFor('phone_number')?>");
+				$('#callback-list th:nth-of-type(3)').attr("title", "<?=$lh->translationFor('last_call_time')?>");
+				$('#callback-list th:nth-of-type(4)').attr("title", "<?=$lh->translationFor('callback_time')?>");
+				$('#callback-list th:nth-of-type(5)').attr("title", "<?=$lh->translationFor('campaign')?>");
+				$('#callback-list th:nth-of-type(6)').attr("title", "<?=$lh->translationFor('comments')?>");
+				$('#callback-list th:nth-of-type(7)').attr("title", "<?=$lh->translationFor('action')?>");
 
-//				$('#callback-list').dataTable({
-//					"drawCallBack": function(){
-//						$('li#callback-list_previous').attr('title', 'Previous');
-//						$('li#callback-list_next').attr('title', 'Next');
-//					}
-//				});
+				//				$('#callback-list').dataTable({
+				//					"drawCallBack": function(){
+				//						$('li#callback-list_previous').attr('title', 'Previous');
+				//						$('li#callback-list_next').attr('title', 'Next');
+				//					}
+				//				});
 				// Dialer
 
-				 $('button#manual-dial-now').attr("data-tooltip", "tooltip");
-                                 $('button#manual-dial-now').attr("title", "Manual Dial");
+				$('button#manual-dial-now').attr("data-tooltip", "tooltip");
+				$('button#manual-dial-now').attr("title", "Manual Dial");
 
-                                 $('button#manual-dial-dropdown').attr("data-tooltip", "tooltip");
-                                 $('button#manual-dial-dropdown').attr("title", "Country Codes");
+				$('button#manual-dial-dropdown').attr("data-tooltip", "tooltip");
+				$('button#manual-dial-dropdown').attr("title", "Country Codes");
 
 				for(var a=0; a<=9; a++){
 					$('button#dialer-pad-' + a).attr("data-tooltip", "tooltip");
-        	                        $('button#dialer-pad-' + a).attr("title", a);
+        	        $('button#dialer-pad-' + a).attr("title", a);
 				}
 			
 				$('li#toggleWebForm').attr("data-tooltip", "tooltip");
-                                $('li#toggleWebForm').attr("title", "<?=$lh->translationFor('Web Form')?>");
+                $('li#toggleWebForm').attr("title", "<?=$lh->translationFor('Web Form')?>");
 				
 				$('li#toggleWebFormTwo').attr("data-tooltip", "tooltip");
-                                $('li#toggleWebFormTwo').attr("title", "<?=$lh->translationFor('Web Form')?>");
+                $('li#toggleWebFormTwo').attr("title", "<?=$lh->translationFor('Web Form')?>");
 
 				$('ul#go_agent_other_buttons li:nth-of-type(4)').attr("data-tooltip", "tooltip");
-                                $('ul#go_agent_other_buttons li:nth-of-type(4)').attr("title", "<?=$lh->translationFor('Lead Preview')?>");
+                $('ul#go_agent_other_buttons li:nth-of-type(4)').attr("title", "<?=$lh->translationFor('Lead Preview')?>");
 	
 				$('li#DialALTPhoneMenu').attr("data-tooltip", "tooltip");
-                                $('li#DialALTPhoneMenu').attr("title", "<?=$lh->translationFor('ALT Phone Dial')?>");
+                $('li#DialALTPhoneMenu').attr("title", "<?=$lh->translationFor('ALT Phone Dial')?>");
 
-                                $('li#toggleHotkeys').attr("data-tooltip", "tooltip");
-                                $('li#toggleHotkeys').attr("title", "<?=$lh->translationFor('Enable Hotkeys')?>");
+				$('li#toggleHotkeys').attr("data-tooltip", "tooltip");
+				$('li#toggleHotkeys').attr("title", "<?=$lh->translationFor('Enable Hotkeys')?>");
 
 				$('li#toggleMute').attr("data-tooltip", "tooltip");
-                                $('li#toggleMute').attr("title", "<?=$lh->translationFor('Toggle Mute')?>");
+                $('li#toggleMute').attr("title", "<?=$lh->translationFor('Toggle Mute')?>");
 
 				
 				// Content Tabs
 				$('#agent_tablist li:nth-of-type(1)>a.bb0').attr("data-tooltip", "tooltip");
 				$('#agent_tablist li:nth-of-type(1)>a.bb0').attr("title", "<?=$lh->translationFor('contact_information')?>");
 
-                                $('#agent_tablist li:nth-of-type(2)>a.bb0').attr("data-tooltip", "tooltip");
-                                $('#agent_tablist li:nth-of-type(2)>a.bb0').attr("title", "<?=$lh->translationFor('comments')?>");
+				$('#agent_tablist li:nth-of-type(2)>a.bb0').attr("data-tooltip", "tooltip");
+				$('#agent_tablist li:nth-of-type(2)>a.bb0').attr("title", "<?=$lh->translationFor('comments')?>");
 
-                                $('#agent_tablist li:nth-of-type(3)>a.bb0').attr("data-tooltip", "tooltip");
-                                $('#agent_tablist li:nth-of-type(3)>a.bb0').attr("title", "<?=$lh->translationFor('script')?>");
+				$('#agent_tablist li:nth-of-type(3)>a.bb0').attr("data-tooltip", "tooltip");
+				$('#agent_tablist li:nth-of-type(3)>a.bb0').attr("title", "<?=$lh->translationFor('script')?>");
 
 				// Hastag Formats
 				$('header.main-header a.logo').append("<label for='logo-home' id='hash-home'>#HOME</label>");
@@ -2863,23 +3216,23 @@ dding-top: 10px;">
 				$('button#btnLogMeOut').append(" [#LP] ");
 				
 				$('#agent_tablist li:nth-of-type(1)>a.bb0').html(" Contact Info [#CI] ");
-	                        $('#agent_tablist li:nth-of-type(2)>a.bb0').append(" [#CM] ");
-                        	$('#agent_tablist li:nth-of-type(3)>a.bb0').append(" [#SC] ");
+				$('#agent_tablist li:nth-of-type(2)>a.bb0').append(" [#CM] ");
+				$('#agent_tablist li:nth-of-type(3)>a.bb0').append(" [#SC] ");
 
 				$('#edit-profile').append(" [#EI] ");
 				$('form#contact_details_form label[for="phone_number"]').append(" [#PN] ");
 				$('form#contact_details_form label[for="alt_phone"]').html("Alt Phone Number [#APN] ");
 				$('form#contact_details_form label[for="address1"]').append(" [#A1] ");
 				$('form#contact_details_form label[for="address2"]').append(" [#A2] ");
-                	        $('form#contact_details_form label[for="city"]').append(" [#CT] ");
-        	                $('form#contact_details_form label[for="state"]').append(" [#ST] ");
-	                        $('form#contact_details_form label[for="postal_code"]').append(" [#PC] ");
-                	        $('form#contact_details_form label[for="country_code"]').append(" [#CC] ");
-        	                $('form#contact_details_form label[for="email"]').append(" [#EM] ");
-	                        $('form#gender_form label[for="title"]').append(" [#TI] ");
-                        	$('form#gender_form label[for="gender"]').append(" [#GE] ");
-                	        $('form#gender_form label[for="date_of_birth"]').append(" [#DB] ");
-        	                $('form#gender_form label[for="call_notes"]').append(" [#CN] ");
+				$('form#contact_details_form label[for="city"]').append(" [#CT] ");
+				$('form#contact_details_form label[for="state"]').append(" [#ST] ");
+				$('form#contact_details_form label[for="postal_code"]').append(" [#PC] ");
+				$('form#contact_details_form label[for="country_code"]').append(" [#CC] ");
+				$('form#contact_details_form label[for="email"]').append(" [#EM] ");
+				$('form#gender_form label[for="title"]').append(" [#TI] ");
+				$('form#gender_form label[for="gender"]').append(" [#GE] ");
+				$('form#gender_form label[for="date_of_birth"]').append(" [#DB] ");
+				$('form#gender_form label[for="call_notes"]').append(" [#CN] ");
 
 				$("[data-toggle='control-sidebar']").append("<br><span>#CONF</span>");
 
@@ -2887,22 +3240,22 @@ dding-top: 10px;">
 				$('li.dropdown.messages-menu a.dropdown-toggle').append('<br><span class="sr-only">Messages</span><span>#VM</span>');
 
 				$('button#btnDialHangup').append('<br><span id="hash-dial-hangup"></span>');
-                                $('button#btnResumePause').append('<br><span>#PR</span>');
-                                $('button#btnParkCall').append('<br><span class="sr-only">Park Call</span><span>#PA</span>');
-                                $('button#btnTransferCall').append('<br><span class="sr-only">Transfer Call</span><span>#TC</span>');
-                                $('button#manual-dial-now').append('<br><span class="hash-call-now">#CALL</span>');
+				$('button#btnResumePause').append('<br><span>#PR</span>');
+				$('button#btnParkCall').append('<br><span class="sr-only">Park Call</span><span>#PA</span>');
+				$('button#btnTransferCall').append('<br><span class="sr-only">Transfer Call</span><span>#TC</span>');
+				$('button#manual-dial-now').append('<br><span class="hash-call-now">#CALL</span>');
 
 				$('li#toggleWebForm button#openWebForm').append(" [#WF] ");
 				$('.sidebar-toggle-labels label[for="LeadPreview"]').append(" [#LE] ");
-                                $('.sidebar-toggle-labels label[for="DialALTPhone"]').append(" [#DALTP] ");
-                                $('.sidebar-toggle-labels label[for="enableHotKeys"]').append(" [#EH] ");
-                                $('.sidebar-toggle-labels label[for="muteMicrophone"]').append(" [#MIC] ");
+				$('.sidebar-toggle-labels label[for="DialALTPhone"]').append(" [#DALTP] ");
+				$('.sidebar-toggle-labels label[for="enableHotKeys"]').append(" [#EH] ");
+				$('.sidebar-toggle-labels label[for="muteMicrophone"]').append(" [#MIC] ");
 
 				$('ul.control-sidebar-menu:nth-of-type(2) a:nth-of-type(1)').append(" [#PR] ");
-                                $('ul.control-sidebar-menu:nth-of-type(2) a:nth-of-type(2)').append(" [#EX] ");
+                $('ul.control-sidebar-menu:nth-of-type(2) a:nth-of-type(2)').append(" [#EX] ");
 
 				$('div#MainStatusSpan a:nth-of-type(1)').append(" [#DL] ");
-                                $('div#MainStatusSpan a:nth-of-type(2)').append(" [#SL] ");
+                $('div#MainStatusSpan a:nth-of-type(2)').append(" [#SL] ");
 
 				// Focus on Input on enter
 				$('form#contact_details_form label[for="alt_phone"]').keypress(function(event){
@@ -2942,5 +3295,64 @@ dding-top: 10px;">
 			});
 		</script>
 		<?php } //end if ECCS_BLIND_MODE ?>
+	
+		<!-- emojionearea -->
+	<link rel="stylesheet" href="js/node_modules/emojionearea/dist/emojionearea.min.css">
+    <script type="text/javascript" src="js/node_modules/emojionearea/dist/emojionearea.min.js"></script>
+
+	<script type="text/javascript" src="js/node_modules/jquery.maskedinput/src/jquery.maskedinput.js"></script>
+
+	<!-- Chat whatsapp -->
+	<link href="css/dashboard/css/chats.css" rel="stylesheet" type="text/css" />
+
+	<!--  Jquery Validate additional-methods -->
+	<script src="/js/additional-methods.js"></script>
+	
+		<script src="/js/custom/template-socket.js" type="text/javascript"></script>
+
+		<script src="js/custom/global.js" type="text/javascript"></script>
+		<script type="text/javascript">
+			/* Token para peticiones AJAX */
+			let token = getCookie('utjo');
+			if (token != null) {
+				$.ajaxSetup({ headers: { 'JWT-TOKEN': token } });
+			} else {
+				console.error('CSRF token not found');
+			}
+		</script>
+		<script src="<?php echo DOMAIN_SOCKET ?>/socket.io/socket.io.js" type="text/javascript"></script>
+		<script src="js/custom/socket.js" type="text/javascript"></script>
+		<script>
+			// nodejs socket
+			
+			const executeSocket = function() {
+				// conectar con socket
+				socketcus.init('<?php echo DOMAIN_SOCKET ?>', '<?php echo $user->getUserA() ?>');
+
+				// iniciar rooms
+				socketcus.chatwhatsapp(null, null, '<?php echo LIST_ID ?>');
+			}
+
+			// ejecutar socket
+			executeSocket();
+
+			// sólo para pruebas
+			socketcus.initCallWhatsapp = function(phone, name, list) {
+				socketcus.chatwhatsapp(phone, name, list);
+			}
+
+			/*
+			socketcus.on_notify_leadgen();
+			
+			// notificaciones declaraciones
+			notify.addnewstyle(notify.htmlstyleleadgen, 'notify_leadgen',);
+			notify.events('notify_leadgen');
+			*/
+		</script>
+		<script src="/js/custom/agent.js" type="text/javascript"></script>
+		<script src="/js/custom/agent-infocontact-footer.js" type="text/javascript"></script>
+		<script>
+			agent.loadVar('<?php echo DOMAIN_SOCKET ?>', '<?php echo $user->getUserA() ?>');
+		</script>
     </body>
 </html>
