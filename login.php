@@ -25,7 +25,7 @@
 
 	// se llama a la librerias
 	require __DIR__ . '/vendor/autoload.php';
-	
+
 	use App\Lib\Phpjwt;
 	use App\Service\NodeService;
 /**
