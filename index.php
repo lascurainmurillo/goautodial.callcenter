@@ -29,19 +29,21 @@
 	require_once('./php/UIHandler.php');
 	require_once('./php/LanguageHandler.php');
 	require_once('./php/DbHandler.php');
+
 	$ui = \creamy\UIHandler::getInstance();
 	$lh = \creamy\LanguageHandler::getInstance();
 	$api = \creamy\APIHandler::getInstance();
-		
+
 	// Try to get the authenticated user.
 	require_once('./php/Session.php');
+
 	try {
 		$user = \creamy\CreamyUser::currentUser();	
 	} catch (\Exception $e) {
 		header("location: ./logout.php");
 		die();
 	}
-	
+
 	//proper user redirects
 	if($user->getUserRole() != CRM_DEFAULTS_USER_ROLE_ADMIN){
 		if($user->getUserRole() == CRM_DEFAULTS_USER_ROLE_AGENT){
