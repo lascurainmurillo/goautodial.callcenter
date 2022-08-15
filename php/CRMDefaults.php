@@ -232,8 +232,8 @@ define ('CRM_GO_VERSION', "v4.0");
 // Customizations
 define ('ECCS_BLIND_MODE', "n"); //Customizations requested by ECCS. Accessibility mode for blind users
 define ('LEADUPLOAD_LEAD_MAPPING', "n"); // Customization requested by Yoothit. Lead Mapping
-define ('LEADUPLOAD_CUSTOM_DELIMITER', ""); //put special characters here, for multiple separate by [space]
-define ('LEADUPLOAD_CHECK_PHONES_IN_SYSTEM', 'n'); //enable or disable Lead Upload Feature: check duplicates in entire system
+define ('LEADUPLOAD_CUSTOM_DELIMITER', ""); // put special characters here, for multiple separate by [space] nat:added pipe symbol
+define ('LEADUPLOAD_CHECK_PHONES_IN_SYSTEM', "y"); //enable or disable Lead Upload Feature: check duplicates
 define ('STATEWIDE_SALES_REPORT', 'n'); //Customization Requested by Statewide. 
 
 define ('EXPORTCALLREPORT_ALLCAMPAIGNS', 'y');
@@ -242,4 +242,8 @@ define ('REALTIME_INBOUND_MONITORING', 'n'); //Change to 'y' to enable realtime 
 
 define ('ROCKETCHAT_ENABLE', 'n'); // Change to 'y' to enable rocketchat feature
 define ('ROCKETCHAT_URL', ""); //Rocketchat URL example: https://rocketchat.company.com
+
+define ('SHOW_AGENT_HEADER', 'n'); //Shows or Hides Black Header in Agent UI
+
+define ('OSTICKET_ENABLED', 'n');
 ?>

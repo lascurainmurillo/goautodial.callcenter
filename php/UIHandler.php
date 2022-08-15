@@ -3871,21 +3871,21 @@ error_reporting(E_ERROR | E_PARSE);
 	
 			foreach ($output->data as $log) {
 				$details = stripslashes($log->details);
-				$db_query = stripslashes($log->db_query);
+				$db_query = strip_tags($log->db_query);
 				//$details = (strlen($details) > 30) ? substr($details, 0, 30) . "..." : $details;
-				//$db_query = (strlen($db_query) > 30) ? substr($db_query, 0, 30) . "..." : $db_query;
+				//$db_query2 = (strlen($db_query) > 30) ? substr($db_query, 0, 30) . "..." : $db_query;
 				$result = $result."<tr>
 					<td><span class='hidden-xs'>".$log->name. " ".$log->user."</span><span class='visible-xs'>".$log->user."</span></td>
 					<td><a href='http://www.ip-tracker.org/locator/ip-lookup.php?ip=".$log->ip_address."' target='_new'>".$log->ip_address."</a></td>
 					<td>".$log->event_date."</td>
 					<td>".$log->action."</td>
 					<td title=\"".stripslashes($log->details)."\">".$details."</td>
-					<td title=\"".stripslashes($log->db_query)."\">".$db_query."</td></tr>";
+					<td title=\""./*stripslashes($log->db_query)*/$db_query."\">".$db_query."</td></tr>";
 			}
 
 			return $result.'</table>';
 
-		} else {
+		} else { 
 			return $output->result;
 		}
 	}
@@ -4546,13 +4546,13 @@ error_reporting(E_ERROR | E_PARSE);
 	    for($i=0;$i<count($output->call_time_id);$i++) {
 		    $action = $this->getUserActionMenuForCalltimes($output->call_time_id[$i], $output->call_time_name[$i]);
 			$schedule = "NULL";
-			if ($output->ct_default_start[$i] === $output->ct_default_stop[$i]) {
+			if ($output->ct_default_start[$i] === NULL  && $output->ct_default_stop[$i] === NULL) {
 				$def = 'data-def="NULL"';
 			}else{
 				$default_start = date('h:i A', strtotime(sprintf("%04d", $output->ct_default_start[$i])));
 				$default_stop = date('h:i A', strtotime(sprintf("%04d", $output->ct_default_stop[$i])));
 				$def = 'data-def="'.$default_start.' - '.$default_stop.'"';
-				$schedule = $default_start.' - '.$default_stop;
+				$schedule = $default_start.' - '.$default_stop;	
 			}
 			if ($output->ct_sunday_start[$i] === $output->ct_sunday_stop[$i]) {
 				$sun = 'data-sun="NULL"';
@@ -4994,7 +4994,7 @@ error_reporting(E_ERROR | E_PARSE);
 		}
 //--------- ACCID ---------
 
-        public function ActionMenuForAreacodes($areacode, $camp_id) {
+        public function ActionMenuForAreacodes($id, $code) {
                  return '<div class="btn-group">
                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">'.$this->lh->translationFor("choose_action").'
                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="height: 34px;">
@@ -5002,8 +5002,8 @@ error_reporting(E_ERROR | E_PARSE);
                                             <span class="sr-only">Toggle Dropdown</span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a class="view_areacode" href="#" data-toggle="modal" data-target="#modal_edit_areacode" data-type="update" data-ac="'.$areacode.'" data-camp="'.$camp_id.'">'.$this->lh->translationFor("modify").'</a></li>
-                        <li><a class="delete-areacode" href="#" data-type="delete" data-ac="'.$areacode.'" data-camp="'.$camp_id.'">'.$this->lh->translationFor("delete").'</a></li>
+                        <li><a class="view_areacode" href="#" data-toggle="modal" data-target="#modal_edit_areacode" data-type="update" data-ac="'.$code.'" data-camp="'.$id.'">'.$this->lh->translationFor("modify").'</a></li>
+                        <li><a class="delete-areacode" href="#" data-type="delete" data-ac="'.$code.'" data-camp="'.$id.'">'.$this->lh->translationFor("delete").'</a></li>
                     </ul>
                 </div>';
         }
