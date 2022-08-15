@@ -24,4 +24,7 @@ define('CRM_ADMIN_EMAIL', 'admin@localhost.com');
 define('APP_ID_FACEBOOK', '');
 define('APP_SECRET_FACEBOOK', '');
 define('APP_VERSION_FACEBOOK', '');
+
+// modo desarrollo = local, modo produccion = production
+define('APP_ENV', 'production');
 ?>

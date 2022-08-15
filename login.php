@@ -61,7 +61,7 @@
 	$session_class = new \creamy\SessionHandler();		
 	
 	// force https protocol
-	if(empty($_SERVER["HTTPS"]) || $_SERVER["HTTPS"] != "on") {
+	if((empty($_SERVER["HTTPS"]) || $_SERVER["HTTPS"] != "on") && APP_ENV == "production") {
 		header("Location: https://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]);
 		exit();
 	}
@@ -73,7 +73,6 @@
 	} else {
 		session_start(); // Starting Session
 	}*/
-	
 	$lh = \creamy\LanguageHandler::getInstance();
 	$ui = \creamy\UIHandler::getInstance();
 	$error = ''; // Variable To Store Error Message

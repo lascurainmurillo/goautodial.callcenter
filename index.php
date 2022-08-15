@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file 		index.php
  * @brief 		Dashboard application
@@ -22,21 +23,20 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
-// phpInfo(); exit;
 	// check if Creamy has been installed.
 	require_once('./php/CRMDefaults.php');
 	require_once('./php/APIHandler.php');
 	require_once('./php/UIHandler.php');
 	require_once('./php/LanguageHandler.php');
 	require_once('./php/DbHandler.php');
-
+	
 	$ui = \creamy\UIHandler::getInstance();
 	$lh = \creamy\LanguageHandler::getInstance();
 	$api = \creamy\APIHandler::getInstance();
 
 	// Try to get the authenticated user.
 	require_once('./php/Session.php');
-
+	
 	try {
 		$user = \creamy\CreamyUser::currentUser();	
 	} catch (\Exception $e) {

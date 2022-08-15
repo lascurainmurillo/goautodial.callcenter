@@ -48,7 +48,7 @@ $session_class = new \creamy\SessionHandler();
 }*/
 
 // force https protocol
-if(empty($_SERVER["HTTPS"]) || $_SERVER["HTTPS"] != "on") {
+if( (empty($_SERVER["HTTPS"]) || $_SERVER["HTTPS"] != "on") && APP_ENV == "production") {
     header("Location: https://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]);
     exit();
 }
@@ -56,7 +56,11 @@ if(empty($_SERVER["HTTPS"]) || $_SERVER["HTTPS"] != "on") {
 $realPath = '';
 if(isset($isAgentUI)){
 	if (preg_match("/GOagentJS/", $isAgentUI)) {
-		$realPath = "https://" . $_SERVER["HTTP_HOST"] . "/";
+		if(APP_ENV == "production") {
+			$realPath = "https://" . $_SERVER["HTTP_HOST"] . "/";
+		} else {
+			$realPath = "http://" . $_SERVER["HTTP_HOST"] . "/";
+		}
 	}
 }
 
