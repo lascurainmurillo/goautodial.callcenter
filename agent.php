@@ -489,6 +489,7 @@ $osTicket = $mh->moduleIsEnabled('osTicket');
 	.content{
 		padding: 0px;
 		margin-top: 30px;
+		padding-bottom: inherit;
 	}
 
 	.nav a.dropdown-toggle{
