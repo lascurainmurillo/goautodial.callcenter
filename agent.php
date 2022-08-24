@@ -636,41 +636,50 @@ $osTicket = $mh->moduleIsEnabled('osTicket');
     <?php } ?>
     <div class="tab-pane active" id="control-dialer-tab">
 		<input type="hidden" id="wa-userid" name="userid" value="<?php print $user->getUserId(); ?>">
-                <section class="content" style="padding-left:0px !important; padding-right:0px !important; padding-top:0px !important;">
-			<?php if(ECCS_BLIND_MODE === 'y'){ ?>
-			<div class="col-lg-3">
-			<?php } ?>
-				<div id="popup-hotkeys" class="panel clearfix">
-				<div class="panel-heading"><b><?=$lh->translationFor('hotkeys')?></b></div>
-					<div class="panel-body"><?=$lh->translationFor('no_available_hotkeys')?></div>
-						<div class="panel-footer clearfix">
-							<div class="text-danger sidecolor" style="padding-right: 5px; background-color: inherit;">
-								<?php if(ECCS_BLIND_MODE === 'n'){ ?>
-								<small><b><?=$lh->translationFor('note')?>:</b> <?=$lh->translationFor('hotkeys_note')?></small>
-								<?php } else { ?>
-								<small id="" style="" class="">Login to Phone Dialer [Shift + Home]</small><br>
-								<small id"" style="" class="">Shortcut Keys to Exit [Shift + End]</small><br>
-								<small id"" style="" class="">Shortcut Keys to Dial/Hangup [Shift + 1]</small><br>
-								<small id"" style="" class="">Shortcut Keys to Pause/Resume [Shift + 2]</small><br>
-								<small id"" style="" class="">Shortcut Keys to Open Webform [Shift + 3]</small><br>
-								<small id"" style="" class="">Shortcut Keys to Lead Preview [Shift + 4]</small><br>
-								<small id"" style="" class="">Shortcut Keys to Callback List [Shift + 5]</small>
-								<?php } ?>
+            <section class="content" style="padding-left:0px !important; padding-right:0px !important; padding-top:0px !important;">
+				<?php if(ECCS_BLIND_MODE === 'y'){ ?>
+				<div class="col-lg-3">
+				<?php } ?>
+					<div id="popup-hotkeys" class="panel clearfix">
+					<div class="panel-heading"><b><?=$lh->translationFor('hotkeys')?></b></div>
+						<div class="panel-body"><?=$lh->translationFor('no_available_hotkeys')?></div>
+							<div class="panel-footer clearfix">
+								<div class="text-danger sidecolor" style="padding-right: 5px; background-color: inherit;">
+									<?php if(ECCS_BLIND_MODE === 'n'){ ?>
+									<small><b><?=$lh->translationFor('note')?>:</b> <?=$lh->translationFor('hotkeys_note')?></small>
+									<?php } else { ?>
+									<small id="" style="" class="">Login to Phone Dialer [Shift + Home]</small><br>
+									<small id"" style="" class="">Shortcut Keys to Exit [Shift + End]</small><br>
+									<small id"" style="" class="">Shortcut Keys to Dial/Hangup [Shift + 1]</small><br>
+									<small id"" style="" class="">Shortcut Keys to Pause/Resume [Shift + 2]</small><br>
+									<small id"" style="" class="">Shortcut Keys to Open Webform [Shift + 3]</small><br>
+									<small id"" style="" class="">Shortcut Keys to Lead Preview [Shift + 4]</small><br>
+									<small id"" style="" class="">Shortcut Keys to Callback List [Shift + 5]</small>
+									<?php } ?>
+								</div>
 							</div>
 						</div>
-					</div>
-			<?php if(ECCS_BLIND_MODE === 'y'){ ?>
-                <div class="row">
-					<input type="text" id="freeTestField" class="hidden">
-				</div> 
-			</div>
+				<?php if(ECCS_BLIND_MODE === 'y'){ ?>
+					<div class="row">
+						<input type="text" id="freeTestField" class="hidden">
+					</div> 
+				</div>
 			
                          <div class="col-lg-9">
-			<?php } ?>
+				<?php } ?>
 					<!-- standard custom edition form -->
 					<div class="container-custom ng-scope">
 						<div id="cust_info" class="card">
-							<?php if(SHOW_AGENT_HEADER === 'y'){?>
+							<div class="row">
+								<div class="col-xs-12">
+									<div class="" style="margin: 10px;">
+										<a class="btn btn-warning" href="#customerslist">
+											<i class="fa fa-list-alt" aria-hidden="true"></i> Ver historial de llamadas
+										</a>
+									</div>
+								</div>
+							</div>
+							<?php if(SHOW_AGENT_HEADER === 'y') {?>
 								<!-- ECCS Customization -->
 								<?php // if(ECCS_BLIND_MODE === 'y'){?>
 								 <div style="background-image:;" class="card-heading bg-inverse">
@@ -680,30 +689,41 @@ $osTicket = $mh->moduleIsEnabled('osTicket');
 											<avatar username="Dialed Client" src="<?php echo CRM_DEFAULTS_USER_AVATAR;?>" :size="64"></avatar>
 										</div>
 										<div class="<?php if (ECCS_BLIND_MODE === 'n') { echo "col-lg-9 col-md-9 col-sm-7"; } else { echo "col-lg-11 col-md-11 col-sm-10"; } ?>">
-								<!-- ECCS Customization-->
-						   <h4 id="cust_full_name" class="isDisabled">
-									<?php if(ECCS_BLIND_MODE === 'n'){ ?>
-									<span id="first_name_label" class="hidden"><?=$lh->translationFor('first_name')?>: </span><a href="#" id="first_name">Firstname</a> <span id="middle_initial_label" class="hidden"><?=$lh->translationFor('middle_initial')?>: </span><a href="#" id="middle_initial">M.I.</a> <span id="last_name_label" class="hidden"><?=$lh->translationFor('last_name')?>: </span><a href="#" id="last_name">Lastname</a>
-									<?php } ?>
-									<!-- ECCS Customization -->
-									<?php if(ECCS_BLIND_MODE === 'y'){ ?>
-									 <span id="cust_campaign_name"></span>
-									<span id="first_name_label" class="hidden"><?=$lh->translationFor('first_name')?>: </span><a href="#" id="first_name"></a> <span id="middle_initial_label" class="hidden"><?=$lh->translationFor('middle_initial')?>: </span><a href="#" id="middle_initial"></a> <span id="last_name_label" class="hidden"><?=$lh->translationFor('last_name')?>: </span><a href="#" id="last_name"></a>
-									<span id="cust_call_type"></span>
-									<?php }//end if ?>
-         <!-- /.ECCS Customization -->
-								</h4>
-						                <p class="ng-binding animated fadeInUpShort">
-									 <!-- ECCS Customization -->
-                                                                        <?php if(ECCS_BLIND_MODE === 'y'){ ?> 
-										<span id="span-cust-number" class="hidden"><label for="cust_number"> Client Number[#CN]: </label> <input type="text" id="cust_number" style="background-color:; border:; color:black; margin-top: 5px; padding-left: 5px; font-size: 14pt; font-weight: 600;" onclick="this.setSelectionRange(0, this.value.length)" readonly/>"Ctrl+C" to Copy Number.</span>
-
-									<?php } else { ?>
-                                                                        <!-- /.ECCS Customization -->
-									<span id="cust_number"></span>
-									<?php } ?>
-								</p>
-						    </div>
+											<!-- ECCS Customization-->
+											<h4 id="cust_full_name" class="isDisabled">
+												<?php if(ECCS_BLIND_MODE === 'n'){ ?>
+													<span id="first_name_label" class="hidden"><?=$lh->translationFor('first_name')?>: </span>
+													<a href="#" id="first_name">Firstname</a> 
+													<span id="middle_initial_label" class="hidden"><?=$lh->translationFor('middle_initial')?>: </span>
+													<a href="#" id="middle_initial">M.I.</a> 
+													<span id="last_name_label" class="hidden"><?=$lh->translationFor('last_name')?>: </span>
+													<a href="#" id="last_name">Lastname</a>
+												<?php } ?>
+												<!-- ECCS Customization -->
+												<?php if(ECCS_BLIND_MODE === 'y'){ ?>
+													<span id="cust_campaign_name"></span>
+													<span id="first_name_label" class="hidden"><?=$lh->translationFor('first_name')?>: </span>
+													<a href="#" id="first_name"></a> 
+													<span id="middle_initial_label" class="hidden"><?=$lh->translationFor('middle_initial')?>: </span>
+													<a href="#" id="middle_initial"></a> 
+													<span id="last_name_label" class="hidden"><?=$lh->translationFor('last_name')?>: </span>
+													<a href="#" id="last_name"></a>
+													<span id="cust_call_type"></span>
+												<?php } //end if ?>
+											<!-- /.ECCS Customization -->
+											</h4>
+											<p class="ng-binding animated fadeInUpShort">
+												<!-- ECCS Customization -->
+												<?php if(ECCS_BLIND_MODE === 'y') { ?> 
+													<span id="span-cust-number" class="hidden"><label for="cust_number"> Client Number[#CN]: </label> 
+														<input type="text" id="cust_number" style="background-color:; border:; color:black; margin-top: 5px; padding-left: 5px; font-size: 14pt; font-weight: 600;" onclick="this.setSelectionRange(0, this.value.length)" readonly/>"Ctrl+C" to Copy Number.
+													</span>
+												<?php } else { ?>
+												<!-- /.ECCS Customization -->
+												<span id="cust_number"></span>
+												<?php } ?>
+											</p>
+										</div>
 										<?php if (STATEWIDE_SALES_REPORT === 'y') { ?>
 										<div id="agent_stats" class="col-lg-2 col-md-2 col-sm-3 hidden-xs" style="font-size: 18px; display: none; float:right;">
 											<p style="margin: 0;">Sales: <span id="agent_sales_count" style="float: right;">0</span></p>

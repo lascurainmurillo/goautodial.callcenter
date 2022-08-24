@@ -57,7 +57,7 @@ Ejecutar los siguientes script
 
 use goautodial;
 
-CREATE TABLE IF NOT EXISTS `call_goautodial`.`go_social_webhook_data` (
+CREATE TABLE IF NOT EXISTS `goautodial`.`go_social_webhook_data` (
   `id` VARCHAR(45) NOT NULL COMMENT 'Id entregado por el webhook changes.  En este caso seria el id de \'leadgen_id\'. El id es segun el tipo (field type)',
   `type` VARCHAR(10) NOT NULL DEFAULT 'leadgen',
   `email` VARCHAR(45) NULL DEFAULT NULL,
@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS `call_goautodial`.`go_social_webhook_data` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = latin1;
 
-CREATE TABLE IF NOT EXISTS `call_goautodial`.`go_social_token` (
+CREATE TABLE IF NOT EXISTS `goautodial`.`go_social_token` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `user_id` VARCHAR(20) NOT NULL,
   `token` VARCHAR(300) NOT NULL,
@@ -85,7 +85,7 @@ AUTO_INCREMENT = 124
 DEFAULT CHARACTER SET = latin1
 COMMENT = 'status => sólo un registro puede poseer valor 1, todos los demas deben ser 0';
 
-CREATE TABLE IF NOT EXISTS `call_goautodial`.`go_social_page` (
+CREATE TABLE IF NOT EXISTS `goautodial`.`go_social_page` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(50) NULL DEFAULT NULL,
   `page_id` VARCHAR(30) NOT NULL,
@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS `call_goautodial`.`go_social_page` (
   INDEX `fk_go_social_page_go_social_token_idx` (`go_social_token_id` ASC),
   CONSTRAINT `fk_go_social_page_go_social_token`
     FOREIGN KEY (`go_social_token_id`)
-    REFERENCES `call_goautodial`.`go_social_token` (`id`)
+    REFERENCES `goautodial`.`go_social_token` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -106,7 +106,7 @@ AUTO_INCREMENT = 236
 DEFAULT CHARACTER SET = latin1
 COMMENT = 'Registro de las fan page de un login/token';
 
-CREATE TABLE IF NOT EXISTS `call_goautodial`.`go_social_webhook_page` (
+CREATE TABLE IF NOT EXISTS `goautodial`.`go_social_webhook_page` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `go_social_token_id` INT(11) NOT NULL,
   `type` VARCHAR(15) NOT NULL DEFAULT 'page' COMMENT 'tipo de objeto',
@@ -117,7 +117,7 @@ CREATE TABLE IF NOT EXISTS `call_goautodial`.`go_social_webhook_page` (
   INDEX `fk_social_webhook_leadgen_go_social_token1_idx` (`go_social_token_id` ASC),
   CONSTRAINT `fk_social_webhook_leadgen_go_social_token1`
     FOREIGN KEY (`go_social_token_id`)
-    REFERENCES `call_goautodial`.`go_social_token` (`id`)
+    REFERENCES `goautodial`.`go_social_token` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -125,7 +125,7 @@ AUTO_INCREMENT = 52
 DEFAULT CHARACTER SET = latin1
 COMMENT = 'Registro de datos enviandos por webhoot de un objeto PAGE';
 
-CREATE TABLE IF NOT EXISTS `call_goautodial`.`go_social_webhook_change` (
+CREATE TABLE IF NOT EXISTS `goautodial`.`go_social_webhook_change` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `social_webhook_page_id` INT(11) NOT NULL,
   `field` VARCHAR(15) NOT NULL DEFAULT 'leadgen' COMMENT 'tipo de subcription facebook',
@@ -137,7 +137,7 @@ CREATE TABLE IF NOT EXISTS `call_goautodial`.`go_social_webhook_change` (
   INDEX `fk_social_webhook_change_social_webhook_page1_idx` (`social_webhook_page_id` ASC),
   CONSTRAINT `fk_social_webhook_change_social_webhook_page1`
     FOREIGN KEY (`social_webhook_page_id`)
-    REFERENCES `call_goautodial`.`go_social_webhook_page` (`id`)
+    REFERENCES `goautodial`.`go_social_webhook_page` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB

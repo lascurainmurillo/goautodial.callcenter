@@ -38,7 +38,7 @@ agentinfo.delpackage = function(e) {
     $(e).parents('tr').remove();
 }
 
-agentinfo.renderrow = function(packages) {
+agentinfo.renderrow = function(packages = []) {
 
     var bodyPackages = $("#body-packages"); // body de la tabla de packages de formulario personalizado Lead 1004 packages_booking
 
