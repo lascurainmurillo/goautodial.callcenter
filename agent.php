@@ -487,8 +487,8 @@ $osTicket = $mh->moduleIsEnabled('osTicket');
 	?>
 <style>
 	.content{
+		padding: 0px;
 		margin-top: 30px;
-		padding-bottom: inherit !important;
 	}
 
 	.nav a.dropdown-toggle{
@@ -636,7 +636,7 @@ $osTicket = $mh->moduleIsEnabled('osTicket');
     <?php } ?>
     <div class="tab-pane active" id="control-dialer-tab">
 		<input type="hidden" id="wa-userid" name="userid" value="<?php print $user->getUserId(); ?>">
-            <section class="content" style="padding-left:0px !important; padding-right:0px !important; padding-top:0px !important;">
+            <section class="content" style="padding-left:0px !important; padding-right:0px !important; padding-top:0px !important; padding-bottom:0px !important;">
 				<?php if(ECCS_BLIND_MODE === 'y'){ ?>
 				<div class="col-lg-3">
 				<?php } ?>
