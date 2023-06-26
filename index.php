@@ -792,7 +792,7 @@
 					</div>
 						
 					<?php print $ui->hooksForDashboard(); ?>
-				
+
                 </section><!-- /.content -->
 				
             </aside><!-- /.right-side -->

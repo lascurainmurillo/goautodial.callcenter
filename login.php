@@ -210,6 +210,16 @@
 	<!--<p class="text-center"><?php $lh->translateText("forgotten_password"); ?> <a href="lostpassword.php"><?php $lh->translateText("click_here"); ?>.</a></p>-->
       </div><!-- /.login-box-body -->
     </div><!-- /.login-box -->
+	
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-12 text-center">
+				<div>
+					<a href="/politica-privacidad.html" >Política de privacidad</a>
+				</div>
+			</div>
+		</div>
+	</div>
 	</center>
 	<footer>
 		<div style="text-align: center; font-weight: 600; margin-top: -40px;">Copyright &copy; <?=date("Y")?> <a href="https://goautodial.com" target="_blank">GOautodial Inc.</a> All rights reserved.</div>
