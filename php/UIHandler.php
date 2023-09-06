@@ -1799,7 +1799,7 @@ error_reporting(E_ERROR | E_PARSE);
 
 			<!-- SDK FACEBOOK -->
 			<div id="fb-root"></div>
-			<script async defer crossorigin="anonymous" src="https://connect.facebook.net/es_ES/sdk.js#xfbml=1&version=v10.0&appId=146655680685042&autoLogAppEvents=1" nonce="TwZDjBs8"></script>
+			<script async defer crossorigin="anonymous" src="https://connect.facebook.net/es_ES/sdk.js#xfbml=1&version=v11.0&appId=146655680685042&autoLogAppEvents=1" nonce="UjCu5Zy3"></script>
 
 			<script>
 				window.fbAsyncInit = function() {
@@ -2349,8 +2349,7 @@ error_reporting(E_ERROR | E_PARSE);
 				<div class="center-block" style="text-align: center">';
 			
 			if ($user->userHasBasicPermission() && !($this->db->getTokenUser())) {
-				$tabpanes .= '<fb:login-button class="fb-login-button" data-width="" data-size="large" data-button-type="login_with" data-layout="default" data-auto-logout-link="false" data-use-continue-as="false" style="margin: 10px 0px" scope="public_profile,email,pages_show_list,pages_manage_ads,pages_manage_metadata,pages_read_engagement,leads_retrieval,ads_management" onlogin="checkLoginState(\''.$_SESSION['user'].'\', \''.$_SESSION['usergroup'].'\');"></fb:login-button>
-				';
+				$tabpanes .= '<fb:login-button class="fb-login-button" data-width="" data-size="large" data-button-type="login_with" data-layout="default" data-auto-logout-link="false" data-use-continue-as="true" style="margin: 10px 0px" data-scope="public_profile,email,pages_show_list,pages_manage_ads,pages_manage_metadata,pages_read_engagement,leads_retrieval,ads_management" onlogin="checkLoginState(\''.$_SESSION['user'].'\', \''.$_SESSION['usergroup'].'\');"></fb:login-button>';
 			} else {
 				// colocar un boton de "VER TODAS LAS PAGINAS FAN"
 				$tabpanes .= '<a href="./socialpages.php" class="btn btn-primary" style="margin-bottom: 20px"><i class="fa fa-thumbs-up"></i> VER FANPAGE VINCULADAS</a>';
